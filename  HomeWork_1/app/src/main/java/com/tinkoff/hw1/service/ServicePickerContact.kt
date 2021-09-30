@@ -1,6 +1,5 @@
 package com.tinkoff.hw1.service
 
-import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
@@ -14,7 +13,7 @@ class ServicePickerContact : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val users = loadContacts()
         val intentBroadcast = Intent(Constant.ACTION_GET_CONTACTS)
-                .putParcelableArrayListExtra(Constant.EXTRA_KEY_CONTACTS, users)
+            .putParcelableArrayListExtra(Constant.EXTRA_KEY_CONTACTS, users)
         val broadcastManager = LocalBroadcastManager.getInstance(baseContext)
         broadcastManager.sendBroadcast(intentBroadcast)
         stopSelf()
@@ -23,25 +22,24 @@ class ServicePickerContact : Service() {
 
     override fun onBind(intent: Intent): IBinder? = null
 
-    @SuppressLint("Range")
-    private fun loadContacts(): ArrayList<Contact>{
+    private fun loadContacts(): ArrayList<Contact> {
         val userContacts = arrayListOf<Contact>()
         val uri = ContactsContract.Contacts.CONTENT_URI
         val cursor = contentResolver.query(
-                uri,
-                null,
-                null,
-                null,
-                ContactsContract.Contacts.DISPLAY_NAME
+            uri,
+            null,
+            null,
+            null,
+            ContactsContract.Contacts.DISPLAY_NAME
         )
         cursor?.moveToFirst()
-        while(cursor?.moveToNext() == true){
+        while (cursor?.moveToNext() == true) {
             val displayName =
-                    cursor.getString(
-                            cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
-                    )
+                cursor.getString(
+                    cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+                )
             userContacts.add(
-                    Contact(contactName = displayName)
+                Contact(contactName = displayName)
             )
         }
         cursor?.close()

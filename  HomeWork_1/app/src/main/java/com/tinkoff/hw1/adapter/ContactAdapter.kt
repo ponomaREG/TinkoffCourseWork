@@ -24,9 +24,9 @@ class ContactAdapter : RecyclerView.Adapter<ContactAdapter.Holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(
             LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_contact,
-                    parent,
-                    false
+                R.layout.item_contact,
+                parent,
+                false
             )
         )
     }
@@ -38,7 +38,7 @@ class ContactAdapter : RecyclerView.Adapter<ContactAdapter.Holder>() {
     override fun getItemCount(): Int = _items.size
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
-        
+
         private val displayName: TextView = view.findViewById(R.id.item_contact_name)
 
         fun bind(contact: Contact) {

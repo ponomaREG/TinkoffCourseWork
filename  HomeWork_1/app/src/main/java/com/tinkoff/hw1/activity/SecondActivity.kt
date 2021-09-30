@@ -15,7 +15,7 @@ import com.tinkoff.hw1.service.ServicePickerContact
 
 class SecondActivity : AppCompatActivity() {
 
-    companion object{
+    companion object {
         fun getIntent(context: Context) =
             Intent(context, SecondActivity::class.java)
     }
@@ -23,9 +23,9 @@ class SecondActivity : AppCompatActivity() {
     private lateinit var buttonStartService: Button
     private lateinit var broadcastManager: LocalBroadcastManager
 
-    private val contactsReceiver = object: BroadcastReceiver(){
+    private val contactsReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if(intent.hasExtra(Constant.EXTRA_KEY_CONTACTS)){
+            if (intent.hasExtra(Constant.EXTRA_KEY_CONTACTS)) {
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }
@@ -51,17 +51,17 @@ class SecondActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    private fun ueOnButtonStartServiceClick(){
+    private fun ueOnButtonStartServiceClick() {
         startService(Intent(this, ServicePickerContact::class.java))
         buttonStartService.isEnabled = false
         buttonStartService.text = getString(R.string.second_button_status_service_is_running)
     }
 
-    private fun findViews(){
+    private fun findViews() {
         buttonStartService = findViewById(R.id.second_button_start_service)
     }
 
-    private fun attachListeners(){
+    private fun attachListeners() {
         buttonStartService.setOnClickListener {
             ueOnButtonStartServiceClick()
         }

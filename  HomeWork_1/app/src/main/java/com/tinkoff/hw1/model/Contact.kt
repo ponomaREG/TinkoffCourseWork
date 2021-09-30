@@ -6,4 +6,4 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Contact(
     val contactName: String
-): Parcelable
+) : Parcelable
