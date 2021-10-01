@@ -51,19 +51,15 @@ class SecondActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    private fun ueOnButtonStartServiceClick() {
-        startService(Intent(this, PickerContactService::class.java))
-        buttonStartService.isEnabled = false
-        buttonStartService.text = getString(R.string.second_button_status_service_is_running)
-    }
-
     private fun findViews() {
         buttonStartService = findViewById(R.id.second_button_start_service)
     }
 
     private fun attachListeners() {
         buttonStartService.setOnClickListener {
-            ueOnButtonStartServiceClick()
+            startService(Intent(this, PickerContactService::class.java))
+            buttonStartService.isEnabled = false
+            buttonStartService.text = getString(R.string.second_button_status_service_is_running)
         }
     }
 }

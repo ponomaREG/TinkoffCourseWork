@@ -55,10 +55,6 @@ class MainActivity : AppCompatActivity() {
         showContacts(contacts)
     }
 
-    private fun ueOnButtonMoveToSecondActivityClick() {
-        permissionsActivityResult.launch(Manifest.permission.READ_CONTACTS)
-    }
-
     private fun findViews() {
         buttonMoveToSecondActivity =
             findViewById(R.id.main_button_move_to_second_activity)
@@ -68,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun attachListeners() {
         buttonMoveToSecondActivity.setOnClickListener {
-            ueOnButtonMoveToSecondActivityClick()
+            permissionsActivityResult.launch(Manifest.permission.READ_CONTACTS)
         }
     }
 
