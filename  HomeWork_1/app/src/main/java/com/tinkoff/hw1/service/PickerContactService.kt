@@ -33,7 +33,7 @@ class PickerContactService : Service() {
             null,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
         )
-        if(cursor != null) {
+        if (cursor != null) {
             cursor.moveToFirst()
             for (i in 0 until cursor.count) {
                 val displayName =

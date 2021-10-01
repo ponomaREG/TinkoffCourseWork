@@ -13,15 +13,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="@dimen/main_button_move_to_second_activity_margin"
-        android:src="@android:drawable/sym_contact_card"
-        />
+        android:src="@android:drawable/sym_contact_card" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_rv_contacts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
-        tools:listitem="@layout/item_contact"
-        />
+        tools:listitem="@layout/item_contact" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
