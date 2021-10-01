@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hw1">
         <service
-            android:name=".service.ServicePickerContact"
+            android:name=".service.PickerContactService"
             android:enabled="true"
             android:exported="false" />
         <activity android:name=".activity.SecondActivity" />

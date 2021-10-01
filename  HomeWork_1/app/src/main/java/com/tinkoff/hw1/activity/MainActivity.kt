@@ -5,18 +5,21 @@ import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.RecyclerView
+import androidx.savedstate.SavedStateRegistry
 import com.tinkoff.hw1.util.Constant
 import com.tinkoff.hw1.model.Contact
 import com.tinkoff.hw1.adapter.ContactAdapter
 import com.tinkoff.hw1.R
+import com.tinkoff.hw1.util.registerForPermission
+import com.tinkoff.hw1.util.showToast
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val STATE_CONTACTS = "STATE_CONTACTS"
+        private const val SIS_CONTACTS = "SIS_CONTACTS"
+        private const val KEY_PROVIDER = "KEY_PROVIDER"
     }
 
     private lateinit var buttonMoveToSecondActivity: View
@@ -24,14 +27,15 @@ class MainActivity : AppCompatActivity() {
 
     private val adapterForContacts = ContactAdapter()
     private val secondActivityResult = getRegisterForSecondActivityResult()
-    private val permissionsActivityResult = getRegisterForPermissions(
-        actionIfGranted = {
-            secondActivityResult.launch(SecondActivity.getIntent(this))
-        },
-        actionNotGranted = {
-            showToast(getString(R.string.error_permission_not_given))
+    private val permissionsActivityResult = registerForPermission { granted ->
+        if(granted) secondActivityResult.launch(SecondActivity.getIntent(this))
+        else showToast(getString(R.string.error_permission_not_given))
+    }
+    private val savedStateProvider = SavedStateRegistry.SavedStateProvider {
+        Bundle().apply {
+            putParcelableArrayList(SIS_CONTACTS, ArrayList(adapterForContacts.getItems()))
         }
-    )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,23 +43,16 @@ class MainActivity : AppCompatActivity() {
         findViews()
         attachListeners()
         attachAdapters()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        val contacts = adapterForContacts.getItems()
-        if (contacts.isNotEmpty()) outState.putParcelableArrayList(
-            STATE_CONTACTS,
-            ArrayList(contacts)
-        )
+        savedStateRegistry.registerSavedStateProvider(KEY_PROVIDER, savedStateProvider)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val contacts: List<Contact> =
-            savedInstanceState
-                .getParcelableArrayList<Contact>(STATE_CONTACTS)?.toList() ?: return
-        adapterForContacts.setItems(contacts)
+        val contacts: List<Contact> = savedStateRegistry
+            .consumeRestoredStateForKey(KEY_PROVIDER)
+            ?.getParcelableArrayList(SIS_CONTACTS)
+            ?: emptyList()
+        showContacts(contacts)
     }
 
     private fun ueOnButtonMoveToSecondActivityClick() {
@@ -67,7 +64,6 @@ class MainActivity : AppCompatActivity() {
             findViewById(R.id.main_button_move_to_second_activity)
         recyclerListWithContacts =
             findViewById(R.id.main_rv_contacts)
-
     }
 
     private fun attachListeners() {
@@ -78,10 +74,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun attachAdapters() {
         recyclerListWithContacts.adapter = adapterForContacts
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showContacts(contacts: List<Contact>) {
@@ -97,14 +89,5 @@ class MainActivity : AppCompatActivity() {
                     ) ?: return@registerForActivityResult
                 showContacts(contacts)
             }
-        }
-
-    private fun getRegisterForPermissions(
-        actionIfGranted: () -> Unit,
-        actionNotGranted: () -> Unit
-    ) =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) actionIfGranted()
-            else actionNotGranted()
         }
 }

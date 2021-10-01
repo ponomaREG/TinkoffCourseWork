@@ -11,7 +11,7 @@ import android.widget.Button
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.tinkoff.hw1.util.Constant
 import com.tinkoff.hw1.R
-import com.tinkoff.hw1.service.ServicePickerContact
+import com.tinkoff.hw1.service.PickerContactService
 
 class SecondActivity : AppCompatActivity() {
 
@@ -52,7 +52,7 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun ueOnButtonStartServiceClick() {
-        startService(Intent(this, ServicePickerContact::class.java))
+        startService(Intent(this, PickerContactService::class.java))
         buttonStartService.isEnabled = false
         buttonStartService.text = getString(R.string.second_button_status_service_is_running)
     }

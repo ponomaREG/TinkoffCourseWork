@@ -8,7 +8,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.tinkoff.hw1.util.Constant
 import com.tinkoff.hw1.model.Contact
 
-class ServicePickerContact : Service() {
+class PickerContactService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val users = loadContacts()
