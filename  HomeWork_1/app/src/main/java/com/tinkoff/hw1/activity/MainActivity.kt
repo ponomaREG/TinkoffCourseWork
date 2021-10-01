@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private val adapterForContacts = ContactAdapter()
     private val secondActivityResult = getRegisterForSecondActivityResult()
     private val permissionsActivityResult = registerForPermission { granted ->
-        if(granted) secondActivityResult.launch(SecondActivity.getIntent(this))
+        if (granted) secondActivityResult.launch(SecondActivity.getIntent(this))
         else showToast(getString(R.string.error_permission_not_given))
     }
     private val savedStateProvider = SavedStateRegistry.SavedStateProvider {
