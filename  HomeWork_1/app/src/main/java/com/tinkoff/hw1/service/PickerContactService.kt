@@ -7,6 +7,7 @@ import android.provider.ContactsContract
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.tinkoff.hw1.util.Constant
 import com.tinkoff.hw1.model.Contact
+import java.util.concurrent.TimeUnit
 
 class PickerContactService : Service() {
 
@@ -30,19 +31,22 @@ class PickerContactService : Service() {
             null,
             null,
             null,
-            ContactsContract.Contacts.DISPLAY_NAME
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
         )
-        cursor?.moveToFirst()
-        while (cursor?.moveToNext() == true) {
-            val displayName =
-                cursor.getString(
-                    cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+        if(cursor != null) {
+            cursor.moveToFirst()
+            for (i in 0 until cursor.count) {
+                val displayName =
+                    cursor.getString(
+                        cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+                    )
+                userContacts.add(
+                    Contact(contactName = displayName)
                 )
-            userContacts.add(
-                Contact(contactName = displayName)
-            )
+                cursor.moveToNext()
+            }
+            cursor.close()
         }
-        cursor?.close()
         return userContacts
     }
 }
