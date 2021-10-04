@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">hw1</string>
+    <string name="app_name">Hw1</string>
+    <string name="main_button_move_to_second_activity">Перейти к следующему экрану</string>
+    <string name="second_button_start_service">Запустить сервис</string>
+    <string name="second_button_status_service_is_running">Сервис запущен</string>
+    <string name="error_permission_not_given">Предоставьте нужное разрешение</string>
 </resources>
