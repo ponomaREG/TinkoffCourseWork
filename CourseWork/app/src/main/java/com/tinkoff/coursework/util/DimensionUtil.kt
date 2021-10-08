@@ -5,13 +5,11 @@ import androidx.annotation.Px
 import kotlin.math.roundToInt
 
 @Px
-fun Float.spToPx(context: Context): Int {
-    val res = context.applicationContext.resources
-    return (this * res.displayMetrics.scaledDensity).roundToInt()
+fun Context.spToPx(sp: Float): Float {
+    return (sp * resources.displayMetrics.scaledDensity)
 }
 
 @Px
-fun Float.dpToPx(context: Context): Float {
-    val res = context.applicationContext.resources
-    return (this * res.displayMetrics.density)
+fun Context.dpToPx(dp: Float): Float {
+    return (dp * resources.displayMetrics.density)
 }

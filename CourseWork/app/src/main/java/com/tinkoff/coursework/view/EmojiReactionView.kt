@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.util.dpToPx
+import com.tinkoff.coursework.util.spToPx
 
 class EmojiReactionView constructor(
     context: Context,
@@ -64,7 +65,7 @@ class EmojiReactionView constructor(
                 invalidate()
             }
         }
-    var contentTextSize: Float = DEFAULT_TEXTSIZE.dpToPx(context)
+    var contentTextSize: Float = context.spToPx(DEFAULT_TEXTSIZE)
         set(value) {
             if (field != value) {
                 field = value
