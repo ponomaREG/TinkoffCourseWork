@@ -9,8 +9,8 @@ import com.tinkoff.coursework.R
 import com.tinkoff.coursework.util.dpToPx
 
 class EmojiReactionView constructor(
-        context: Context,
-        attributeSet: AttributeSet? = null
+    context: Context,
+    attributeSet: AttributeSet? = null
 ) : View(context, attributeSet) {
 
     companion object {
@@ -23,21 +23,21 @@ class EmojiReactionView constructor(
 
     init {
         context.obtainStyledAttributes(
-                attributeSet,
-                R.styleable.EmojiReactionView,
-                0,
-                0).apply {
+            attributeSet,
+            R.styleable.EmojiReactionView,
+            0,
+            0).apply {
             emojiCode = getInt(
-                    R.styleable.EmojiReactionView_emojiUnicode,
-                    DEFAULT_EMOJI
+                R.styleable.EmojiReactionView_emojiUnicode,
+                DEFAULT_EMOJI
             )
             countOfVotes = getInt(
-                    R.styleable.EmojiReactionView_counterOfVotes,
-                    DEFAULT_COUNT_OF_VOTES
+                R.styleable.EmojiReactionView_counterOfVotes,
+                DEFAULT_COUNT_OF_VOTES
             )
             textColor = getColor(
-                    R.styleable.EmojiReactionView_textColor,
-                    ContextCompat.getColor(context, DEFAULT_TEXT_COLOR_ID)
+                R.styleable.EmojiReactionView_textColor,
+                ContextCompat.getColor(context, DEFAULT_TEXT_COLOR_ID)
             )
             recycle()
         }
@@ -72,8 +72,7 @@ class EmojiReactionView constructor(
             }
         }
 
-    var textBounds = Rect()
-
+    private var textBounds = Rect()
     private var content: String = getFormattedContent()
         set(value) {
             if (field != value) {

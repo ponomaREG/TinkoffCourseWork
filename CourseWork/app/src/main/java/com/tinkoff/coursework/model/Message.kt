@@ -1,8 +1,8 @@
 package com.tinkoff.coursework.model
 
 data class Message(
-        val username: String,
-        val message: String,
-        val avatarRes: Int,
-        val reactions: List<Reaction>
+    val username: String,
+    val message: String,
+    val avatarRes: Int,
+    val reactions: List<Reaction>
 )

@@ -11,8 +11,8 @@ import androidx.core.view.children
 import com.tinkoff.coursework.R
 
 class FlexBoxLayout constructor(
-        context: Context,
-        attributeSet: AttributeSet
+    context: Context,
+    attributeSet: AttributeSet
 ) : ViewGroup(context, attributeSet) {
 
     companion object {
@@ -24,8 +24,8 @@ class FlexBoxLayout constructor(
     init {
         context.obtainStyledAttributes(attributeSet, R.styleable.FlexBoxLayout, 0, 0).apply {
             maxQuantityChildPerRow = getInt(
-                    R.styleable.FlexBoxLayout_maxQuantityOfChildPerRow,
-                    DEFAULT_MAX_QUANTITY_OF_ROW
+                R.styleable.FlexBoxLayout_maxQuantityOfChildPerRow,
+                DEFAULT_MAX_QUANTITY_OF_ROW
             )
             recycle()
         }
@@ -44,7 +44,7 @@ class FlexBoxLayout constructor(
         }
 
     private val offset = resources.getDimensionPixelSize(
-            R.dimen.flex_box_layout_offset_between_elements
+        R.dimen.flex_box_layout_offset_between_elements
     )
 
     override fun onLayout(p0: Boolean, p1: Int, p2: Int, p3: Int, p4: Int) {
@@ -82,16 +82,16 @@ class FlexBoxLayout constructor(
             widthOfLayout = maxOf(widthOfLayout, currentWidth)
         }
         setMeasuredDimension(
-                resolveSize(widthOfLayout, widthMeasureSpec),
-                resolveSize(
-                        maxOf(maxChildHeight, heightOfLayout),
-                        heightMeasureSpec
-                )
+            resolveSize(widthOfLayout, widthMeasureSpec),
+            resolveSize(
+                maxOf(maxChildHeight, heightOfLayout),
+                heightMeasureSpec
+            )
         )
     }
 
     override fun generateDefaultLayoutParams(): LayoutParams =
-            MarginLayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        MarginLayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
     override fun generateLayoutParams(attrs: AttributeSet?) = MarginLayoutParams(context, attrs)
 
