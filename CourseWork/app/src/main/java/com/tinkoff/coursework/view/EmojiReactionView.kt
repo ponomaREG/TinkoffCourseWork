@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.tinkoff.coursework.R
-import com.tinkoff.coursework.util.dpToPx
 import com.tinkoff.coursework.util.spToPx
 
 class EmojiReactionView constructor(
@@ -40,6 +39,10 @@ class EmojiReactionView constructor(
                 R.styleable.EmojiReactionView_textColor,
                 ContextCompat.getColor(context, DEFAULT_TEXT_COLOR_ID)
             )
+            contentTextSize = getDimensionPixelSize(
+                R.styleable.EmojiReactionView_android_textSize,
+                context.spToPx(DEFAULT_TEXTSIZE).toInt()
+            ).toFloat()
             recycle()
         }
     }
@@ -48,14 +51,14 @@ class EmojiReactionView constructor(
         set(value) {
             if (field != value) {
                 field = value
-                content = getFormattedContent()
+                requestLayout()
             }
         }
     var emojiCode: Int
         set(value) {
             if (field != value) {
                 field = value
-                content = getFormattedContent()
+                requestLayout()
             }
         }
     var textColor: Int
@@ -65,7 +68,7 @@ class EmojiReactionView constructor(
                 invalidate()
             }
         }
-    var contentTextSize: Float = context.spToPx(DEFAULT_TEXTSIZE)
+    var contentTextSize: Float
         set(value) {
             if (field != value) {
                 field = value
@@ -74,13 +77,10 @@ class EmojiReactionView constructor(
         }
 
     private var textBounds = Rect()
-    private var content: String = getFormattedContent()
-        set(value) {
-            if (field != value) {
-                field = value
-                requestLayout()
-            }
-        }
+
+    private val content: String
+        get() = getFormattedContent()
+
 
     private val contentPaint = Paint().apply {
         style = Paint.Style.FILL

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.ImageView
 import androidx.core.view.children
 import com.tinkoff.coursework.R
 
@@ -19,20 +18,20 @@ class FlexBoxLayout constructor(
         private const val DEFAULT_MAX_QUANTITY_OF_ROW = 5
     }
 
-    val imageViewIconAdd: ImageView
-
     init {
         context.obtainStyledAttributes(attributeSet, R.styleable.FlexBoxLayout, 0, 0).apply {
             maxQuantityChildPerRow = getInt(
                 R.styleable.FlexBoxLayout_maxQuantityOfChildPerRow,
                 DEFAULT_MAX_QUANTITY_OF_ROW
             )
+            offsetBetweenElenements = getDimensionPixelOffset(
+                R.styleable.FlexBoxLayout_offsetBetweenElements,
+                resources.getDimensionPixelSize(
+                    R.dimen.flex_box_layout_offset_between_elements
+                )
+            )
             recycle()
         }
-        imageViewIconAdd = ImageView(context).apply {
-            setImageResource(R.drawable.ic_plus_emoji)
-        }
-        addView(imageViewIconAdd)
     }
 
     var maxQuantityChildPerRow: Int
@@ -43,16 +42,12 @@ class FlexBoxLayout constructor(
             }
         }
 
-    private val offset = resources.getDimensionPixelSize(
-        R.dimen.flex_box_layout_offset_between_elements
-    )
+    var offsetBetweenElenements: Int
 
-    override fun onLayout(p0: Boolean, p1: Int, p2: Int, p3: Int, p4: Int) {
-        removeView(imageViewIconAdd)
-        (children + imageViewIconAdd).forEach { child ->
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        (children).forEach { child ->
             child.layout(child.left, child.top, child.right, child.bottom)
         }
-        addView(imageViewIconAdd)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -65,20 +60,19 @@ class FlexBoxLayout constructor(
         children.forEach {
             measureChildWithMargins(it, widthMeasureSpec, 0, heightMeasureSpec, 0)
         }
-        removeView(imageViewIconAdd)
-        val maxChildHeight = (children + imageViewIconAdd).maxOf { children ->
+        val maxChildHeight = children.maxOf { children ->
             children.measuredHeight
         }
-        (children + imageViewIconAdd).forEach { child ->
+        children.forEach { child ->
             if (currentWidth + child.measuredWidth >= widthSpecSize || childCounterPerRow >= maxQuantityChildPerRow) {
                 currentWidth = 0
                 childCounterPerRow = 0
-                topOfLatestRow += maxChildHeight + offset
+                topOfLatestRow += maxChildHeight + offsetBetweenElenements
                 heightOfLayout += topOfLatestRow + maxChildHeight
             }
             putView(child, currentWidth, topOfLatestRow)
             childCounterPerRow++
-            currentWidth += child.measuredWidth + offset
+            currentWidth += child.measuredWidth + offsetBetweenElenements
             widthOfLayout = maxOf(widthOfLayout, currentWidth)
         }
         setMeasuredDimension(

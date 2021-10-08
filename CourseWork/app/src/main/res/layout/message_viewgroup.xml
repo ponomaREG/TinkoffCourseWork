@@ -34,7 +34,7 @@
         android:maxWidth="@dimen/message_viewgroup_max_width"
         android:textColor="@color/message_view_group_message_text_color"
         android:textSize="@dimen/message_viewgroup_message_text_size"
-        tools:text="Тестовое сообщение" />
+        tools:text="123"/>
 
     <com.tinkoff.coursework.view.FlexBoxLayout
         android:id="@+id/reactions"

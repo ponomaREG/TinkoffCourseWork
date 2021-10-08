@@ -21,13 +21,46 @@ import com.tinkoff.coursework.util.sumVerticalMargins
 
 class MessageViewGroup constructor(
     context: Context,
-    attributeSet: AttributeSet
+    attributeSet: AttributeSet?
 ) : ViewGroup(context, attributeSet) {
 
+    var emojiContentTextSize: Float
+    var emojiBackgroundId: Int
+    var emojiPadding: Float
+
+    private val imageViewIconAdd: ImageView
     private val avatarImageView: ImageView
     private val usernameTextView: TextView
     private val messageTextView: TextView
     private val reactionsFlexBoxLayout: FlexBoxLayout
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.message_viewgroup, this, true)
+        avatarImageView = findViewById(R.id.avatar)
+        usernameTextView = findViewById(R.id.username)
+        messageTextView = findViewById(R.id.message)
+        reactionsFlexBoxLayout = findViewById(R.id.reactions)
+        avatarImageView.clipToOutline = true
+        imageViewIconAdd = ImageView(context).apply {
+            setImageResource(R.drawable.ic_plus_emoji)
+        }
+        context.obtainStyledAttributes(attributeSet, R.styleable.MessageViewGroup).apply {
+            emojiContentTextSize = getDimensionPixelSize(
+                R.styleable.MessageViewGroup_emojiTextSize,
+                resources.getDimensionPixelSize(R.dimen.emoji_view_text_size)
+            ).toFloat()
+            emojiBackgroundId = getResourceId(
+                R.styleable.MessageViewGroup_emojiBackground,
+                R.drawable.bg_emoji_view
+            )
+            emojiPadding = getDimensionPixelSize(
+                R.styleable.MessageViewGroup_emojiPadding,
+                resources.getDimensionPixelSize(R.dimen.emoji_view_padding)
+            ).toFloat()
+            recycle()
+        }
+        setWillNotDraw(false)
+    }
 
     private val avatarRect = Rect()
     private val usernameRect = Rect()
@@ -42,16 +75,6 @@ class MessageViewGroup constructor(
         resources.getDimensionPixelSize(R.dimen.message_viewgroup_radius).toFloat()
     private val backgroundMargin =
         resources.getDimensionPixelSize(R.dimen.message_viewgroup_background_margin)
-
-    init {
-        LayoutInflater.from(context).inflate(R.layout.message_viewgroup, this, true)
-        avatarImageView = findViewById(R.id.avatar)
-        usernameTextView = findViewById(R.id.username)
-        messageTextView = findViewById(R.id.message)
-        reactionsFlexBoxLayout = findViewById(R.id.reactions)
-        avatarImageView.clipToOutline = true
-        setWillNotDraw(false)
-    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val avatarLayoutParams = avatarImageView.layoutParams as MarginLayoutParams
@@ -122,7 +145,7 @@ class MessageViewGroup constructor(
         )
     }
 
-    override fun onLayout(p0: Boolean, p1: Int, p2: Int, p3: Int, p4: Int) {
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         avatarImageView.layout(
             avatarRect,
             null,
@@ -165,31 +188,40 @@ class MessageViewGroup constructor(
         )
     }
 
-    fun setMessage(message: Message) {
+    fun setMessage(
+        message: Message,
+        onEmojiClick:(Reaction, EmojiReactionView) -> Unit,
+        onIconAddClick: (View) -> Unit
+    ) {
         avatarImageView.setImageResource(message.avatarRes)
         usernameTextView.text = message.username
         messageTextView.text = message.message
-        addReactions(message.reactions)
+        setReactions(message.reactions, onEmojiClick, onIconAddClick)
     }
 
-    fun addReactions(reactions: List<Reaction>) {
+    fun setReactions(
+        reactions: List<Reaction>,
+        onEmojiClick:(Reaction, EmojiReactionView) -> Unit,
+        onIconAddClick: (View) -> Unit
+    ) {
+        reactionsFlexBoxLayout.removeAllViews()
         reactions.forEach { reaction ->
             val emojiView = EmojiReactionView(context)
             emojiView.setBackgroundResource(R.drawable.bg_emoji_view)
             emojiView.setPadding(
                 resources.getDimensionPixelSize(R.dimen.emoji_view_padding)
             )
-            emojiView.contentTextSize =
-                resources.getDimensionPixelSize(R.dimen.emoji_view_text_size).toFloat()
+            emojiView.contentTextSize = emojiContentTextSize
             emojiView.countOfVotes = reaction.countOfVotes
             emojiView.emojiCode = reaction.emojiCode
-            emojiView.setOnClickListener { emoji ->
-                emoji.isSelected = emoji.isSelected.not()
-                if (emoji.isSelected) emojiView.countOfVotes += 1
-                else emojiView.countOfVotes -= 1
+            emojiView.isSelected = reaction.isSelected
+            emojiView.setOnClickListener {
+                onEmojiClick(reaction, emojiView)
             }
             reactionsFlexBoxLayout.addView(emojiView)
         }
+        imageViewIconAdd.setOnClickListener(onIconAddClick)
+        reactionsFlexBoxLayout.addView(imageViewIconAdd)
         requestLayout()
     }
 
