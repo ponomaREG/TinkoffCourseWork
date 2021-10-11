@@ -24,15 +24,15 @@ class MessageViewGroup constructor(
     attributeSet: AttributeSet?
 ) : ViewGroup(context, attributeSet) {
 
-    var emojiContentTextSize: Float
-    var emojiBackgroundId: Int
-    var emojiPadding: Float
-
     private val imageViewIconAdd: ImageView
     private val avatarImageView: ImageView
     private val usernameTextView: TextView
     private val messageTextView: TextView
     private val reactionsFlexBoxLayout: FlexBoxLayout
+
+    private val emojiContentTextSize: Float
+    private val emojiBackgroundId: Int
+    private val emojiPadding: Float
 
     init {
         LayoutInflater.from(context).inflate(R.layout.message_viewgroup, this, true)
@@ -189,40 +189,45 @@ class MessageViewGroup constructor(
     }
 
     fun setMessage(
-        message: Message,
-        onEmojiClick:(Reaction, EmojiReactionView) -> Unit,
-        onIconAddClick: (View) -> Unit
+        message: Message
     ) {
         avatarImageView.setImageResource(message.avatarRes)
         usernameTextView.text = message.username
         messageTextView.text = message.message
-        setReactions(message.reactions, onEmojiClick, onIconAddClick)
+        setReactions(message.reactions)
     }
 
     fun setReactions(
-        reactions: List<Reaction>,
-        onEmojiClick:(Reaction, EmojiReactionView) -> Unit,
-        onIconAddClick: (View) -> Unit
+        reactions: List<Reaction>
     ) {
         reactionsFlexBoxLayout.removeAllViews()
         reactions.forEach { reaction ->
             val emojiView = EmojiReactionView(context)
-            emojiView.setBackgroundResource(R.drawable.bg_emoji_view)
-            emojiView.setPadding(
-                resources.getDimensionPixelSize(R.dimen.emoji_view_padding)
-            )
+            emojiView.setBackgroundResource(emojiBackgroundId)
+            emojiView.setPadding(emojiPadding.toInt())
             emojiView.contentTextSize = emojiContentTextSize
             emojiView.countOfVotes = reaction.countOfVotes
             emojiView.emojiCode = reaction.emojiCode
             emojiView.isSelected = reaction.isSelected
-            emojiView.setOnClickListener {
-                onEmojiClick(reaction, emojiView)
-            }
             reactionsFlexBoxLayout.addView(emojiView)
         }
-        imageViewIconAdd.setOnClickListener(onIconAddClick)
         reactionsFlexBoxLayout.addView(imageViewIconAdd)
         requestLayout()
+    }
+
+    fun setOnEmojiViewClickListener(listener: OnClickListener) {
+        for (i in 0 until reactionsFlexBoxLayout.childCount - 1) {
+            reactionsFlexBoxLayout.getChildAt(i)
+                .setOnClickListener(listener)
+        }
+    }
+
+    fun setOnAddClickListenerClick(listener: OnClickListener) {
+        val reactionsChildCount = reactionsFlexBoxLayout.childCount
+        if (reactionsChildCount > 0) {
+            reactionsFlexBoxLayout.getChildAt(reactionsChildCount - 1)
+                .setOnClickListener(listener)
+        }
     }
 
     private fun View.layout(

@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tinkoff.coursework.adapter.MessageAdapter
 import com.tinkoff.coursework.model.Message
 import com.tinkoff.coursework.model.Reaction
-import com.tinkoff.coursework.view.MessageViewGroup
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {

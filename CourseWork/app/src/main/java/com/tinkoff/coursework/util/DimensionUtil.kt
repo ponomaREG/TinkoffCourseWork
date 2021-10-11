@@ -2,7 +2,6 @@ package com.tinkoff.coursework.util
 
 import android.content.Context
 import androidx.annotation.Px
-import kotlin.math.roundToInt
 
 @Px
 fun Context.spToPx(sp: Float): Float {

@@ -26,25 +26,26 @@ class EmojiReactionView constructor(
             attributeSet,
             R.styleable.EmojiReactionView,
             0,
-            0).apply {
-            emojiCode = getInt(
-                R.styleable.EmojiReactionView_emojiUnicode,
-                DEFAULT_EMOJI
-            )
-            countOfVotes = getInt(
-                R.styleable.EmojiReactionView_counterOfVotes,
-                DEFAULT_COUNT_OF_VOTES
-            )
-            textColor = getColor(
-                R.styleable.EmojiReactionView_textColor,
-                ContextCompat.getColor(context, DEFAULT_TEXT_COLOR_ID)
-            )
-            contentTextSize = getDimensionPixelSize(
-                R.styleable.EmojiReactionView_android_textSize,
-                context.spToPx(DEFAULT_TEXTSIZE).toInt()
-            ).toFloat()
-            recycle()
-        }
+            0)
+            .apply {
+                emojiCode = getInt(
+                    R.styleable.EmojiReactionView_emojiUnicode,
+                    DEFAULT_EMOJI
+                )
+                countOfVotes = getInt(
+                    R.styleable.EmojiReactionView_counterOfVotes,
+                    DEFAULT_COUNT_OF_VOTES
+                )
+                textColor = getColor(
+                    R.styleable.EmojiReactionView_textColor,
+                    ContextCompat.getColor(context, DEFAULT_TEXT_COLOR_ID)
+                )
+                contentTextSize = getDimensionPixelSize(
+                    R.styleable.EmojiReactionView_android_textSize,
+                    context.spToPx(DEFAULT_TEXTSIZE).toInt()
+                ).toFloat()
+                recycle()
+            }
     }
 
     var countOfVotes: Int
@@ -65,6 +66,7 @@ class EmojiReactionView constructor(
         set(value) {
             if (field != value) {
                 field = value
+                contentPaint?.color = textColor
                 invalidate()
             }
         }
@@ -72,6 +74,7 @@ class EmojiReactionView constructor(
         set(value) {
             if (field != value) {
                 field = value
+                contentPaint?.textSize = contentTextSize
                 requestLayout()
             }
         }
@@ -80,7 +83,6 @@ class EmojiReactionView constructor(
 
     private val content: String
         get() = getFormattedContent()
-
 
     private val contentPaint = Paint().apply {
         style = Paint.Style.FILL

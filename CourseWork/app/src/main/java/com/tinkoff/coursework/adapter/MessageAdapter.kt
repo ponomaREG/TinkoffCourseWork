@@ -1,11 +1,13 @@
 package com.tinkoff.coursework.adapter
 
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.tinkoff.coursework.model.Message
+import com.tinkoff.coursework.view.EmojiReactionView
 import com.tinkoff.coursework.view.MessageViewGroup
 
-class MessageAdapter: RecyclerView.Adapter<MessageAdapter.Holder>() {
+class MessageAdapter : RecyclerView.Adapter<MessageAdapter.Holder>() {
 
     private val items: MutableList<Message> = mutableListOf()
 
@@ -24,19 +26,19 @@ class MessageAdapter: RecyclerView.Adapter<MessageAdapter.Holder>() {
         notifyItemRangeInserted(beginPosition, messages.size)
     }
 
-    class Holder(private val view: MessageViewGroup): RecyclerView.ViewHolder(view) {
+    class Holder(private val view: MessageViewGroup) : RecyclerView.ViewHolder(view) {
         fun bind(message: Message) {
-            view.setMessage(
-                message,
-                onEmojiClick = { emoji, view ->
+            view.setMessage(message)
+            view.setOnAddClickListenerClick { icAdd ->
+
+            }
+            view.setOnEmojiViewClickListener { view ->
+                if (view is EmojiReactionView) {
                     view.isSelected = view.isSelected.not()
                     if (view.isSelected) view.countOfVotes += 1
                     else view.countOfVotes -= 1
-                },
-                onIconAddClick = { iconAdd ->
-
                 }
-            )
+            }
         }
     }
 }
