@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="emoji_view_text_size">14sp</dimen>
+    <dimen name="emoji_view_padding">6dp</dimen>
+    <dimen name="message_viewgroup_avatar_size">37dp</dimen>
+    <dimen name="message_viewgroup_margin_start">10dp</dimen>
+    <dimen name="message_viewgroup_margin_end">20dp</dimen>
+    <dimen name="message_viewgroup_radius">8dp</dimen>
+    <dimen name="message_viewgroup_background_margin">6dp</dimen>
+    <dimen name="flex_box_layout_offset_between_elements">4dp</dimen>
+    <dimen name="message_viewgroup_username_margin_top">8dp</dimen>
+    <dimen name="message_viewgroup_username_text_size">14sp</dimen>
+    <dimen name="message_viewgroup_message_margin_bottom">8dp</dimen>
+    <dimen name="message_viewgroup_max_width">217dp</dimen>
+    <dimen name="message_viewgroup_message_text_size">16sp</dimen>
+    <dimen name="message_viewgroup_reactions_margin_top">7dp</dimen>
+    <dimen name="message_viewgroup_reactions_margin_start">-5dp</dimen>
+    <dimen name="emoji_view_bg_radius">6dp</dimen>
+
+</resources>

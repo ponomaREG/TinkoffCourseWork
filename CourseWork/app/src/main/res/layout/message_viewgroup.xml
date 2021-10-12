@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="com.tinkoff.coursework.view.MessageViewGroup">
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/message_viewgroup_avatar_size"
+        android:layout_height="@dimen/message_viewgroup_avatar_size"
+        android:layout_marginStart="@dimen/message_viewgroup_margin_start"
+        android:layout_marginEnd="@dimen/message_viewgroup_margin_end"
+        android:background="@drawable/round_avatar"
+        android:scaleType="centerCrop"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_marginTop="@dimen/message_viewgroup_username_margin_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/message_view_group_username_text_color"
+        android:textSize="@dimen/message_viewgroup_username_text_size"
+        android:textStyle="bold"
+        tools:text="Иванов Иван" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/message_viewgroup_message_margin_bottom"
+        android:maxWidth="@dimen/message_viewgroup_max_width"
+        android:textColor="@color/message_view_group_message_text_color"
+        android:textSize="@dimen/message_viewgroup_message_text_size"
+        tools:text="123"/>
+
+    <com.tinkoff.coursework.view.FlexBoxLayout
+        android:id="@+id/reactions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/message_viewgroup_reactions_margin_start"
+        android:layout_marginTop="@dimen/message_viewgroup_reactions_margin_top"
+        app:maxQuantityOfChildPerRow="5" />
+
+</merge>

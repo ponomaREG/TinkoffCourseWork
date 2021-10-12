@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="EmojiReactionView">
+        <attr name="emojiUnicode" format="integer" />
+        <attr name="android:radius" format="dimension" />
+        <attr name="counterOfVotes" format="integer" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="backgroundSelectedColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="android:padding" format="dimension" />
+        <attr name="android:textSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="FlexBoxLayout">
+        <attr name="maxQuantityOfChildPerRow" format="integer" />
+        <attr name="offsetBetweenElements" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="MessageViewGroup">
+        <attr name="emojiPadding" format="dimension"/>
+        <attr name="emojiTextSize" format="dimension"/>
+        <attr name="emojiBackground" format="reference"/>
+    </declare-styleable>
+</resources>
