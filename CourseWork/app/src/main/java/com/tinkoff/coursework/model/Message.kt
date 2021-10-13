@@ -4,5 +4,5 @@ data class Message(
     val username: String,
     val message: String,
     val avatarRes: Int,
-    val reactions: List<Reaction>
-)
+    val reactions: MutableList<Reaction>
+) : EntityUI
