@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <TextView android:id="@+id/date_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:textSize="@dimen/date_divider_text_size"
+        android:paddingVertical="@dimen/date_divider_padding_vertical"
+        android:paddingHorizontal="@dimen/date_divider_padding_horizontal"
+        android:background="@drawable/bg_date_divider"
+        android:textColor="@color/date_divider_text_color"
+        tools:text="1 Фев" />
+</LinearLayout>
