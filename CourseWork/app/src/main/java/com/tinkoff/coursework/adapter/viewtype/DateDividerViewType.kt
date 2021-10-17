@@ -11,11 +11,11 @@ import com.tinkoff.coursework.model.DateDivider
 import com.tinkoff.coursework.model.EntityUI
 
 class DateDividerViewType : BaseItemViewType<ItemDateDividerBinding, DateDivider> {
-    override fun isRelativeItem(entityUI: EntityUI): Boolean = entityUI is DateDivider
+    override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is DateDivider
 
     override fun getLayoutID(): Int = R.layout.item_date_divider
 
-    override fun getViewHolder(
+    override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
     ): BaseViewHolder<ItemDateDividerBinding, DateDivider> {

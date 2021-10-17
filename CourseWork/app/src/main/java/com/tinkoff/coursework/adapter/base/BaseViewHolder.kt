@@ -8,4 +8,6 @@ abstract class BaseViewHolder<B : ViewBinding, E : EntityUI>(
     binding: B
 ) : RecyclerView.ViewHolder(binding.root) {
     abstract fun bind(entityUI: E)
+
+    open fun bind(entityUI: E, payloads: List<Any>) {}
 }

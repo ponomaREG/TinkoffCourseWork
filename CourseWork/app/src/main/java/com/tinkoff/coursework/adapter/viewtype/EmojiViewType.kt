@@ -11,13 +11,13 @@ import com.tinkoff.coursework.model.Emoji
 import com.tinkoff.coursework.model.EntityUI
 
 class EmojiViewType(
-    private val onEmojiClick: (Int) -> Unit = {}
+    private val onEmojiClick: (Emoji) -> Unit = {}
 ) : BaseItemViewType<ItemBsReactionBinding, Emoji> {
-    override fun isRelativeItem(entityUI: EntityUI): Boolean = entityUI is Emoji
+    override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is Emoji
 
     override fun getLayoutID(): Int = R.layout.item_bs_reaction
 
-    override fun getViewHolder(
+    override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
     ): BaseViewHolder<ItemBsReactionBinding, Emoji> {

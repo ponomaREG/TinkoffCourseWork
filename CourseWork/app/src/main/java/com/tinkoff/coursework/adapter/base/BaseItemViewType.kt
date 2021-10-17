@@ -6,7 +6,7 @@ import androidx.viewbinding.ViewBinding
 import com.tinkoff.coursework.model.EntityUI
 
 interface BaseItemViewType<B : ViewBinding, E : EntityUI> {
-    fun isRelativeItem(entityUI: EntityUI): Boolean
+    fun isCorrectItem(entityUI: EntityUI): Boolean
     fun getLayoutID(): Int
-    fun getViewHolder(layoutInflater: LayoutInflater, parent: ViewGroup): BaseViewHolder<B, E>
+    fun createViewHolder(layoutInflater: LayoutInflater, parent: ViewGroup): BaseViewHolder<B, E>
 }

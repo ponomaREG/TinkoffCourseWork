@@ -20,7 +20,7 @@ class DelegateAdapter(
     ): BaseViewHolder<ViewBinding, EntityUI> {
         val inflater = LayoutInflater.from(parent.context)
         return supportedViewTypes.find { it.getLayoutID() == viewType }
-            ?.getViewHolder(inflater, parent)
+            ?.createViewHolder(inflater, parent)
             ?.let { it as BaseViewHolder<ViewBinding, EntityUI> } ?: throw IllegalStateException()
     }
 
@@ -31,10 +31,19 @@ class DelegateAdapter(
         holder.bind(items[position])
     }
 
+    override fun onBindViewHolder(
+        holder: BaseViewHolder<ViewBinding, EntityUI>,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isNullOrEmpty()) super.onBindViewHolder(holder, position, payloads)
+        else holder.bind(items[position], payloads)
+    }
+
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = supportedViewTypes
-        .find { it.isRelativeItem(items[position]) }
+        .find { it.isCorrectItem(items[position]) }
         ?.getLayoutID() ?: throw IllegalStateException()
 
     fun addItems(newItems: List<EntityUI>) {
@@ -47,6 +56,8 @@ class DelegateAdapter(
         items.clear()
         addItems(newItems)
     }
+
+    fun getItemAt(position: Int): EntityUI? = items.getOrNull(position)
 
     fun clear() {
         items.clear()

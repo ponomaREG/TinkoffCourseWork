@@ -118,10 +118,10 @@ class MessageViewGroup constructor(
         )
         val backgroundRectLeft =
             avatarImageView.measuredHeight +
-                avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
+                    avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
         val backgroundRectRight =
             backgroundRectLeft +
-                maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
+                    maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
         backgroundRect.set(
             backgroundRectLeft.toFloat(),
             0f,
@@ -238,9 +238,10 @@ class MessageViewGroup constructor(
         currentChildRect: Rect,
         childOnLeft: View?,
         childOnLeftRect: Rect?,
-        childOnTopRect: Rect?) {
+        childOnTopRect: Rect?
+    ) {
         currentChildRect.left = (childOnLeftRect?.right ?: 0) +
-            (childOnLeft?.marginRight ?: 0) + marginLeft
+                (childOnLeft?.marginRight ?: 0) + marginLeft
         currentChildRect.top = (childOnTopRect?.bottom ?: 0) + marginTop
         currentChildRect.right = currentChildRect.left + measuredWidth
         currentChildRect.bottom = currentChildRect.top + measuredHeight + marginBottom

@@ -26,7 +26,8 @@ class EmojiReactionView constructor(
             attributeSet,
             R.styleable.EmojiReactionView,
             0,
-            0)
+            0
+        )
             .apply {
                 emojiCode = getInt(
                     R.styleable.EmojiReactionView_emojiUnicode,
@@ -111,7 +112,12 @@ class EmojiReactionView constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawText(content, coordinatePointOfContent.x, coordinatePointOfContent.y, contentPaint)
+        canvas.drawText(
+            content,
+            coordinatePointOfContent.x,
+            coordinatePointOfContent.y,
+            contentPaint
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

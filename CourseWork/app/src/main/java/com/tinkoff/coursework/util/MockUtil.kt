@@ -9,32 +9,7 @@ import kotlin.random.Random
 
 object MockUtil {
 
-    fun mockReactions() = mutableListOf(
-        Reaction(
-            Random.nextInt(0x1F300, 0x1f310),
-            Random.nextInt(1, 3),
-            true,
-            mutableListOf(12345)
-        ),
-        Reaction(
-            Random.nextInt(0x1F300, 0x1f310),
-            Random.nextInt(1, 3),
-            true,
-            mutableListOf(12345)
-        ),
-        Reaction(
-            Random.nextInt(0x1F300, 0x1f310),
-            Random.nextInt(1, 3),
-            true,
-            mutableListOf(12345)
-        ),
-        Reaction(
-            Random.nextInt(0x1F300, 0x1f310),
-            Random.nextInt(1, 3),
-            true,
-            mutableListOf(12345)
-        ),
-    )
+    fun mockReactions() = mutableListOf<Reaction>()
 
     fun mockEmojies() = listOf(
         Emoji(0x1F300),
