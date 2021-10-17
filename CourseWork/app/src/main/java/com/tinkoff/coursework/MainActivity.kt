@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -20,12 +21,13 @@ import com.tinkoff.coursework.model.Reaction
 import com.tinkoff.coursework.util.MockUtil
 import com.tinkoff.coursework.util.hideKeyboard
 import com.tinkoff.coursework.view.EmojiReactionView
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())
 
-    private lateinit var dialogWithReactions: BottomSheetDialogFragment
+    private lateinit var dialogWithReactions: BottomSheetDialogWithReactions
     private lateinit var binding: ActivityMainBinding
 
     private var clickedMessagePosition: Int = -1
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initBottomSheetDialogFragmentWithReactions() {
-        dialogWithReactions = BottomSheetDialogWithReactions(
+        dialogWithReactions = BottomSheetDialogWithReactions.newInstance(
             this::onEmojiAtBottomSheetDialogClick
         )
     }
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         chatAdapter.addItems(
             listOf(
                 Message(
+                    id = Random.nextInt(1, 1000),
                     username = "Пользователь",
                     message = textMessage,
                     avatarRes = R.mipmap.ic_launcher,
@@ -102,18 +105,14 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun onMessageLongClick(messagePosition: Int) {
-        clickedMessagePosition = messagePosition
-        dialogWithReactions.show(supportFragmentManager, null)
-    }
-
     private fun onEmojiAtBottomSheetDialogClick(emoji: Emoji) {
         dialogWithReactions.dismiss()
-        val message = chatAdapter.getItemAt(clickedMessagePosition)
+        var message = chatAdapter.getItemAt(clickedMessagePosition)
         if (message is Message) {
-            val alreadyExistsReaction =
-                message.reactions.find { it.emojiCode == emoji.emojiCode }
-            if (alreadyExistsReaction == null) {
+            message = message.copy(reactions = message.reactions.toMutableList())
+            val alreadyExistsReactionInd =
+                message.reactions.indexOfFirst { it.emojiCode == emoji.emojiCode }
+            if (alreadyExistsReactionInd == -1) {
                 message.reactions.add(
                     Reaction(
                         emojiCode = emoji.emojiCode,
@@ -121,45 +120,46 @@ class MainActivity : AppCompatActivity() {
                         countOfVotes = 1
                     )
                 )
-            } else if (alreadyExistsReaction.isSelected.not()) {
+            } else {
+                val alreadyExistsReaction = message.reactions[alreadyExistsReactionInd].copy()
                 alreadyExistsReaction.apply {
                     countOfVotes += 1
                     isSelected = true
                 }
+                message.reactions[alreadyExistsReactionInd] = alreadyExistsReaction
             }
-            chatAdapter.notifyItemChanged(
-                clickedMessagePosition,
-                MessageViewHolder.PAYLOAD_UPDATE_REACTIONS
-            )
+            chatAdapter.updateAt(clickedMessagePosition, message)
         }
     }
 
     private fun onReactionUnderMessageClick(
         message: Message,
-        emojiView: EmojiReactionView,
-        adapterPosition: Int
+        adapterPosition: Int,
+        reactionInContainerPosition: Int
     ) {
-        val modelReactionInd =
-            message.reactions.indexOfFirst { it.emojiCode == emojiView.emojiCode }
-        val modelReaction = message.reactions[modelReactionInd]
+        val messageCopy = message.copy(reactions = message.reactions.toMutableList())
+        val modelReaction = messageCopy.reactions[reactionInContainerPosition].copy()
+        messageCopy.reactions[reactionInContainerPosition] = modelReaction
         modelReaction.isSelected = modelReaction.isSelected.not()
         if (modelReaction.isSelected) modelReaction.countOfVotes += 1
         else {
             modelReaction.countOfVotes -= 1
             if (modelReaction.countOfVotes == 0) {
-                message.reactions.removeAt(modelReactionInd)
+                messageCopy.reactions.removeAt(reactionInContainerPosition)
             }
         }
-        chatAdapter.notifyItemChanged(
-            adapterPosition,
-            MessageViewHolder.PAYLOAD_UPDATE_REACTIONS
-        )
+        chatAdapter.updateAt(adapterPosition, messageCopy)
     }
 
     private fun getSupportedViewTypesForChatRv() = listOf(
         MessageViewType(
-            this::onMessageLongClick,
-            this::onReactionUnderMessageClick
+            onMessageLongClick = { messagePosition ->
+                clickedMessagePosition = messagePosition
+                dialogWithReactions.show(supportFragmentManager, null)
+            },
+            onEmojiClick = { message, adapterPosition, reactionInContainerPosition ->
+                onReactionUnderMessageClick(message, adapterPosition, reactionInContainerPosition)
+            }
         ),
         DateDividerViewType()
     )

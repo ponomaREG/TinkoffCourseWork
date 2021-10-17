@@ -5,10 +5,10 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 class OffsetItemDecorator(
-    private val left: Int,
-    private val right: Int,
-    private val top: Int,
-    private val bottom: Int
+    private val left: Int = 0,
+    private val right: Int = 0,
+    private val top: Int = 0,
+    private val bottom: Int = 0
 ) : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,

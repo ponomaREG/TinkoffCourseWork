@@ -10,27 +10,51 @@ import com.tinkoff.coursework.adapter.viewtype.EmojiViewType
 import com.tinkoff.coursework.databinding.BottomSheetDialogReactionsBinding
 import com.tinkoff.coursework.model.Emoji
 import com.tinkoff.coursework.util.MockUtil
+import java.io.Serializable
 
-class BottomSheetDialogWithReactions(
-    onEmojiClick: (Emoji) -> Unit
-) : BottomSheetDialogFragment() {
+class BottomSheetDialogWithReactions() : BottomSheetDialogFragment() {
 
-    private val emojiAdapter = DelegateAdapter(
-        listOf(
-            EmojiViewType(onEmojiClick)
+    companion object {
+        const val ARGS_EMOJI_CLICK_LISTENER = "ARGS_EMOJI_CLICK_LISTENER"
+        fun newInstance(onEmojiClick: (Emoji) -> Unit): BottomSheetDialogWithReactions {
+            val args = Bundle()
+            val fragment = BottomSheetDialogWithReactions()
+            args.putSerializable(ARGS_EMOJI_CLICK_LISTENER, onEmojiClick as Serializable)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    private var onEmojiClick: (Emoji) -> Unit = {}
+
+    private lateinit var emojiAdapter: DelegateAdapter
+
+    private var _binding: BottomSheetDialogReactionsBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        onEmojiClick = arguments?.getSerializable(ARGS_EMOJI_CLICK_LISTENER) as (Emoji) -> Unit
+        emojiAdapter = DelegateAdapter(
+            listOf(
+                EmojiViewType(onEmojiClick)
+            )
         )
-    )
-
-    private lateinit var binding: BottomSheetDialogReactionsBinding
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding =
+        _binding =
             BottomSheetDialogReactionsBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -2,6 +2,7 @@ package com.tinkoff.coursework.adapter.viewtype
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.adapter.base.BaseViewHolder
@@ -22,4 +23,15 @@ class DateDividerViewType : BaseItemViewType<ItemDateDividerBinding, DateDivider
         val binding = ItemDateDividerBinding.inflate(layoutInflater, parent, false)
         return DateDividerViewHolder(binding)
     }
+
+    override fun getDiffUtilCallback(): DiffUtil.ItemCallback<DateDivider> =
+        object: DiffUtil.ItemCallback<DateDivider>() {
+            override fun areItemsTheSame(oldItem: DateDivider, newItem: DateDivider): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: DateDivider, newItem: DateDivider): Boolean {
+                return oldItem == newItem
+            }
+        }
 }

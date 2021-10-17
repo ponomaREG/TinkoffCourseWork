@@ -1,7 +1,9 @@
 package com.tinkoff.coursework.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.tinkoff.coursework.adapter.base.BaseItemViewType
@@ -10,7 +12,9 @@ import com.tinkoff.coursework.model.EntityUI
 
 class DelegateAdapter(
     private val supportedViewTypes: List<BaseItemViewType<*, *>>
-) : RecyclerView.Adapter<BaseViewHolder<ViewBinding, EntityUI>>() {
+) : ListAdapter<EntityUI, BaseViewHolder<ViewBinding, EntityUI>>(
+    ItemViewTypeDiffUtil(supportedViewTypes)
+) {
 
     private val items: MutableList<EntityUI> = mutableListOf()
 
@@ -47,9 +51,8 @@ class DelegateAdapter(
         ?.getLayoutID() ?: throw IllegalStateException()
 
     fun addItems(newItems: List<EntityUI>) {
-        val oldEndPosition = itemCount
         items.addAll(newItems)
-        notifyItemRangeInserted(oldEndPosition, newItems.size)
+        update()
     }
 
     fun setItems(newItems: List<EntityUI>) {
@@ -59,8 +62,18 @@ class DelegateAdapter(
 
     fun getItemAt(position: Int): EntityUI? = items.getOrNull(position)
 
+    fun updateAt(position: Int, entityUI: EntityUI) {
+        items.removeAt(position)
+        items.add(position, entityUI)
+        update()
+    }
+
     fun clear() {
         items.clear()
         notifyDataSetChanged()
+    }
+
+    fun update() {
+        submitList(items.toMutableList())
     }
 }

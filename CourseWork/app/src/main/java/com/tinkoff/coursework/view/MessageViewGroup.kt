@@ -34,7 +34,7 @@ class MessageViewGroup constructor(
     private val emojiBackgroundId: Int
     private val emojiPadding: Float
 
-    private var emojiReactionViewListener: OnClickListener? = null
+    private var emojiReactionViewListener: OnEmojiClickListener? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.message_viewgroup, this, true)
@@ -204,7 +204,7 @@ class MessageViewGroup constructor(
     ) {
         reactionsFlexBoxLayout.removeAllViews()
         if (reactions.isNotEmpty()) {
-            reactions.forEach { reaction ->
+            reactions.forEachIndexed { index, reaction ->
                 val emojiView = EmojiReactionView(context)
                 emojiView.setBackgroundResource(emojiBackgroundId)
                 emojiView.setPadding(emojiPadding.toInt())
@@ -213,7 +213,7 @@ class MessageViewGroup constructor(
                 emojiView.emojiCode = reaction.emojiCode
                 emojiView.isSelected = reaction.isSelected
                 emojiReactionViewListener?.let {
-                    emojiView.setOnClickListener(emojiReactionViewListener)
+                    emojiView.setOnClickListener(emojiReactionViewListener!!, index)
                 }
                 reactionsFlexBoxLayout.addView(emojiView)
             }
@@ -222,11 +222,11 @@ class MessageViewGroup constructor(
         }
     }
 
-    fun setOnEmojiViewClickListener(listener: OnClickListener) {
+    fun setOnEmojiViewClickListener(listener: OnEmojiClickListener) {
         emojiReactionViewListener = listener
         for (i in 0 until reactionsFlexBoxLayout.childCount - 1) {
-            reactionsFlexBoxLayout.getChildAt(i)
-                .setOnClickListener(listener)
+            (reactionsFlexBoxLayout.getChildAt(i) as EmojiReactionView)
+                .setOnClickListener(listener, i)
         }
     }
 
@@ -271,5 +271,18 @@ class MessageViewGroup constructor(
         val height = child.measuredHeight + params.sumVerticalMargins()
         val width = child.measuredWidth + params.sumHorizontalMargins()
         return height to width
+    }
+
+    private fun EmojiReactionView.setOnClickListener(
+        emojiClickListener: OnEmojiClickListener,
+        position: Int
+    ) {
+        setOnClickListener {
+            emojiClickListener.click(position)
+        }
+    }
+
+    interface OnEmojiClickListener {
+        fun click(reactionInContainerPosition: Int)
     }
 }
