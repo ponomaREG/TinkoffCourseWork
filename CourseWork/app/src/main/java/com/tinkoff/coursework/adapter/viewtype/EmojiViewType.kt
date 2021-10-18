@@ -8,7 +8,6 @@ import com.tinkoff.coursework.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.adapter.holder.EmojiViewHolder
 import com.tinkoff.coursework.databinding.ItemBsReactionBinding
-import com.tinkoff.coursework.model.DateDivider
 import com.tinkoff.coursework.model.Emoji
 import com.tinkoff.coursework.model.EntityUI
 
@@ -28,7 +27,7 @@ class EmojiViewType(
     }
 
     override fun getDiffUtilCallback(): DiffUtil.ItemCallback<Emoji> =
-        object: DiffUtil.ItemCallback<Emoji>() {
+        object : DiffUtil.ItemCallback<Emoji>() {
             override fun areItemsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
                 return oldItem == newItem
             }

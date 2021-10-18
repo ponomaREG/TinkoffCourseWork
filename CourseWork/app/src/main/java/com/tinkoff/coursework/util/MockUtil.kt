@@ -15,7 +15,7 @@ object MockUtil {
         Reaction(0x1F302, 1, true),
         Reaction(0x1F303, 1, true),
 
-    )
+        )
 
     fun mockEmojies() = listOf(
         Emoji(0x1F300),

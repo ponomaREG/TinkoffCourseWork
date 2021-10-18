@@ -1,6 +1,5 @@
 package com.tinkoff.coursework.adapter.viewtype
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,7 +10,6 @@ import com.tinkoff.coursework.adapter.holder.MessageViewHolder
 import com.tinkoff.coursework.databinding.ItemMessageBinding
 import com.tinkoff.coursework.model.EntityUI
 import com.tinkoff.coursework.model.Message
-import com.tinkoff.coursework.view.EmojiReactionView
 
 class MessageViewType(
     private val onMessageLongClick: (Int) -> Unit = {},
@@ -40,7 +38,7 @@ class MessageViewType(
             }
 
             override fun getChangePayload(oldItem: Message, newItem: Message): Any? {
-                return if(oldItem.reactions != newItem.reactions) true
+                return if (oldItem.reactions != newItem.reactions) true
                 else super.getChangePayload(oldItem, newItem)
             }
         }

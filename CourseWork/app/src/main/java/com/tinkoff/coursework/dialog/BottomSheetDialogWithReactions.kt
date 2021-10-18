@@ -10,22 +10,14 @@ import com.tinkoff.coursework.adapter.viewtype.EmojiViewType
 import com.tinkoff.coursework.databinding.BottomSheetDialogReactionsBinding
 import com.tinkoff.coursework.model.Emoji
 import com.tinkoff.coursework.util.MockUtil
-import java.io.Serializable
 
-class BottomSheetDialogWithReactions() : BottomSheetDialogFragment() {
+class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
 
     companion object {
-        const val ARGS_EMOJI_CLICK_LISTENER = "ARGS_EMOJI_CLICK_LISTENER"
-        fun newInstance(onEmojiClick: (Emoji) -> Unit): BottomSheetDialogWithReactions {
-            val args = Bundle()
-            val fragment = BottomSheetDialogWithReactions()
-            args.putSerializable(ARGS_EMOJI_CLICK_LISTENER, onEmojiClick as Serializable)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): BottomSheetDialogWithReactions {
+            return BottomSheetDialogWithReactions()
         }
     }
-
-    private var onEmojiClick: (Emoji) -> Unit = {}
 
     private lateinit var emojiAdapter: DelegateAdapter
 
@@ -34,10 +26,11 @@ class BottomSheetDialogWithReactions() : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        onEmojiClick = arguments?.getSerializable(ARGS_EMOJI_CLICK_LISTENER) as (Emoji) -> Unit
         emojiAdapter = DelegateAdapter(
             listOf(
-                EmojiViewType(onEmojiClick)
+                EmojiViewType { emoji ->
+                    (activity as? OnEmojiPickListener)?.onEmojiPicked(emoji)
+                }
             )
         )
     }
@@ -60,5 +53,9 @@ class BottomSheetDialogWithReactions() : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.bsdRvReactions.adapter = emojiAdapter
         emojiAdapter.setItems(MockUtil.mockEmojies())
+    }
+
+    interface OnEmojiPickListener {
+        fun onEmojiPicked(emoji: Emoji)
     }
 }

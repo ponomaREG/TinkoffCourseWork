@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tinkoff.coursework.adapter.DelegateAdapter
 import com.tinkoff.coursework.adapter.decorator.OffsetItemDecorator
-import com.tinkoff.coursework.adapter.holder.MessageViewHolder
 import com.tinkoff.coursework.adapter.viewtype.DateDividerViewType
 import com.tinkoff.coursework.adapter.viewtype.MessageViewType
 import com.tinkoff.coursework.databinding.ActivityMainBinding
@@ -20,10 +17,9 @@ import com.tinkoff.coursework.model.Message
 import com.tinkoff.coursework.model.Reaction
 import com.tinkoff.coursework.util.MockUtil
 import com.tinkoff.coursework.util.hideKeyboard
-import com.tinkoff.coursework.view.EmojiReactionView
 import kotlin.random.Random
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmojiPickListener {
 
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())
 
@@ -45,6 +41,33 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onEmojiPicked(emoji: Emoji) {
+        dialogWithReactions.dismiss()
+        var message = chatAdapter.getItemAt(clickedMessagePosition)
+        if (message is Message) {
+            message = message.copy(reactions = message.reactions.toMutableList())
+            val alreadyExistsReactionInd =
+                message.reactions.indexOfFirst { it.emojiCode == emoji.emojiCode }
+            if (alreadyExistsReactionInd == -1) {
+                message.reactions.add(
+                    Reaction(
+                        emojiCode = emoji.emojiCode,
+                        isSelected = true,
+                        countOfVotes = 1
+                    )
+                )
+            } else {
+                val alreadyExistsReaction = message.reactions[alreadyExistsReactionInd].copy()
+                alreadyExistsReaction.apply {
+                    countOfVotes += 1
+                    isSelected = true
+                }
+                message.reactions[alreadyExistsReactionInd] = alreadyExistsReaction
+            }
+            chatAdapter.updateAt(clickedMessagePosition, message)
+        }
+    }
+
     private fun initRecyclerView() {
         binding.rvMessages.adapter = chatAdapter
         binding.rvMessages.addItemDecoration(
@@ -58,9 +81,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initBottomSheetDialogFragmentWithReactions() {
-        dialogWithReactions = BottomSheetDialogWithReactions.newInstance(
-            this::onEmojiAtBottomSheetDialogClick
-        )
+        dialogWithReactions = BottomSheetDialogWithReactions.newInstance()
     }
 
     private fun setTextWatcher() {
@@ -103,33 +124,6 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
-    }
-
-    private fun onEmojiAtBottomSheetDialogClick(emoji: Emoji) {
-        dialogWithReactions.dismiss()
-        var message = chatAdapter.getItemAt(clickedMessagePosition)
-        if (message is Message) {
-            message = message.copy(reactions = message.reactions.toMutableList())
-            val alreadyExistsReactionInd =
-                message.reactions.indexOfFirst { it.emojiCode == emoji.emojiCode }
-            if (alreadyExistsReactionInd == -1) {
-                message.reactions.add(
-                    Reaction(
-                        emojiCode = emoji.emojiCode,
-                        isSelected = true,
-                        countOfVotes = 1
-                    )
-                )
-            } else {
-                val alreadyExistsReaction = message.reactions[alreadyExistsReactionInd].copy()
-                alreadyExistsReaction.apply {
-                    countOfVotes += 1
-                    isSelected = true
-                }
-                message.reactions[alreadyExistsReactionInd] = alreadyExistsReaction
-            }
-            chatAdapter.updateAt(clickedMessagePosition, message)
-        }
     }
 
     private fun onReactionUnderMessageClick(

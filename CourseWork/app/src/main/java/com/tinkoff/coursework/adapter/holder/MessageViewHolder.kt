@@ -1,10 +1,8 @@
 package com.tinkoff.coursework.adapter.holder
 
-import android.util.Log
 import com.tinkoff.coursework.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.databinding.ItemMessageBinding
 import com.tinkoff.coursework.model.Message
-import com.tinkoff.coursework.view.EmojiReactionView
 import com.tinkoff.coursework.view.MessageViewGroup
 
 class MessageViewHolder(
@@ -22,7 +20,7 @@ class MessageViewHolder(
         binding.root.setOnAddClickListenerClick { icAdd ->
             onMessageLongClick(adapterPosition)
         }
-        binding.root.setOnEmojiViewClickListener(object: MessageViewGroup.OnEmojiClickListener {
+        binding.root.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
             override fun click(reactionInContainerPosition: Int) {
                 onEmojiClick(entityUI, adapterPosition, reactionInContainerPosition)
             }
@@ -32,9 +30,9 @@ class MessageViewHolder(
     override fun bind(entityUI: Message, payloads: List<Any>) {
         super.bind(entityUI, payloads)
         val isNeedChange = payloads.last() as Boolean
-        if(isNeedChange) {
+        if (isNeedChange) {
             binding.root.setReactions(entityUI.reactions)
-            binding.root.setOnEmojiViewClickListener(object: MessageViewGroup.OnEmojiClickListener {
+            binding.root.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
                 override fun click(reactionInContainerPosition: Int) {
                     onEmojiClick(entityUI, adapterPosition, reactionInContainerPosition)
                 }

@@ -1,14 +1,12 @@
 package com.tinkoff.coursework.adapter
 
-import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import com.tinkoff.coursework.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.model.EntityUI
-import java.lang.IllegalStateException
 
 class ItemViewTypeDiffUtil(
     private val viewTypes: List<BaseItemViewType<*, *>>
-): DiffUtil.ItemCallback<EntityUI>() {
+) : DiffUtil.ItemCallback<EntityUI>() {
 
     override fun areItemsTheSame(oldItem: EntityUI, newItem: EntityUI): Boolean {
         if (oldItem::class != newItem::class) return false

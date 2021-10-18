@@ -1,10 +1,8 @@
 package com.tinkoff.coursework.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.tinkoff.coursework.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.adapter.base.BaseViewHolder
