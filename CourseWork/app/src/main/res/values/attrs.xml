@@ -16,8 +16,8 @@
         <attr name="offsetBetweenElements" format="dimension" />
     </declare-styleable>
     <declare-styleable name="MessageViewGroup">
-        <attr name="emojiPadding" format="dimension"/>
-        <attr name="emojiTextSize" format="dimension"/>
-        <attr name="emojiBackground" format="reference"/>
+        <attr name="emojiPadding" format="dimension" />
+        <attr name="emojiTextSize" format="dimension" />
+        <attr name="emojiBackground" format="reference" />
     </declare-styleable>
 </resources>

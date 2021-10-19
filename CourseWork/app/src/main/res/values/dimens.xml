@@ -16,5 +16,20 @@
     <dimen name="message_viewgroup_reactions_margin_top">7dp</dimen>
     <dimen name="message_viewgroup_reactions_margin_start">-5dp</dimen>
     <dimen name="emoji_view_bg_radius">6dp</dimen>
-
+    <dimen name="chat_input_margin_vertical">5dp</dimen>
+    <dimen name="chat_input_margin_start">10dp</dimen>
+    <dimen name="chat_input_margin_end">12dp</dimen>
+    <dimen name="chat_input_padding_vertical">17dp</dimen>
+    <dimen name="chat_input_padding_horizontal">21dp</dimen>
+    <dimen name="chat_input_text_size">17sp</dimen>
+    <dimen name="chat_btn_action_margin_end">10dp</dimen>
+    <dimen name="chat_items_margin_top">8dp</dimen>
+    <dimen name="chat_items_margin_bottom">8dp</dimen>
+    <dimen name="bottom_sheet_dialog_reactions_padding">8dp</dimen>
+    <dimen name="bsd_rv_reactions_margin_top">25dp</dimen>
+    <dimen name="item_bs_reaction_size">50dp</dimen>
+    <dimen name="item_bs_reaction_text_size">32sp</dimen>
+    <dimen name="date_divider_text_size">14sp</dimen>
+    <dimen name="date_divider_padding_vertical">2dp</dimen>
+    <dimen name="date_divider_padding_horizontal">20dp</dimen>
 </resources>

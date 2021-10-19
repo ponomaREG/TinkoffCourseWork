@@ -60,9 +60,11 @@ class FlexBoxLayout constructor(
         children.forEach {
             measureChildWithMargins(it, widthMeasureSpec, 0, heightMeasureSpec, 0)
         }
-        val maxChildHeight = children.maxOf { children ->
-            children.measuredHeight
-        }
+        val maxChildHeight = if (children.iterator().hasNext()) {
+            children.maxOf { children ->
+                children.measuredHeight
+            }
+        } else 0
         children.forEach { child ->
             if (currentWidth + child.measuredWidth >= widthSpecSize || childCounterPerRow >= maxQuantityChildPerRow) {
                 currentWidth = 0

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CourseWork</string>
+    <string name="chat_input_hint">Написать сообщение</string>
 </resources>

@@ -34,6 +34,8 @@ class MessageViewGroup constructor(
     private val emojiBackgroundId: Int
     private val emojiPadding: Float
 
+    private var emojiReactionViewListener: OnEmojiClickListener? = null
+
     init {
         LayoutInflater.from(context).inflate(R.layout.message_viewgroup, this, true)
         avatarImageView = findViewById(R.id.avatar)
@@ -201,40 +203,43 @@ class MessageViewGroup constructor(
         reactions: List<Reaction>
     ) {
         reactionsFlexBoxLayout.removeAllViews()
-        reactions.forEach { reaction ->
-            val emojiView = EmojiReactionView(context)
-            emojiView.setBackgroundResource(emojiBackgroundId)
-            emojiView.setPadding(emojiPadding.toInt())
-            emojiView.contentTextSize = emojiContentTextSize
-            emojiView.countOfVotes = reaction.countOfVotes
-            emojiView.emojiCode = reaction.emojiCode
-            emojiView.isSelected = reaction.isSelected
-            reactionsFlexBoxLayout.addView(emojiView)
+        if (reactions.isNotEmpty()) {
+            reactions.forEachIndexed { index, reaction ->
+                val emojiView = EmojiReactionView(context)
+                emojiView.setBackgroundResource(emojiBackgroundId)
+                emojiView.setPadding(emojiPadding.toInt())
+                emojiView.contentTextSize = emojiContentTextSize
+                emojiView.countOfVotes = reaction.countOfVotes
+                emojiView.emojiCode = reaction.emojiCode
+                emojiView.isSelected = reaction.isSelected
+                emojiReactionViewListener?.let {
+                    emojiView.setOnClickListener(emojiReactionViewListener!!, index)
+                }
+                reactionsFlexBoxLayout.addView(emojiView)
+            }
+            reactionsFlexBoxLayout.addView(imageViewIconAdd)
+            requestLayout()
         }
-        reactionsFlexBoxLayout.addView(imageViewIconAdd)
-        requestLayout()
     }
 
-    fun setOnEmojiViewClickListener(listener: OnClickListener) {
+    fun setOnEmojiViewClickListener(listener: OnEmojiClickListener) {
+        emojiReactionViewListener = listener
         for (i in 0 until reactionsFlexBoxLayout.childCount - 1) {
-            reactionsFlexBoxLayout.getChildAt(i)
-                .setOnClickListener(listener)
+            (reactionsFlexBoxLayout.getChildAt(i) as EmojiReactionView)
+                .setOnClickListener(listener, i)
         }
     }
 
     fun setOnAddClickListenerClick(listener: OnClickListener) {
-        val reactionsChildCount = reactionsFlexBoxLayout.childCount
-        if (reactionsChildCount > 0) {
-            reactionsFlexBoxLayout.getChildAt(reactionsChildCount - 1)
-                .setOnClickListener(listener)
-        }
+        imageViewIconAdd.setOnClickListener(listener)
     }
 
     private fun View.layout(
         currentChildRect: Rect,
         childOnLeft: View?,
         childOnLeftRect: Rect?,
-        childOnTopRect: Rect?) {
+        childOnTopRect: Rect?
+    ) {
         currentChildRect.left = (childOnLeftRect?.right ?: 0) +
             (childOnLeft?.marginRight ?: 0) + marginLeft
         currentChildRect.top = (childOnTopRect?.bottom ?: 0) + marginTop
@@ -266,5 +271,18 @@ class MessageViewGroup constructor(
         val height = child.measuredHeight + params.sumVerticalMargins()
         val width = child.measuredWidth + params.sumHorizontalMargins()
         return height to width
+    }
+
+    private fun EmojiReactionView.setOnClickListener(
+        emojiClickListener: OnEmojiClickListener,
+        position: Int
+    ) {
+        setOnClickListener {
+            emojiClickListener.click(position)
+        }
+    }
+
+    interface OnEmojiClickListener {
+        fun click(reactionInContainerPosition: Int)
     }
 }

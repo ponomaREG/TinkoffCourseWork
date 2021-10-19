@@ -16,4 +16,12 @@
     <color name="message_view_group_message_text_color">#FAFAFA</color>
     <color name="message_view_group_background_color">#1C1C1C</color>
     <color name="message_view_group_avatar_stroke_color">#A1A1A1</color>
+    <color name="chat_input_container_background_color">#1E1E1E</color>
+    <color name="chat_input_text_color">#CCCCCC</color>
+    <color name="chat_input_hint_text_color">#CCCCCC</color>
+    <color name="chat_background">#121212</color>
+    <color name="chat_input_background_color">#282828</color>
+    <color name="bg_date_divider">#000000</color>
+    <color name="bottom_sheet_dialog_reactions_background_color">#1C1C1C</color>
+    <color name="date_divider_text_color">#999999</color>
 </resources>
