@@ -27,19 +27,15 @@ class MessageViewType(
         return MessageViewHolder(binding, onMessageLongClick, onEmojiClick)
     }
 
-    override fun getDiffUtilCallback(): DiffUtil.ItemCallback<Message> =
-        object : DiffUtil.ItemCallback<Message>() {
-            override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-                return oldItem.id == newItem.id
-            }
+    override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
+        return oldItem.id == newItem.id
+    }
 
-            override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
-                return oldItem == newItem
-            }
+    override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+        return oldItem == newItem
+    }
 
-            override fun getChangePayload(oldItem: Message, newItem: Message): Any? {
-                return if (oldItem.reactions != newItem.reactions) true
-                else super.getChangePayload(oldItem, newItem)
-            }
-        }
+    override fun getChangePayload(oldItem: Message, newItem: Message): Any? {
+        return if (oldItem.reactions != newItem.reactions) true else null
+    }
 }

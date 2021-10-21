@@ -24,14 +24,13 @@ class DateDividerViewType : BaseItemViewType<ItemDateDividerBinding, DateDivider
         return DateDividerViewHolder(binding)
     }
 
-    override fun getDiffUtilCallback(): DiffUtil.ItemCallback<DateDivider> =
-        object : DiffUtil.ItemCallback<DateDivider>() {
-            override fun areItemsTheSame(oldItem: DateDivider, newItem: DateDivider): Boolean {
-                return oldItem == newItem
-            }
+    override fun areItemsTheSame(oldItem: DateDivider, newItem: DateDivider): Boolean {
+        return oldItem == newItem
+    }
 
-            override fun areContentsTheSame(oldItem: DateDivider, newItem: DateDivider): Boolean {
-                return oldItem == newItem
-            }
-        }
+    override fun areContentsTheSame(oldItem: DateDivider, newItem: DateDivider): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun getChangePayload(oldItem: DateDivider, newItem: DateDivider): Any? = null
 }

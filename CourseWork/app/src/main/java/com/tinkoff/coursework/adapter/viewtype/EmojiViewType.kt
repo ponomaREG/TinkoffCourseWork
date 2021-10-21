@@ -26,14 +26,13 @@ class EmojiViewType(
         return EmojiViewHolder(binding, onEmojiClick)
     }
 
-    override fun getDiffUtilCallback(): DiffUtil.ItemCallback<Emoji> =
-        object : DiffUtil.ItemCallback<Emoji>() {
-            override fun areItemsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
-                return oldItem == newItem
-            }
+    override fun areItemsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
+        return oldItem == newItem
+    }
 
-            override fun areContentsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
-                return oldItem == newItem
-            }
-        }
+    override fun areContentsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun getChangePayload(oldItem: Emoji, newItem: Emoji): Any? = null
 }
