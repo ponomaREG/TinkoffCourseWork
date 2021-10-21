@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="topicPossibleColors">
+        <item>@color/topicPossibleColorRed</item>
+        <item>@color/topicPossibleColorBlue</item>
+        <item>@color/topicPossibleColorGreen</item>
+        <item>@color/topicPossibleColorOrange</item>
+        <item>@color/topicPossibleColorYellow</item>
+        <item>@color/topicPossibleColorCyan</item>
+        <item>@color/topicPossibleColorPink</item>
+        <item>@color/topicPossibleColorPurple</item>
+        <item>@color/topicPossibleColorIndigo</item>
+    </array>
+</resources>

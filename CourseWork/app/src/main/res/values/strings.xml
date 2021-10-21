@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">CourseWork</string>
     <string name="chat_input_hint">Написать сообщение</string>
+    <string name="fragment_searches_searchInput_hint">Search…</string>
+    <string name="fragment_people_searchInput_hint">Users…</string>
+    <string name="fragment_profile_logOut">Log out</string>
+    <string name="fragment_profile_status">In a meeting</string>
+    <string name="chat_topic">Topic: %0$s</string>
+    <string name="item_topic_new_messages">%0$d mes</string>
+    <string name="main_bnv_channels">Channels</string>
+    <string name="main_bnv_people">People</string>
+    <string name="main_bnv_profile">Profile</string>
+    <string name="fragment_streams_type_subscribed">Subscribed</string>
+    <string name="fragment_streams_type_all">All</string>
 </resources>

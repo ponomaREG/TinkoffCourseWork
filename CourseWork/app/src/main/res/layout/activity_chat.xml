@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ChatActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/chat_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorPrimaryVariantChat" />
+
+    <TextView
+        android:id="@+id/chat_topic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/chat_tool_bar"
+        android:textColor="@color/chat_topic_text_color"
+        android:textSize="@dimen/chat_topic_text_size"
+        android:textAlignment="center"
+        android:background="@color/chat_topic_bg"
+        tools:text="Topic: #testing" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_messages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toBottomOf="@id/chat_topic"
+        app:layout_constraintBottom_toTopOf="@id/chat_input_container"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <LinearLayout
+        android:id="@+id/chat_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/chat_input_container_background_color"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/chat_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:layout_marginVertical="@dimen/chat_input_margin_vertical"
+            android:layout_marginStart="@dimen/chat_input_margin_start"
+            android:layout_marginEnd="@dimen/chat_input_margin_end"
+            android:paddingVertical="@dimen/chat_input_padding_vertical"
+            android:paddingHorizontal="@dimen/chat_input_padding_horizontal"
+            android:background="@drawable/bg_send_message"
+            android:textSize="@dimen/chat_input_text_size"
+            android:textColor="@color/chat_input_text_color"
+            android:textColorHint="@color/chat_input_hint_text_color"
+            android:hint="@string/chat_input_hint"
+            android:maxLines="2"
+            android:ellipsize="start"
+            tools:text="@tools:sample/lorem/random" />
+
+        <ImageView
+            android:id="@+id/chat_btn_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/chat_btn_action_margin_end"
+            android:src="@drawable/ic_add_files"
+            android:layout_gravity="center" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

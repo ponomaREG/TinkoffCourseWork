@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryVariant">#1E1E1E</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+
+    <color name="colorSecondary">#FFFFFF</color>
+    <color name="colorSecondaryVariant">#FFFFFF</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+
+    <color name="colorPrimaryVariantChat">#2A9D8F</color>
+
+    <color name="emoji_view_default_text_color">#EAEAEA</color>
+    <color name="emoji_view_background_color">#1C1C1C</color>
+    <color name="emoji_view_background_selected_color">#3A3A3A</color>
+
+    <color name="message_view_group_username_text_color">#2A9D8F</color>
+    <color name="message_view_group_message_text_color">#FAFAFA</color>
+    <color name="message_view_group_background_color">#1C1C1C</color>
+    <color name="message_view_group_avatar_stroke_color">#A1A1A1</color>
+    <color name="chat_input_container_background_color">#1E1E1E</color>
+    <color name="chat_input_text_color">#FFFFFF</color>
+    <color name="chat_input_hint_text_color">#CCCCCC</color>
+    <color name="chat_input_background_color">#282828</color>
+    <color name="chat_background">#121212</color>
+    <color name="chat_topic_bg">#1C1C1C</color>
+    <color name="chat_topic_text_color">#CCCCCC</color>
+    <color name="bg_date_divider">#070707</color>
+    <color name="bottom_sheet_dialog_reactions_background_color">#1C1C1C</color>
+    <color name="date_divider_text_color">#999999</color>
+    <color name="item_user_name">#FAFAFA</color>
+    <color name="item_user_email">#A1A1A1</color>
+    <color name="ic_status_online_fill">#048325</color>
+    <color name="item_stream_background">#121212</color>
+    <color name="item_topic_background">#000000</color>
+    <color name="item_topic_messagesCount_text_color">#FAFAFA</color>
+    <color name="item_topic_name_text_color">#FAFAFA</color>
+    <color name="item_stream_name_text_color">#FAFAFA</color>
+    <color name="fragment_profile_status_text_color">#BCBCBC</color>
+    <color name="fragment_profile_onlineStatus_text_color">#4AB54D</color>
+    <color name="fragment_profile_logOut_text_color">#FFFFFF</color>
+    <color name="fragment_searches_searchInput_text_color">#FFFFFF</color>
+    <color name="fragment_searches_searchInput_text_color_hint">#FFFFFF</color>
+    <color name="fragment_profile_name_text_color">#FFFFFF</color>
+    <color name="bg_button_logout">#1B1B1B</color>
+    <color name="fragment_people_searchInput_text_color">#FFFFFF</color>
+
+    <!-->Icons</-->
+    <color name="icon_search">#FFFFFF</color>
+    <color name="icon_add_emoji_bg">#1C1C1C</color>
+    <color name="icon_add_emoji_plus">#FFFFFF</color>
+</resources>
