@@ -29,14 +29,11 @@ class MessageViewHolder(
 
     override fun bind(entityUI: Message, payloads: List<Any>) {
         super.bind(entityUI, payloads)
-        val isNeedChange = payloads.last() as Boolean
-        if (isNeedChange) {
-            binding.root.setReactions(entityUI.reactions)
-            binding.root.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
-                override fun click(reactionInContainerPosition: Int) {
-                    onEmojiClick(entityUI, adapterPosition, reactionInContainerPosition)
-                }
-            })
-        }
+        binding.root.setReactions(entityUI.reactions)
+        binding.root.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
+            override fun click(reactionInContainerPosition: Int) {
+                onEmojiClick(entityUI, adapterPosition, reactionInContainerPosition)
+            }
+        })
     }
 }
