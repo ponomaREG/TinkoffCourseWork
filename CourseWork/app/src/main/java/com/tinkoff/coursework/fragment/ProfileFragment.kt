@@ -6,21 +6,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentProfileBinding
 import com.tinkoff.coursework.util.MockUtil
 
-class FragmentProfile : Fragment() {
+class ProfileFragment : Fragment() {
 
     companion object {
-        fun newInstance(): FragmentProfile {
-            return FragmentProfile()
+        fun newInstance(): ProfileFragment {
+            return ProfileFragment()
         }
     }
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -32,10 +37,10 @@ class FragmentProfile : Fragment() {
             fragmentProfileAvatar.setImageResource(ownProfile.avatar)
             fragmentProfileAvatar.clipToOutline = true
             fragmentProfileOnlineStatus.text =
-                if (ownProfile.isOnline) "online"
+                if (ownProfile.isOnline) getString(R.string.fragment_profile_onlineStatus)
                 else {
                     fragmentProfileStatus.setTextColor(Color.RED)
-                    "offline"
+                    getString(R.string.fragment_profile_offlineStatus)
                 }
         }
     }

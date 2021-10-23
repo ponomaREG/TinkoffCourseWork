@@ -1,6 +1,6 @@
 package com.tinkoff.coursework.model
 
-enum class TypeOfStreamsSorting(val key: String) {
+enum class StreamsGroup(val key: String) {
     SUBSCRIBED("Subscribed streams"),
     ALL("All streams")
 }

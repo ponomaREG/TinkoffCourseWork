@@ -2,7 +2,6 @@ package com.tinkoff.coursework.adapter.base
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.tinkoff.coursework.model.EntityUI
 

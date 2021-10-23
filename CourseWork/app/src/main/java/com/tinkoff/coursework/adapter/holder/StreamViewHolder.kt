@@ -10,20 +10,18 @@ class StreamViewHolder constructor(
 ) : BaseViewHolder<ItemStreamBinding, Stream>(binding) {
 
     override fun bind(entityUI: Stream) {
-        binding.apply {
-            itemStreamName.text = entityUI.name
-            val rotation = if (entityUI.isExpanded) 180f
-            else 0f
-            binding.itemStreamExpandArrow.rotation = rotation
-            root.setOnClickListener {
-                onStreamClick(entityUI, adapterPosition)
-            }
-        }
+        binding.itemStreamName.text = entityUI.name
+        updateView(entityUI)
     }
 
     override fun bind(entityUI: Stream, payloads: List<Any>) {
         super.bind(entityUI, payloads)
-        val rotation = if (entityUI.isExpanded) 180f else 0f
+        updateView(entityUI)
+    }
+
+    private fun updateView(entityUI: Stream) {
+        val rotation = if (entityUI.isExpanded) 180f
+        else 0f
         binding.itemStreamExpandArrow.rotation = rotation
         binding.root.setOnClickListener {
             onStreamClick(entityUI, adapterPosition)

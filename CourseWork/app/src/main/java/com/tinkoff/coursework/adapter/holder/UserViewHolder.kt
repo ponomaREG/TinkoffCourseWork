@@ -1,9 +1,9 @@
 package com.tinkoff.coursework.adapter.holder
 
+import androidx.core.view.isVisible
 import com.tinkoff.coursework.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.databinding.ItemUserBinding
 import com.tinkoff.coursework.model.User
-import com.tinkoff.coursework.util.setVisible
 
 class UserViewHolder(
     private val binding: ItemUserBinding,
@@ -16,7 +16,7 @@ class UserViewHolder(
             itemUserEmail.text = entityUI.email
             itemUserAvatar.setImageResource(entityUI.avatar)
             itemUserAvatar.clipToOutline = true
-            itemUserOnlineStatus.setVisible(entityUI.isOnline)
+            itemUserOnlineStatus.isVisible = entityUI.isOnline
             root.setOnClickListener {
                 onUserClick(entityUI)
             }

@@ -2,7 +2,6 @@ package com.tinkoff.coursework.adapter.viewtype
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.adapter.base.BaseViewHolder

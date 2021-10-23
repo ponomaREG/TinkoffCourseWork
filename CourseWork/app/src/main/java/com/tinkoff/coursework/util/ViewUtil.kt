@@ -1,7 +1,16 @@
 package com.tinkoff.coursework.util
 
-import android.view.View
+import android.widget.EditText
+import com.jakewharton.rxbinding4.widget.textChangeEvents
+import java.util.concurrent.TimeUnit
 
-fun View.setVisible(isVisible: Boolean) {
-    visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+fun EditText.doAfterTextChangedWithDelay(
+    delayMilliseconds: Long = 500,
+    action: (String) -> Unit
+) {
+    textChangeEvents()
+        .debounce(delayMilliseconds, TimeUnit.MILLISECONDS)
+        .subscribe { event ->
+            action.invoke(event.text.toString())
+        }
 }

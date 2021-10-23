@@ -3,12 +3,11 @@ package com.tinkoff.coursework
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.text.SpannableStringBuilder
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import com.tinkoff.coursework.adapter.DelegateAdapter
 import com.tinkoff.coursework.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.adapter.viewtype.DateDividerViewType
@@ -26,32 +25,35 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         private const val EXTRA_STREAM = "EXTRA_STREAM"
         private const val EXTRA_TOPIC = "EXTRA_TOPIC"
 
-        fun startActivity(context: Context, stream: Stream, topic: Topic) {
+        fun getIntent(context: Context, stream: Stream, topic: Topic): Intent {
             val intentToChatActivity = Intent(context, ChatActivity::class.java)
             intentToChatActivity.putExtra(EXTRA_STREAM, stream)
             intentToChatActivity.putExtra(EXTRA_TOPIC, topic)
-            context.startActivity(intentToChatActivity)
+            return intentToChatActivity
         }
     }
 
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())
 
-    private lateinit var dialogWithReactions: BottomSheetDialogWithReactions
+    private val dialogWithReactions =
+        BottomSheetDialogWithReactions.newInstance()
+
     private lateinit var binding: ActivityChatBinding
 
     private var clickedMessagePosition: Int = -1
 
-    private lateinit var currentStream: Stream
-    private lateinit var currentTopic: Topic
+    private val currentStream: Stream
+        get() = intent.getParcelableExtra(EXTRA_STREAM) ?: throw IllegalStateException()
+
+    private val currentTopic: Topic
+        get() = intent.getParcelableExtra(EXTRA_TOPIC) ?: throw IllegalStateException()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        initArguments()
         initActionBar()
         initRecyclerView()
-        initBottomSheetDialogFragmentWithReactions()
         setTextWatcher()
         setListener()
         chatAdapter.setItems(
@@ -89,14 +91,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
                     message.reactions[alreadyExistsReactionInd] = alreadyExistsReaction
                 }
             }
-            chatAdapter.updateAt(clickedMessagePosition, message)
-        }
-    }
-
-    private fun initArguments() {
-        intent.apply {
-            currentStream = getParcelableExtra(EXTRA_STREAM) ?: throw IllegalStateException()
-            currentTopic = getParcelableExtra(EXTRA_TOPIC) ?: throw IllegalStateException()
+            chatAdapter.replaceItemAt(clickedMessagePosition, message)
         }
     }
 
@@ -118,33 +113,19 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         binding.rvMessages.adapter = chatAdapter
         binding.rvMessages.addItemDecoration(
             OffsetItemDecorator(
-                left = 0,
-                right = 0,
                 top = resources.getDimensionPixelSize(R.dimen.chat_items_margin_top),
                 bottom = resources.getDimensionPixelSize(R.dimen.chat_items_margin_bottom)
             )
         )
     }
 
-    private fun initBottomSheetDialogFragmentWithReactions() {
-        dialogWithReactions = BottomSheetDialogWithReactions.newInstance()
-    }
-
     private fun setTextWatcher() {
-        binding.chatInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val iconForShowing =
-                    if (s?.isEmpty() == true) R.drawable.ic_add_files
-                    else R.drawable.ic_send_message
-                binding.chatBtnAction.setImageResource(iconForShowing)
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
+        binding.chatInput.doOnTextChanged { text, _, _, _ ->
+            val iconForShowing =
+                if (text?.isEmpty() == true) R.drawable.ic_add_files
+                else R.drawable.ic_send_message
+            binding.chatBtnAction.setImageResource(iconForShowing)
+        }
     }
 
     private fun setListener() {
@@ -188,7 +169,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
                 messageCopy.reactions.removeAt(reactionInContainerPosition)
             }
         }
-        chatAdapter.updateAt(adapterPosition, messageCopy)
+        chatAdapter.replaceItemAt(adapterPosition, messageCopy)
     }
 
     private fun getSupportedViewTypesForChatRv() = listOf(

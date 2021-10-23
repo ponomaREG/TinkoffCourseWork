@@ -1,8 +1,6 @@
 package com.tinkoff.coursework.fragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,13 +12,14 @@ import com.tinkoff.coursework.adapter.viewtype.UserViewType
 import com.tinkoff.coursework.databinding.FragmentPeopleBinding
 import com.tinkoff.coursework.model.User
 import com.tinkoff.coursework.util.MockUtil
+import com.tinkoff.coursework.util.doAfterTextChangedWithDelay
 import java.util.*
 
-class FragmentPeople : Fragment() {
+class PeopleFragment : Fragment() {
 
     companion object {
-        fun newInstance(): FragmentPeople {
-            return FragmentPeople()
+        fun newInstance(): PeopleFragment {
+            return PeopleFragment()
         }
     }
 
@@ -33,14 +32,13 @@ class FragmentPeople : Fragment() {
         )
     )
 
-    private lateinit var people: List<User>
+    private val people: List<User> = MockUtil.mockUsers()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        people = MockUtil.mockUsers()
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentPeopleBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,8 +55,8 @@ class FragmentPeople : Fragment() {
     }
 
     private fun initRecyclerView() {
-        binding.fragmentPeopleRvPeople.adapter = peopleAdapter
-        binding.fragmentPeopleRvPeople.addItemDecoration(
+        binding.recyclerView.adapter = peopleAdapter
+        binding.recyclerView.addItemDecoration(
             OffsetItemDecorator(
                 top = resources.getDimensionPixelSize(R.dimen.item_user_margin_top),
                 bottom = resources.getDimensionPixelSize(R.dimen.item_user_margin_bottom),
@@ -69,25 +67,15 @@ class FragmentPeople : Fragment() {
     }
 
     private fun attachTextWatcher() {
-        binding.fragmentPeopleSearchInput.addTextChangedListener(
-            object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if (s.isNullOrEmpty().not()) {
-                        peopleAdapter.setItems(
-                            people.filter {
-                                it.name.toLowerCase(Locale.ROOT).contains(s.toString())
-                            }
-                        )
-                    } else peopleAdapter.setItems(people)
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                }
-            }
-        )
+        binding.fragmentPeopleSearchInput.doAfterTextChangedWithDelay { input ->
+            if (input.isNotEmpty()) {
+                peopleAdapter.setItems(
+                    people.filter { user ->
+                        user.name.toLowerCase(Locale.ROOT).contains(input)
+                    }
+                )
+            } else peopleAdapter.setItems(people)
+        }
     }
 
     private fun onUserClick(user: User) {

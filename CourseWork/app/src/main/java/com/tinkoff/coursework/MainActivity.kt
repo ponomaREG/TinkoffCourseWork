@@ -5,15 +5,15 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.tinkoff.coursework.databinding.ActivityMainBinding
-import com.tinkoff.coursework.fragment.FragmentNavigationViaStreams
-import com.tinkoff.coursework.fragment.FragmentPeople
-import com.tinkoff.coursework.fragment.FragmentProfile
+import com.tinkoff.coursework.fragment.ChannelsFragment
+import com.tinkoff.coursework.fragment.PeopleFragment
+import com.tinkoff.coursework.fragment.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private var currentFragment: Fragment = FragmentNavigationViaStreams.newInstance()
+    private var currentFragment: Fragment = ChannelsFragment.newInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +31,13 @@ class MainActivity : AppCompatActivity() {
         binding.mainBnv.setOnItemSelectedListener { item ->
             currentFragment = when (item.itemId) {
                 R.id.main_bnv_channels -> {
-                    FragmentNavigationViaStreams.newInstance()
+                    ChannelsFragment.newInstance()
                 }
                 R.id.main_bnv_people -> {
-                    FragmentPeople.newInstance()
+                    PeopleFragment.newInstance()
                 }
                 R.id.main_bnv_profile -> {
-                    FragmentProfile.newInstance()
+                    ProfileFragment.newInstance()
                 }
                 else -> return@setOnItemSelectedListener false
             }

@@ -65,7 +65,7 @@ class DelegateAdapter(
 
     fun getItemAt(position: Int): EntityUI? = items.getOrNull(position)
 
-    fun updateAt(position: Int, entityUI: EntityUI) {
+    fun replaceItemAt(position: Int, entityUI: EntityUI) {
         items.removeAt(position)
         items.add(position, entityUI)
         update()

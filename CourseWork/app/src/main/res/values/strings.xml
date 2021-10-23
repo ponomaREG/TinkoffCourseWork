@@ -12,4 +12,6 @@
     <string name="main_bnv_profile">Profile</string>
     <string name="fragment_streams_type_subscribed">Subscribed</string>
     <string name="fragment_streams_type_all">All</string>
+    <string name="fragment_profile_onlineStatus">online</string>
+    <string name="fragment_profile_offlineStatus">offline</string>
 </resources>

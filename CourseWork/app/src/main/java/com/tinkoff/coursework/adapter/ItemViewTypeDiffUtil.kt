@@ -3,7 +3,6 @@ package com.tinkoff.coursework.adapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.tinkoff.coursework.adapter.base.BaseItemViewType
-import com.tinkoff.coursework.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.model.EntityUI
 
 class ItemViewTypeDiffUtil(

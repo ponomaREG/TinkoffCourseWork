@@ -1,7 +1,6 @@
 package com.tinkoff.coursework.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,29 +13,34 @@ import com.tinkoff.coursework.adapter.viewtype.TopicViewType
 import com.tinkoff.coursework.databinding.FragmentSpecificStreamsBinding
 import com.tinkoff.coursework.model.EntityUI
 import com.tinkoff.coursework.model.Stream
+import com.tinkoff.coursework.model.StreamsGroup
 import com.tinkoff.coursework.model.Topic
-import com.tinkoff.coursework.model.TypeOfStreamsSorting
+import com.tinkoff.coursework.util.MockUtil
 import java.util.*
-import kotlin.collections.ArrayList
 
-class FragmentSpecificStreams : Fragment() {
+class StreamFragment : Fragment() {
 
     companion object {
-        private const val ARGS_STREAMS = "ARGS_STREAMS"
         private const val ARGS_TYPE = "ARGS_TYPE"
+        private const val ARGS_FILTER_STRING = "ARGS_FILTER_STRING"
 
-        fun newInstance(streams: List<Stream>, type: TypeOfStreamsSorting): FragmentSpecificStreams {
-            val fragment = FragmentSpecificStreams()
+        fun newInstance(type: StreamsGroup): StreamFragment {
+            val fragment = StreamFragment()
             val args = Bundle()
-            args.putParcelableArrayList(ARGS_STREAMS, ArrayList(streams))
             args.putSerializable(ARGS_TYPE, type)
             fragment.arguments = args
             return fragment
         }
+
+        fun updateFilterArguments(inputString: String): Bundle {
+            return Bundle().apply {
+                putString(ARGS_FILTER_STRING, inputString)
+            }
+        }
     }
 
     private var _binding: FragmentSpecificStreamsBinding? = null
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
 
     private val streamAdapter: DelegateAdapter = DelegateAdapter(
         listOf(
@@ -45,43 +49,49 @@ class FragmentSpecificStreams : Fragment() {
         )
     )
 
-    private lateinit var streams: MutableList<Stream>
-    private lateinit var type: TypeOfStreamsSorting
+    private val type: StreamsGroup
+        get() = requireArguments().getSerializable(ARGS_TYPE) as StreamsGroup
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        streams = requireArguments().getParcelableArrayList<Stream>(
-            ARGS_STREAMS
-        )?.toMutableList() ?: throw IllegalStateException("Important argument not found")
-        type = (requireArguments().getSerializable(
-            ARGS_TYPE
-        ) as? TypeOfStreamsSorting) ?: throw IllegalStateException("Important argument not found")
-    }
+    private val streams: MutableList<Stream>
+        get() = (if (type == StreamsGroup.SUBSCRIBED) MockUtil.mockFavoriteStreams()
+        else MockUtil.mockAllStreams()).toMutableList()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentSpecificStreamsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.root.adapter = streamAdapter
-        binding.rvSpecificStreams.addItemDecoration(
-            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        )
+        initRecyclerView()
         streamAdapter.setItems(streams)
+        subscribeToFilter()
+    }
+
+    private fun initRecyclerView() {
+        binding.root.apply {
+            adapter = streamAdapter
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            )
+        }
+    }
+
+    private fun subscribeToFilter() {
         parentFragmentManager.setFragmentResultListener(
             type.key,
             viewLifecycleOwner
         ) { _, args ->
-            val searchInput = args.getString(FragmentNavigationViaStreams.ARGS_SEARCH_INPUT)
+            val searchInput = args.getString(ARGS_FILTER_STRING)
             if (searchInput.isNullOrEmpty().not()) {
                 val filteredStreams = streams.filter { item ->
                     (item.name
                         .toLowerCase(Locale.ROOT)
-                        .contains(
-                            searchInput!!.toLowerCase(Locale.ROOT)
-                        )
-                    )
+                        .contains(searchInput!!.toLowerCase(Locale.ROOT))
+                            )
                 }
                 streamAdapter.setItems(filteredStreams)
             } else streamAdapter.setItems(streams as List<EntityUI>)
@@ -99,7 +109,7 @@ class FragmentSpecificStreams : Fragment() {
             newStream.isExpanded = true
             streamAdapter.addItems(adapterPosition + 1, newStream.topics)
         }
-        streamAdapter.updateAt(adapterPosition, newStream)
+        streamAdapter.replaceItemAt(adapterPosition, newStream)
     }
 
     private fun onTopicClick(topic: Topic) {
@@ -107,7 +117,9 @@ class FragmentSpecificStreams : Fragment() {
             it.topics.contains(topic)
         } ?: throw IllegalStateException()
         activity?.let { context ->
-            ChatActivity.startActivity(context, stream, topic)
+            context.startActivity(
+                ChatActivity.getIntent(context, stream, topic)
+            )
         }
     }
 }
