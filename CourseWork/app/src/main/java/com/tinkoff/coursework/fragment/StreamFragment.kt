@@ -52,9 +52,10 @@ class StreamFragment : Fragment() {
     private val type: StreamsGroup
         get() = requireArguments().getSerializable(ARGS_TYPE) as StreamsGroup
 
-    private val streams: MutableList<Stream>
-        get() = (if (type == StreamsGroup.SUBSCRIBED) MockUtil.mockFavoriteStreams()
+    private val streams: MutableList<Stream> by lazy {
+        (if (type == StreamsGroup.SUBSCRIBED) MockUtil.mockFavoriteStreams()
         else MockUtil.mockAllStreams()).toMutableList()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
