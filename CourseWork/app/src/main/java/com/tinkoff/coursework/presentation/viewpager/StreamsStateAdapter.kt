@@ -1,4 +1,4 @@
-package com.tinkoff.coursework.viewpager
+package com.tinkoff.coursework.presentation.viewpager
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

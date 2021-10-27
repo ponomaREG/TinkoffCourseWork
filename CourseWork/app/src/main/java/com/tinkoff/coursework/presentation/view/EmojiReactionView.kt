@@ -1,4 +1,4 @@
-package com.tinkoff.coursework.view
+package com.tinkoff.coursework.presentation.view
 
 import android.content.Context
 import android.graphics.*
@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.tinkoff.coursework.R
-import com.tinkoff.coursework.util.spToPx
+import com.tinkoff.coursework.presentation.util.spToPx
 
 class EmojiReactionView constructor(
     context: Context,

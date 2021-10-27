@@ -1,4 +1,4 @@
-package com.tinkoff.coursework.model
+package com.tinkoff.coursework.presentation.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

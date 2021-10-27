@@ -1,4 +1,4 @@
-package com.tinkoff.coursework.view
+package com.tinkoff.coursework.presentation.view
 
 import android.content.Context
 import android.graphics.Canvas
@@ -14,10 +14,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import com.tinkoff.coursework.R
-import com.tinkoff.coursework.model.Message
-import com.tinkoff.coursework.model.Reaction
-import com.tinkoff.coursework.util.sumHorizontalMargins
-import com.tinkoff.coursework.util.sumVerticalMargins
+import com.tinkoff.coursework.presentation.model.Message
+import com.tinkoff.coursework.presentation.model.Reaction
+import com.tinkoff.coursework.presentation.util.sumHorizontalMargins
+import com.tinkoff.coursework.presentation.util.sumVerticalMargins
 
 class MessageViewGroup constructor(
     context: Context,
@@ -118,10 +118,10 @@ class MessageViewGroup constructor(
         )
         val backgroundRectLeft =
             avatarImageView.measuredHeight +
-                    avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
+                avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
         val backgroundRectRight =
             backgroundRectLeft +
-                    maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
+                maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
         backgroundRect.set(
             backgroundRectLeft.toFloat(),
             0f,
@@ -241,7 +241,7 @@ class MessageViewGroup constructor(
         childOnTopRect: Rect?
     ) {
         currentChildRect.left = (childOnLeftRect?.right ?: 0) +
-                (childOnLeft?.marginRight ?: 0) + marginLeft
+            (childOnLeft?.marginRight ?: 0) + marginLeft
         currentChildRect.top = (childOnTopRect?.bottom ?: 0) + marginTop
         currentChildRect.right = currentChildRect.left + measuredWidth
         currentChildRect.bottom = currentChildRect.top + measuredHeight + marginBottom

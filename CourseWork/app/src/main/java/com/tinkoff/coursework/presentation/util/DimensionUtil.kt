@@ -1,4 +1,4 @@
-package com.tinkoff.coursework.util
+package com.tinkoff.coursework.presentation.util
 
 import android.content.Context
 import androidx.annotation.Px

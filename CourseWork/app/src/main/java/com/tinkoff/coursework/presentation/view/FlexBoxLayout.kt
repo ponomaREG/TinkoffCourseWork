@@ -1,4 +1,4 @@
-package com.tinkoff.coursework.view
+package com.tinkoff.coursework.presentation.view
 
 import android.content.Context
 import android.util.AttributeSet

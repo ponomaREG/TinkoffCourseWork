@@ -1,16 +1,18 @@
-package com.tinkoff.coursework.util
+package com.tinkoff.coursework.presentation.util
 
+import android.util.Log
 import android.widget.EditText
 import com.jakewharton.rxbinding4.widget.textChangeEvents
 import java.util.concurrent.TimeUnit
 
 fun EditText.doAfterTextChangedWithDelay(
-    delayMilliseconds: Long = 500,
+    delayMilliseconds: Long = 800,
     action: (String) -> Unit
 ) {
     textChangeEvents()
         .debounce(delayMilliseconds, TimeUnit.MILLISECONDS)
-        .subscribe { event ->
+        .distinctUntilChanged()
+        .subscribe {event ->
             action.invoke(event.text.toString())
         }
 }
