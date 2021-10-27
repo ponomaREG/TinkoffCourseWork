@@ -45,6 +45,7 @@
     <color name="fragment_profile_name_text_color">#FFFFFF</color>
     <color name="bg_button_logout">#1B1B1B</color>
     <color name="fragment_people_searchInput_text_color">#FFFFFF</color>
+    <color name="shimmer_background">#302F2F</color>
 
     <!-->Icons</-->
     <color name="icon_search">#FFFFFF</color>

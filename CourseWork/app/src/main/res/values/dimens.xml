@@ -74,4 +74,12 @@
     <dimen name="fragment_searches_searchInput_text_size">24sp</dimen>
     <dimen name="fragment_container_streams_tabLayout_margin_top">15dp</dimen>
     <dimen name="chat_topic_text_size">18sp</dimen>
+    <dimen name="shimmer_item_message_margin_top">10dp</dimen>
+    <dimen name="shimmer_item_message_width">180dp</dimen>
+    <dimen name="shimmer_item_message_height">70dp</dimen>
+    <dimen name="shimmer_item_stream_margin_bottom">5dp</dimen>
+    <dimen name="shimmer_item_user_text_width">240dp</dimen>
+    <dimen name="shimmer_item_user_margin_top">10dp</dimen>
+    <dimen name="shimmer_profile_text_height">80dp</dimen>
+    <dimen name="shimmer_profile_text_width">240dp</dimen>
 </resources>

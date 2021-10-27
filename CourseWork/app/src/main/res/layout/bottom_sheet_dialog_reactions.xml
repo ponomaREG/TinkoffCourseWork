@@ -14,12 +14,31 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_blind" />
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/bsd_reactions_shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bsd_rv_reactions_margin_top"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <include layout="@layout/shimmer_item_bs_reaction"/>
+            <include layout="@layout/shimmer_item_bs_reaction"/>
+            <include layout="@layout/shimmer_item_bs_reaction"/>
+            <include layout="@layout/shimmer_item_bs_reaction"/>
+            <include layout="@layout/shimmer_item_bs_reaction"/>
+            <include layout="@layout/shimmer_item_bs_reaction"/>
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bsd_rv_reactions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/bsd_rv_reactions_margin_top"
-        app:spanCount="7"
+        app:spanCount="@integer/bsd_reactions_spanCount"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/item_bs_reaction" />
 </LinearLayout>

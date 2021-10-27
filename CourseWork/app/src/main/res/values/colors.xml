@@ -46,6 +46,7 @@
     <color name="bg_button_logout">#B5B5B5</color>
     <color name="fragment_people_searchInput_text_color">#000000</color>
     <color name="fragment_container_streams_tab">#219653</color>
+    <color name="shimmer_background">#DDDDDD</color>
 
     <color name="topicPossibleColorRed">#FF0000</color>
     <color name="topicPossibleColorBlue">#0000FF</color>

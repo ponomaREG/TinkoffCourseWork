@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:parentTag="com.tinkoff.coursework.view.MessageViewGroup">
+    tools:parentTag="com.tinkoff.coursework.presentation.view.MessageViewGroup">
 
     <ImageView
         android:id="@+id/avatar"
@@ -36,7 +36,7 @@
         android:textSize="@dimen/message_viewgroup_message_text_size"
         tools:text="123" />
 
-    <com.tinkoff.coursework.view.FlexBoxLayout
+    <com.tinkoff.coursework.presentation.view.FlexBoxLayout
         android:id="@+id/reactions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

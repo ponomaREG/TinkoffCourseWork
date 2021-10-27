@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ChatActivity">
+    tools:context=".presentation.activity.chat.ChatActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/chat_tool_bar"
@@ -25,6 +25,32 @@
         android:background="@color/chat_topic_bg"
         tools:text="Topic: #testing" />
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/chat_shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toBottomOf="@id/chat_topic"
+        app:layout_constraintBottom_toTopOf="@id/chat_input_container"
+        android:orientation="vertical"
+        app:shimmer_duration="800"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layoutDirection="ltr">
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+            <include layout="@layout/shimmer_item_message"/>
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_messages"
         android:layout_width="match_parent"
@@ -32,7 +58,10 @@
         app:layout_constrainedHeight="true"
         app:layout_constraintTop_toBottomOf="@id/chat_topic"
         app:layout_constraintBottom_toTopOf="@id/chat_input_container"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        android:visibility="invisible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:visibility="visible"
+        tools:listitem="@layout/item_message"/>
 
     <LinearLayout
         android:id="@+id/chat_input_container"
