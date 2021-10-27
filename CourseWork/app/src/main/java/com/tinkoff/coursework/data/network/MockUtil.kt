@@ -1,7 +1,7 @@
-package com.tinkoff.coursework.util
+package com.tinkoff.coursework.data.network
 
 import com.tinkoff.coursework.R
-import com.tinkoff.coursework.model.*
+import com.tinkoff.coursework.presentation.model.*
 import kotlin.random.Random
 
 object MockUtil {
