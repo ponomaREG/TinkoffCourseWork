@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -46,4 +48,10 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaVersion"
     implementation "com.jakewharton.rxbinding4:rxbinding:$rxBinding"
+    implementation "androidx.fragment:fragment-ktx:$fragmentKtx"
+    implementation "androidx.activity:activity-ktx:$activityKtx"
+    implementation "com.facebook.shimmer:shimmer:$shimmerLayout"
+
+    implementation "com.google.dagger:hilt-android:$hiltAndroid"
+    kapt "com.google.dagger:hilt-android-compiler:$hiltAndroid"
 }
