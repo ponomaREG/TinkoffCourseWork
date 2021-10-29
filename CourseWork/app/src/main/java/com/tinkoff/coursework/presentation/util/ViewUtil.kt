@@ -1,6 +1,5 @@
 package com.tinkoff.coursework.presentation.util
 
-import android.util.Log
 import android.widget.EditText
 import com.jakewharton.rxbinding4.widget.textChangeEvents
 import java.util.concurrent.TimeUnit
@@ -12,7 +11,7 @@ fun EditText.doAfterTextChangedWithDelay(
     textChangeEvents()
         .debounce(delayMilliseconds, TimeUnit.MILLISECONDS)
         .distinctUntilChanged()
-        .subscribe {event ->
+        .subscribe { event ->
             action.invoke(event.text.toString())
         }
 }

@@ -4,14 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tinkoff.coursework.databinding.BottomSheetDialogReactionsBinding
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.viewtype.EmojiViewType
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.Emoji
+import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 @AndroidEntryPoint
@@ -56,6 +60,7 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.bsdRvReactions.adapter = emojiAdapter
         observeState()
+        observeAction()
     }
 
     override fun onDestroyView() {
@@ -65,36 +70,34 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        compositeDisposable.dispose()
-        viewModel.clear()
+        compositeDisposable.clear()
     }
 
     private fun observeState() {
-        compositeDisposable.add(
-            viewModel.stateObservable.subscribe { state ->
+        viewModel.stateObservable
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { state ->
                 state.apply {
-                    isLoading?.let {
-                        if (it) {
-                            binding.bsdReactionsShimmer.apply {
-                                visibility = View.VISIBLE
-                                startShimmer()
-                            }
-                        } else {
-                            binding.bsdReactionsShimmer.apply {
-                                visibility = View.GONE
-                                stopShimmer()
-                            }
-                        }
+                    binding.bsdReactionsShimmer.apply {
+                        isVisible = state.loadingState == LoadingState.LOADING
+                        if (isVisible) startShimmer() else stopShimmer()
                     }
                     emojies?.let {
                         emojiAdapter.setItems(it)
                     }
-                    error?.let {
-                        requireContext().showToast(it.message)
-                    }
                 }
-            }
-        )
+            }.addTo(compositeDisposable)
+    }
+
+    private fun observeAction() {
+        viewModel.actionObservable
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { action ->
+                when (action) {
+                    is BSDAction.ShowToastMessage -> requireContext().showToast(action.message)
+                }
+            }.addTo(compositeDisposable)
     }
 
     interface OnEmojiPickListener {

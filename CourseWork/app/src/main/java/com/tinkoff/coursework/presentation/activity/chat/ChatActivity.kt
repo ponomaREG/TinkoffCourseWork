@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityChatBinding
@@ -17,13 +18,16 @@ import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.presentation.adapter.viewtype.DateDividerViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.MessageViewType
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.dialog.emoji.BottomSheetDialogWithReactions
 import com.tinkoff.coursework.presentation.model.Emoji
 import com.tinkoff.coursework.presentation.model.Stream
 import com.tinkoff.coursework.presentation.model.Topic
+import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.hideKeyboard
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
 @AndroidEntryPoint
@@ -66,8 +70,6 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         initRecyclerView()
         setTextWatcher()
         setListener()
-        observerState()
-        observeActions()
     }
 
     override fun onPause() {
@@ -75,10 +77,15 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         binding.chatShimmer.stopShimmer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.dispose()
-        viewModel.clear()
+    override fun onStart() {
+        super.onStart()
+        observeActions()
+        observerState()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        compositeDisposable.clear()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -127,7 +134,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         binding.chatBtnAction.setOnClickListener {
             val input = binding.chatInput.text
             if (input.isNullOrEmpty().not()) {
-                viewModel.sendMessage(input.toString())
+                viewModel.sendMessage(currentTopic, input.toString())
                 binding.chatInput.text = SpannableStringBuilder("")
                 hideKeyboard()
             }
@@ -147,47 +154,42 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
     )
 
     private fun observerState() {
-        val disposable = viewModel.observableState
+        viewModel.observableState
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state ->
                 state.apply {
                     messages?.let {
                         chatAdapter.setItems(it)
                     }
-                    error?.let {
-                        showToast(it.message)
-                    }
-                    isFirstLoadingMessages?.let {
-                        if (it) {
-                            binding.chatShimmer.apply {
-                                visibility = View.VISIBLE
-                                startShimmer()
-                            }
-                            binding.rvMessages.visibility = View.INVISIBLE
-                        } else {
-                            binding.rvMessages.visibility = View.VISIBLE
-                            binding.chatShimmer.apply {
-                                visibility = View.GONE
-                                stopShimmer()
-                            }
-                        }
-                    }
+                    binding.rvMessages.isInvisible = loadingState == LoadingState.LOADING
+                    binding.chatShimmer.isVisible = loadingState == LoadingState.LOADING
+                    if (state.loadingState == LoadingState.LOADING) binding.chatShimmer.startShimmer()
+                    else binding.chatShimmer.stopShimmer()
+                    binding.chatBtnAction.isGone = loadingInput == LoadingState.LOADING
+                    binding.chatInputLoadingIndicator.isGone = binding.chatBtnAction.isGone.not()
                 }
-            }
-        compositeDisposable.add(disposable)
+            }.addTo(compositeDisposable)
     }
 
     private fun observeActions() {
         compositeDisposable.add(
-            viewModel.observableAction.subscribe { action ->
-                action?.let {
-                    when (it) {
-                        is ChatAction.OpenBottomSheetDialog ->
-                            dialogWithReactions.show(supportFragmentManager, null)
-                        is ChatAction.HideBottomSheetDialog ->
-                            if (dialogWithReactions.isAdded) dialogWithReactions.dismiss()
+            viewModel.observableAction
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { action ->
+                    action?.let {
+                        when (it) {
+                            is ChatAction.OpenBottomSheetDialog ->
+                                dialogWithReactions.show(supportFragmentManager, null)
+                            is ChatAction.HideBottomSheetDialog ->
+                                if (dialogWithReactions.isAdded) dialogWithReactions.dismiss()
+                            is ChatAction.ShowToastMessage ->
+                                showToast(it.message)
+                            is ChatAction.ShowPreviouslyTypedMessage ->
+                                binding.chatInput.text = SpannableStringBuilder(it.message)
+                        }
                     }
                 }
-            }
         )
     }
 }

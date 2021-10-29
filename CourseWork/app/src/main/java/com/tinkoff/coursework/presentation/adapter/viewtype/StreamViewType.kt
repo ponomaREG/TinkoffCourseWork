@@ -11,7 +11,7 @@ import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.Stream
 
 class StreamViewType constructor(
-    private val onStreamClick: (Stream, Int) -> Unit = { _, _ -> }
+    private val onStreamClick: (Stream) -> Unit = { _ -> }
 ) : BaseItemViewType<ItemStreamBinding, Stream> {
 
     override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is Stream

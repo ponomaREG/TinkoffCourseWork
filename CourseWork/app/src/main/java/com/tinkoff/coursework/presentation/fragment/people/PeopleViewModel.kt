@@ -1,75 +1,93 @@
 package com.tinkoff.coursework.presentation.fragment.people
 
 import androidx.lifecycle.ViewModel
-import com.tinkoff.coursework.domain.usecase.GetPeoplesUseCase
+import com.tinkoff.coursework.domain.usecase.GetPeopleUseCase
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.model.User
+import com.tinkoff.coursework.presentation.util.addTo
+import com.tinkoff.coursework.presentation.util.filterAsync
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class PeopleViewModel @Inject constructor(
-    private val getPeoplesUseCase: GetPeoplesUseCase
+    private val getPeopleUseCase: GetPeopleUseCase
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<PeopleUIState> = BehaviorSubject.create()
-    private val currentState: PeopleUIState = PeopleUIState()
+    val actionObservable: PublishSubject<PeopleAction> = PublishSubject.create()
+    private var currentState: PeopleUIState = PeopleUIState()
     private val compositeDisposable = CompositeDisposable()
 
     init {
-        loadPeoples()
+        loadPeople()
     }
 
-    private var peoples: List<User>? = null
+    private var users: List<User>? = null
 
-    fun loadPeoples() {
-        currentState.isLoading = true
+    override fun onCleared() {
+        compositeDisposable.dispose()
+    }
+
+    fun loadPeople() {
+        currentState.loadingState = LoadingState.LOADING
         submitState()
-        val callBack: (List<User>?, Throwable?) -> Unit = { data, error ->
-            data?.let {
-                peoples = data
-                currentState.peoples = data
-                currentState.isLoading = false
-            }
-            error?.let {
-                currentState.error = it.parseError()
-                currentState.isLoading = false
-            }
-            submitState()
-            currentState.isLoading = null
-        }
-        val disposable = getPeoplesUseCase()
+        getPeopleUseCase()
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(callBack)
-        compositeDisposable.add(disposable)
+            .subscribe { data, error ->
+                data?.let {
+                    users = data
+                    currentState.peoples = data
+                    currentState.loadingState = LoadingState.SUCCESS
+                }
+                error?.let { e ->
+                    currentState.loadingState = LoadingState.ERROR
+                    submitAction(PeopleAction.ShowToastMessage(e.parseError().message))
+                }
+                submitState()
+            }.addTo(compositeDisposable)
     }
 
     fun filter(searchInput: String) {
-        peoples?.let {
-            val filteredPeoples =
-                if (searchInput.isNotEmpty()) {
-                    it.filter { user ->
+        users?.let {
+            if (searchInput.isNotEmpty()) {
+                it.filterAsync(
+                    predicate = { user ->
                         user.name.toLowerCase(Locale.ROOT).contains(searchInput)
+                    },
+                    action = { filteredPeople ->
+                        filteredPeople?.let {
+                            currentState.peoples = it as List<User>
+                            submitState()
+                        }
                     }
-                } else it
-            currentState.peoples = filteredPeoples
-            submitState()
+                )
+            } else {
+                currentState.peoples = users
+                submitState()
+            }
         }
     }
 
-    private fun submitState() {
-        stateObservable.onNext(currentState)
-    }
-
     fun onUserClick(user: User) {
-
+        submitAction(PeopleAction.ShowUserProfile(user))
     }
 
-    fun clear() {
-        compositeDisposable.dispose()
+    private fun submitAction(action: PeopleAction) {
+        actionObservable.onNext(action)
+    }
+
+    private fun submitState() {
+        val newState = currentState.copy()
+        stateObservable.onNext(currentState)
+        currentState = newState
     }
 }

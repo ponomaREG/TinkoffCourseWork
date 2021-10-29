@@ -1,10 +1,11 @@
 package com.tinkoff.coursework.presentation.fragment.stream
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -13,10 +14,15 @@ import com.tinkoff.coursework.presentation.activity.chat.ChatActivity
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.viewtype.StreamViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.TopicViewType
+import com.tinkoff.coursework.presentation.assisted_factory.StreamAssistedFactory
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.Stream
 import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.model.Topic
+import com.tinkoff.coursework.presentation.util.addTo
+import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -43,14 +49,13 @@ class StreamFragment : Fragment() {
     }
 
     @Inject
-    lateinit var assistedFactory: StreamViewModel.AssistedFactory
+    lateinit var streamAssistedFactory: StreamAssistedFactory
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val viewModel: StreamViewModel by viewModels {
-        StreamViewModel.provideFactory(
-            assistedFactory,
-            type
-        )
+        streamAssistedFactory.also {
+            it.type = type
+        }
     }
 
     private var _binding: FragmentSpecificStreamsBinding? = null
@@ -59,8 +64,8 @@ class StreamFragment : Fragment() {
     private val streamAdapter: DelegateAdapter = DelegateAdapter(
         listOf(
             StreamViewType(
-                onStreamClick = { stream, adapterPosition ->
-                    viewModel.onStreamClick(stream, adapterPosition)
+                onStreamClick = { stream ->
+                    viewModel.onStreamClick(stream)
                 }
             ),
             TopicViewType(
@@ -110,48 +115,35 @@ class StreamFragment : Fragment() {
     }
 
     private fun observeState() {
-        val callBack: (StreamUIState) -> Unit = { state ->
-            state.apply {
-                isFirstLoading?.let {
-                    if (it) {
-                        binding.apply {
-                            streamShimmer.visibility = View.VISIBLE
-                            streamShimmer.startShimmer()
-                            rvSpecificStreams.visibility = View.INVISIBLE
-                        }
-                    } else {
-                        binding.apply {
-                            if (streamShimmer.isShimmerStarted) streamShimmer.stopShimmer()
-                            streamShimmer.visibility = View.GONE
-                            rvSpecificStreams.visibility = View.VISIBLE
-                        }
+        viewModel.stateObservable
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { state ->
+                state.apply {
+                    binding.rvSpecificStreams.isInvisible =
+                        state.loadingState == LoadingState.LOADING
+                    binding.streamShimmer.apply {
+                        isVisible = state.loadingState == LoadingState.LOADING
+                        if (isVisible) startShimmer() else stopShimmer()
+                    }
+                    data?.let {
+                        streamAdapter.setItems(it)
                     }
                 }
-                streams?.let {
-                    streamAdapter.setItems(it)
-                }
-            }
-        }
-        compositeDisposable.add(
-            viewModel.stateObservable.subscribe(callBack)
-        )
+            }.addTo(compositeDisposable)
     }
 
     private fun observeAction() {
-        val callBack: (StreamAction?) -> Unit = { action ->
-            action?.let {
-                when (it) {
-                    is StreamAction.ShowChatActivity -> showChatActivity(it.stream, it.topic)
-                    is StreamAction.AddTopicsAt -> streamAdapter.addItems(it.position, it.topics)
-                    is StreamAction.RemoveTopics -> streamAdapter.removeSlice(it.slice)
-                    is StreamAction.UpdateStreamAtSpecificPosition ->
-                        streamAdapter.replaceItemAt(it.position, it.stream)
+        viewModel.actionObservable
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { action ->
+                action?.let {
+                    when (it) {
+                        is StreamAction.ShowChatActivity -> showChatActivity(it.stream, it.topic)
+                        is StreamAction.ShotToastMessage -> requireContext().showToast(it.message)
+                    }
                 }
-            }
-        }
-        compositeDisposable.add(
-            viewModel.actionObservable.subscribe(callBack)
-        )
+            }.addTo(compositeDisposable)
     }
 
     private fun subscribeToFilter() {

@@ -82,4 +82,5 @@
     <dimen name="shimmer_item_user_margin_top">10dp</dimen>
     <dimen name="shimmer_profile_text_height">80dp</dimen>
     <dimen name="shimmer_profile_text_width">240dp</dimen>
+    <dimen name="chat_input_loading_indicator_size">39dp</dimen>
 </resources>

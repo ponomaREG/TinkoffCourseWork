@@ -6,7 +6,7 @@ import com.tinkoff.coursework.presentation.model.Stream
 
 class StreamViewHolder constructor(
     private val binding: ItemStreamBinding,
-    private val onStreamClick: (Stream, Int) -> Unit = { _, _ -> }
+    private val onStreamClick: (Stream) -> Unit = { _ -> }
 ) : BaseViewHolder<ItemStreamBinding, Stream>(binding) {
 
     override fun bind(entityUI: Stream) {
@@ -24,7 +24,7 @@ class StreamViewHolder constructor(
         else 0f
         binding.itemStreamExpandArrow.rotation = rotation
         binding.root.setOnClickListener {
-            onStreamClick(entityUI, adapterPosition)
+            onStreamClick(entityUI)
         }
     }
 }

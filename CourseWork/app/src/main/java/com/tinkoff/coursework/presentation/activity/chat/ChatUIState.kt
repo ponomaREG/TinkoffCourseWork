@@ -1,11 +1,10 @@
 package com.tinkoff.coursework.presentation.activity.chat
 
-import com.tinkoff.coursework.presentation.error.Error
+import com.tinkoff.coursework.presentation.base.BaseUIState
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.EntityUI
 
 data class ChatUIState(
-    var isFirstLoadingMessages: Boolean? = false,
     var messages: List<EntityUI>? = null,
-    var error: Error? = null,
-    var action: ChatAction? = null
-)
+    var loadingInput: LoadingState? = null
+) : BaseUIState()

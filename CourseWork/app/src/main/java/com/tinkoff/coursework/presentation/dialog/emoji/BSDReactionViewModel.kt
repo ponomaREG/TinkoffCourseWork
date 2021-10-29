@@ -2,11 +2,15 @@ package com.tinkoff.coursework.presentation.dialog.emoji
 
 import androidx.lifecycle.ViewModel
 import com.tinkoff.coursework.domain.usecase.GetEmojiesUseCase
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.util.addTo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,7 +19,8 @@ class BSDReactionViewModel @Inject constructor(
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<BSDReactionUIState> = BehaviorSubject.create()
-    private val currentState = BSDReactionUIState()
+    val actionObservable: PublishSubject<BSDAction> = PublishSubject.create()
+    private var currentState = BSDReactionUIState()
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -23,35 +28,36 @@ class BSDReactionViewModel @Inject constructor(
         loadEmojies()
     }
 
-    fun loadEmojies() {
-        currentState.isLoading = true
-        submitState()
-        val disposable = getEmojiesUseCase()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { data, err ->
-                data?.let {
-                    currentState.apply {
-                        isLoading = false
-                        emojies = it
-                    }
-                }
-                err?.let {
-                    currentState.apply {
-                        isLoading = false
-                        error = it.parseError()
-                    }
-                }
-                submitState()
-                currentState.isLoading = null
-            }
-        compositeDisposable.add(disposable)
-    }
-
-    fun clear() {
+    override fun onCleared() {
         compositeDisposable.dispose()
     }
 
+    fun loadEmojies() {
+        currentState.loadingState = LoadingState.LOADING
+        submitState()
+        getEmojiesUseCase()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { data, err ->
+                data?.let {
+                    currentState.emojies = it
+                    currentState.loadingState = LoadingState.SUCCESS
+                }
+                err?.let {
+                    currentState.loadingState = LoadingState.ERROR
+                    submitAction(BSDAction.ShowToastMessage(it.parseError().message))
+                }
+                submitState()
+            }.addTo(compositeDisposable)
+    }
+
     private fun submitState() {
+        val newState = currentState.copy()
         stateObservable.onNext(currentState)
+        currentState = newState
+    }
+
+    private fun submitAction(action: BSDAction) {
+        actionObservable.onNext(action)
     }
 }

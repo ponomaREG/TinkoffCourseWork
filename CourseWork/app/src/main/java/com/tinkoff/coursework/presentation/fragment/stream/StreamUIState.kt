@@ -1,11 +1,8 @@
 package com.tinkoff.coursework.presentation.fragment.stream
 
-import com.tinkoff.coursework.presentation.error.Error
-import com.tinkoff.coursework.presentation.model.Stream
+import com.tinkoff.coursework.presentation.base.BaseUIState
+import com.tinkoff.coursework.presentation.model.EntityUI
 
 data class StreamUIState(
-    var isFirstLoading: Boolean? = null,
-    var streams: List<Stream>? = null,
-    var action: StreamAction? = null,
-    var error: Error? = null
-)
+    var data: List<EntityUI>? = null,
+) : BaseUIState()

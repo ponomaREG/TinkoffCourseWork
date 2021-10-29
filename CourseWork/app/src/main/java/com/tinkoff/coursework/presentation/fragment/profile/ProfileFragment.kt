@@ -5,15 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentProfileBinding
+import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.User
+import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
@@ -41,6 +45,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeState()
+        observeActions()
         setListeners()
     }
 
@@ -52,7 +57,6 @@ class ProfileFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
-        viewModel.clear()
     }
 
     private fun renderProfile(profile: User) {
@@ -70,29 +74,32 @@ class ProfileFragment : Fragment() {
     }
 
     private fun observeState() {
-        val disposable = viewModel.stateObservable.subscribe { state ->
-            state.apply {
-                isLoading?.let {
-                    if (it) {
-                        binding.profileShimmer.showShimmer(true)
-                        binding.fragmentProfileStatus.visibility = View.INVISIBLE
-                    } else {
-                        binding.profileShimmer.apply {
-                            stopShimmer()
-                            visibility = View.GONE
-                        }
-                        binding.fragmentProfileStatus.visibility = View.VISIBLE
+        viewModel.stateObservable
+            .distinctUntilChanged()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { state ->
+                state.apply {
+                    binding.fragmentProfileStatus.isInvisible = loadingState == LoadingState.LOADING
+                    binding.profileShimmer.apply {
+                        isVisible = loadingState == LoadingState.LOADING
+                        if (isVisible) startShimmer() else stopShimmer()
+                    }
+                    data?.let {
+                        renderProfile(it)
                     }
                 }
-                data?.let {
-                    renderProfile(it)
+            }.addTo(compositeDisposable)
+    }
+
+    private fun observeActions() {
+        viewModel.actionObservable
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { action ->
+                when (action) {
+                    is ProfileAction.ShowToastMessage ->
+                        requireContext().showToast(action.message)
                 }
-                error?.let {
-                    requireContext().showToast(it.message)
-                }
-            }
-        }
-        compositeDisposable.add(disposable)
+            }.addTo(compositeDisposable)
     }
 
     private fun setListeners() {

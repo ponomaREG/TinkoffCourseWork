@@ -277,4 +277,13 @@ object MockUtil {
             isExpanded = false
         ),
     )
+
+    fun mockSuccessfulResponse() = Response(true)
+
+    fun mockUnsuccessfulResponse() = Response(false)
+
+    fun mockEmojiManipulationResponse() = EmojiManipulationResponse(
+        isSuccess = Random.nextBoolean(),
+        isAlsoExists = Random.nextBoolean()
+    )
 }
