@@ -19,3 +19,9 @@ fun <E> Collection<E>.filterAsync(
     .toList()
     .observeOn(AndroidSchedulers.mainThread())
     .subscribe(action)
+
+fun io.reactivex.rxjava3.disposables.Disposable.addTo(
+    compositeDisposable: io.reactivex.rxjava3.disposables.CompositeDisposable
+) {
+    compositeDisposable.add(this)
+}

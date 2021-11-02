@@ -10,6 +10,7 @@ import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentContainerStreamsBinding
 import com.tinkoff.coursework.presentation.fragment.stream.StreamFragment
 import com.tinkoff.coursework.presentation.model.StreamsGroup
+import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.viewpager.StreamsStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +27,8 @@ class ChannelsFragment : Fragment() {
 
     private var _binding: FragmentContainerStreamsBinding? = null
     private val binding get() = _binding!!
+    private val compositeDisposableRxJava3: io.reactivex.rxjava3.disposables.CompositeDisposable =
+        io.reactivex.rxjava3.disposables.CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +52,11 @@ class ChannelsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposableRxJava3.clear()
     }
 
     private fun initStateAdapter() {
@@ -89,6 +97,6 @@ class ChannelsFragment : Fragment() {
                 StreamsGroup.ALL.key,
                 args
             )
-        }
+        }.addTo(compositeDisposableRxJava3)
     }
 }

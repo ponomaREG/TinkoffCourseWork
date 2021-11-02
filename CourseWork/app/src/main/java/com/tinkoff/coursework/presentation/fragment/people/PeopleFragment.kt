@@ -20,6 +20,7 @@ import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 
 @AndroidEntryPoint
 class PeopleFragment : Fragment() {
@@ -35,6 +36,8 @@ class PeopleFragment : Fragment() {
 
     private val viewModel: PeopleViewModel by viewModels()
     private val compositeDisposable = CompositeDisposable()
+    private val compositeDisposableRxJava3: io.reactivex.rxjava3.disposables.CompositeDisposable =
+        io.reactivex.rxjava3.disposables.CompositeDisposable() // Мигрировать в дальнейшем полностью на RxJava3
 
     private val peopleAdapter = DelegateAdapter(
         listOf(
@@ -70,6 +73,7 @@ class PeopleFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         compositeDisposable.dispose()
+        compositeDisposableRxJava3.dispose()
     }
 
     private fun initRecyclerView() {
@@ -87,7 +91,7 @@ class PeopleFragment : Fragment() {
     private fun attachTextWatcher() {
         binding.fragmentPeopleSearchInput.doAfterTextChangedWithDelay { input ->
             viewModel.filter(input)
-        }
+        }.addTo(compositeDisposableRxJava3)
     }
 
     private fun observeState() {
