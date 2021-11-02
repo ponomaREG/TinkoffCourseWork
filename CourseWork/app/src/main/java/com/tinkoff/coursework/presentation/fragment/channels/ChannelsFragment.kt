@@ -14,6 +14,7 @@ import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.viewpager.StreamsStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.disposables.CompositeDisposable
 
 @AndroidEntryPoint
 class ChannelsFragment : Fragment() {
@@ -27,8 +28,7 @@ class ChannelsFragment : Fragment() {
 
     private var _binding: FragmentContainerStreamsBinding? = null
     private val binding get() = _binding!!
-    private val compositeDisposableRxJava3: io.reactivex.rxjava3.disposables.CompositeDisposable =
-        io.reactivex.rxjava3.disposables.CompositeDisposable()
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +56,7 @@ class ChannelsFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        compositeDisposableRxJava3.clear()
+        compositeDisposable.clear()
     }
 
     private fun initStateAdapter() {
@@ -97,6 +97,6 @@ class ChannelsFragment : Fragment() {
                 StreamsGroup.ALL.key,
                 args
             )
-        }.addTo(compositeDisposableRxJava3)
+        }.addTo(compositeDisposable)
     }
 }

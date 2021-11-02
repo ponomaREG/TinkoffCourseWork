@@ -24,7 +24,6 @@ import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import javax.inject.Inject
 
 @AndroidEntryPoint
