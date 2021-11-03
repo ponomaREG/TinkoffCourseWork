@@ -1,38 +1,54 @@
 package com.tinkoff.coursework.data.repository
 
-import com.tinkoff.coursework.data.network.MockUtil
+import com.tinkoff.coursework.data.mapper.MessageMapper
+import com.tinkoff.coursework.data.network.api.MessageAPI
+import com.tinkoff.coursework.data.network.response.SendMessageResponse
+import com.tinkoff.coursework.data.util.NarrowBuilder
+import com.tinkoff.coursework.domain.model.Emoji
+import com.tinkoff.coursework.domain.model.Message
 import com.tinkoff.coursework.domain.repository.MessageRepository
-import com.tinkoff.coursework.presentation.model.EntityUI
-import com.tinkoff.coursework.presentation.model.Message
-import com.tinkoff.coursework.presentation.model.Response
+import io.reactivex.Completable
 import io.reactivex.Single
-import java.util.concurrent.TimeUnit
+import okhttp3.internal.toHexString
 import javax.inject.Inject
-import kotlin.random.Random
 
-class MessageRepositoryImpl @Inject constructor() : MessageRepository {
+class MessageRepositoryImpl @Inject constructor(
+    private val messageAPI: MessageAPI,
+    private val messageMapper: MessageMapper,
+    private val narrowBuilder: NarrowBuilder
+) : MessageRepository {
 
-    override fun fetchMessages(): Single<List<EntityUI>> =
-        Single.fromCallable(MockUtil::mockMessages)
-            .delay(2, TimeUnit.SECONDS)
-            .map {
-                if (Random.nextInt(0, 4) == 3) throw IllegalStateException()
-                it
+    override fun fetchMessages(streamName: String, topicName: String): Single<List<Message>> =
+        messageAPI.getMessages(
+            anchor = "newest",
+            numAfter = 0,
+            numBefore = 20,
+            narrow = narrowBuilder.buildNarrow(streamName, topicName)
+        )
+            .map { response ->
+                response.messages.map(messageMapper::fromNetworkModelToDomainModel)
             }
 
-    override fun addReaction(messageId: Int, emoji: Int): Single<Response> =
-        Single.fromCallable(MockUtil::mockSuccessfulResponse)
-            .delay(300, TimeUnit.MILLISECONDS)
+    override fun addReaction(messageId: Int, emoji: Emoji): Completable =
+        messageAPI.sendReaction(
+            messageId = messageId,
+            emojiName = emoji.emojiName
+        )
 
-    override fun removeReaction(messageId: Int, emoji: Int): Single<Response> =
-        Single.fromCallable(MockUtil::mockSuccessfulResponse)
-            .delay(300, TimeUnit.MILLISECONDS)
+    override fun removeReaction(messageId: Int, emoji: Emoji): Completable =
+        messageAPI.removeReaction(
+            messageId = messageId,
+            emojiCode = emoji.emojiCode.toHexString()
+        )
 
-    override fun sendMessage(topicId: Int, message: Message): Single<Response> =
-        Single.fromCallable(MockUtil::mockSuccessfulResponse)
-            .delay(300, TimeUnit.MILLISECONDS)
-            .map {
-                if (Random.nextInt(0, 4) == 3) throw IllegalStateException()
-                it
-            }
+    override fun sendMessage(
+        chatIds: List<Int>,
+        topicName: String,
+        message: Message
+    ): Single<SendMessageResponse> =
+        messageAPI.sendMessage(
+            content = message.message,
+            to = chatIds,
+            topic = topicName
+        )
 }
