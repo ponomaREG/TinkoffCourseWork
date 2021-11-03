@@ -32,6 +32,8 @@
     <color name="item_user_name">#000000</color>
     <color name="item_user_email">#302F2F</color>
     <color name="ic_status_online_fill">#048325</color>
+    <color name="ic_status_idle_fill">#C5AC0E</color>
+    <color name="ic_status_offline_fill">#8A0808</color>
     <color name="item_stream_background">#FFFFFF</color>
     <color name="item_topic_background">#D5D5D5</color>
     <color name="item_topic_messagesCount_text_color">#000000</color>

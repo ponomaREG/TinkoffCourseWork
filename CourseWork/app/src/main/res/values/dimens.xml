@@ -58,7 +58,7 @@
     <dimen name="fragment_profile_name_padding_horizontal">30dp</dimen>
     <dimen name="fragment_profile_name_text_size">32sp</dimen>
     <dimen name="fragment_profile_status_text_size">20sp</dimen>
-    <dimen name="fragment_profile_onlineStatus_margin_start">21dp</dimen>
+    <dimen name="fragment_profile_onlineStatus_margin_start">4dp</dimen>
     <dimen name="fragment_profile_onlineStatus_text_size">16sp</dimen>
     <dimen name="fragment_profile_logOut_width">184dp</dimen>
     <dimen name="fragment_profile_logOut_height">52dp</dimen>
@@ -83,4 +83,5 @@
     <dimen name="shimmer_profile_text_height">80dp</dimen>
     <dimen name="shimmer_profile_text_width">240dp</dimen>
     <dimen name="chat_input_loading_indicator_size">39dp</dimen>
+    <dimen name="fragment_profile_onlineStatus_size">30dp</dimen>
 </resources>

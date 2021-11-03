@@ -3,4 +3,4 @@
     android:layout_width="@dimen/item_bs_reaction_size"
     android:layout_height="@dimen/item_bs_reaction_size"
     android:background="@color/shimmer_background"
-    android:layout_margin="5dp"/>
+    android:layout_margin="5dp" />

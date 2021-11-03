@@ -13,23 +13,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/fragment_profile_avatar_margin_top"
-        tools:visibility="gone"
-        >
+        tools:visibility="gone">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
+
             <View
                 android:layout_width="@dimen/fragment_profile_avatar_size"
                 android:layout_height="@dimen/fragment_profile_avatar_size"
-                android:background="@color/shimmer_background"/>
+                android:background="@color/shimmer_background" />
+
             <View
                 android:layout_width="@dimen/shimmer_profile_text_width"
                 android:layout_height="@dimen/shimmer_profile_text_height"
                 android:layout_marginTop="@dimen/fragment_profile_name_margin_top"
-                android:background="@color/shimmer_background"
-                />
+                android:background="@color/shimmer_background" />
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
 
@@ -57,43 +58,13 @@
         android:textSize="@dimen/fragment_profile_name_text_size"
         tools:text="Darrel Steward" />
 
-    <TextView
-        android:id="@+id/fragment_profile_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/fragment_profile_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/fragment_profile_onlineStatus"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        android:textSize="@dimen/fragment_profile_status_text_size"
-        android:textColor="@color/fragment_profile_status_text_color"
-        android:text="@string/fragment_profile_status" />
-
-    <TextView
+    <ImageView
         android:id="@+id/fragment_profile_onlineStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/fragment_profile_status"
-        app:layout_constraintBottom_toBottomOf="@id/fragment_profile_status"
-        app:layout_constraintStart_toEndOf="@id/fragment_profile_status"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="@dimen/fragment_profile_onlineStatus_margin_start"
-        android:textSize="@dimen/fragment_profile_onlineStatus_text_size"
-        android:textColor="@color/fragment_profile_onlineStatus_text_color"
-        tools:text="online" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/fragment_profile_logOut"
-        android:layout_width="@dimen/fragment_profile_logOut_width"
-        android:layout_height="@dimen/fragment_profile_logOut_height"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="@dimen/fragment_profile_logOut_margin_bottom"
-        android:background="@drawable/bg_button_logout"
-        android:text="@string/fragment_profile_logOut"
-        android:textAllCaps="false"
-        android:textSize="@dimen/fragment_profile_logOut_text_size"
-        android:textColor="@color/fragment_profile_logOut_text_color" />
+        android:layout_width="@dimen/fragment_profile_onlineStatus_size"
+        android:layout_height="@dimen/fragment_profile_onlineStatus_size"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_profile_avatar"
+        app:layout_constraintEnd_toEndOf="@id/fragment_profile_avatar"
+        android:layout_margin="@dimen/fragment_profile_onlineStatus_margin_start"
+        android:src="@drawable/ic_status_online" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

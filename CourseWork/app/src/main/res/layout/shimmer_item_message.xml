@@ -17,6 +17,6 @@
         android:layout_width="@dimen/shimmer_item_message_width"
         android:layout_height="@dimen/shimmer_item_message_height"
         android:orientation="vertical"
-        android:background="@drawable/shimmer_bg_message"/>
+        android:background="@drawable/shimmer_bg_message" />
 
 </LinearLayout>
