@@ -54,10 +54,6 @@ class ProfileViewModel @Inject constructor(
             }.addTo(compositeDisposable)
     }
 
-    fun onLogoutClick() {
-
-    }
-
     private fun submitState() {
         val newState = currentState.copy()
         stateObservable.onNext(currentState)

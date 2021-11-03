@@ -15,7 +15,7 @@ class UserMapper @Inject constructor() : BaseMapper<User, UserUI> {
             fullName = domainModel.fullName,
             email = domainModel.email,
             avatarUrl = domainModel.avatarUrl,
-            status = domainModel.status.convertDomainStatusToPresentationStatus()
+            status = domainModel.status.convertDomainStatusToPresentationStatus(),
         )
 
     override fun fromPresentationModelToDomainModel(presentationModel: UserUI): User =

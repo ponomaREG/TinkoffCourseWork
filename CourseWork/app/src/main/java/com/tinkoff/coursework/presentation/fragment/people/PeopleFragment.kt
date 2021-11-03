@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.presentation.fragment.people
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.presentation.adapter.viewtype.UserViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.util.addTo
+import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,6 +104,11 @@ class PeopleFragment : Fragment() {
                         if (isVisible) startShimmer() else stopShimmer()
                     }
                     peoples?.let {
+                        it.forEach { user ->
+                            user.colorStateList = ColorStateList.valueOf(
+                                user.status.detectStatusColor(requireContext())
+                            )
+                        }
                         peopleAdapter.setItems(it)
                     }
                 }
