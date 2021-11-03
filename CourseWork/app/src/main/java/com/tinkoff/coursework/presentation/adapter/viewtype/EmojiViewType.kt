@@ -7,31 +7,31 @@ import com.tinkoff.coursework.databinding.ItemBsReactionBinding
 import com.tinkoff.coursework.presentation.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.presentation.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.presentation.adapter.holder.EmojiViewHolder
-import com.tinkoff.coursework.presentation.model.Emoji
+import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.model.EntityUI
 
 class EmojiViewType(
-    private val onEmojiClick: (Emoji) -> Unit = {}
-) : BaseItemViewType<ItemBsReactionBinding, Emoji> {
-    override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is Emoji
+    private val onEmojiClick: (EmojiUI) -> Unit = {}
+) : BaseItemViewType<ItemBsReactionBinding, EmojiUI> {
+    override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is EmojiUI
 
     override fun getLayoutID(): Int = R.layout.item_bs_reaction
 
     override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
-    ): BaseViewHolder<ItemBsReactionBinding, Emoji> {
+    ): BaseViewHolder<ItemBsReactionBinding, EmojiUI> {
         val binding = ItemBsReactionBinding.inflate(layoutInflater, parent, false)
         return EmojiViewHolder(binding, onEmojiClick)
     }
 
-    override fun areItemsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
+    override fun areItemsTheSame(oldItem: EmojiUI, newItem: EmojiUI): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
+    override fun areContentsTheSame(oldItem: EmojiUI, newItem: EmojiUI): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: Emoji, newItem: Emoji): Any? = null
+    override fun getChangePayload(oldItem: EmojiUI, newItem: EmojiUI): Any? = null
 }

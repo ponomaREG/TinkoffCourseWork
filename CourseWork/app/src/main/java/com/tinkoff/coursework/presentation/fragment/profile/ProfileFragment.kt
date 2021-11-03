@@ -1,6 +1,6 @@
 package com.tinkoff.coursework.presentation.fragment.profile
 
-import android.graphics.Color
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +9,12 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentProfileBinding
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.model.User
+import com.tinkoff.coursework.presentation.model.UserUI
 import com.tinkoff.coursework.presentation.util.addTo
+import com.tinkoff.coursework.presentation.util.detectStatusColor
+import com.tinkoff.coursework.presentation.util.loadImageByUrl
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +47,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         observeState()
         observeActions()
-        setListeners()
     }
 
     override fun onDestroyView() {
@@ -59,17 +59,14 @@ class ProfileFragment : Fragment() {
         compositeDisposable.dispose()
     }
 
-    private fun renderProfile(profile: User) {
+    private fun renderProfile(profile: UserUI) {
         binding.apply {
-            fragmentProfileName.text = profile.name
-            fragmentProfileAvatar.setImageResource(profile.avatar)
+            fragmentProfileName.text = profile.fullName
+            fragmentProfileAvatar.loadImageByUrl(profile.avatarUrl)
             fragmentProfileAvatar.clipToOutline = true
-            fragmentProfileOnlineStatus.text =
-                if (profile.isOnline) getString(R.string.fragment_profile_onlineStatus)
-                else {
-                    fragmentProfileStatus.setTextColor(Color.RED)
-                    getString(R.string.fragment_profile_offlineStatus)
-                }
+            fragmentProfileOnlineStatus.imageTintList = ColorStateList.valueOf(
+                profile.status.detectStatusColor(requireContext())
+            )
         }
     }
 
@@ -79,7 +76,8 @@ class ProfileFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { state ->
                 state.apply {
-                    binding.fragmentProfileStatus.isInvisible = loadingState == LoadingState.LOADING
+                    binding.fragmentProfileOnlineStatus.isInvisible =
+                        state.loadingState == LoadingState.LOADING
                     binding.profileShimmer.apply {
                         isVisible = loadingState == LoadingState.LOADING
                         if (isVisible) startShimmer() else stopShimmer()
@@ -100,11 +98,5 @@ class ProfileFragment : Fragment() {
                         requireContext().showToast(action.message)
                 }
             }.addTo(compositeDisposable)
-    }
-
-    private fun setListeners() {
-        binding.fragmentProfileLogOut.setOnClickListener {
-            viewModel.onLogoutClick()
-        }
     }
 }

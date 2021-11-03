@@ -5,10 +5,11 @@ import com.tinkoff.coursework.domain.usecase.GetAllChannelsUseCase
 import com.tinkoff.coursework.domain.usecase.GetSubscribedChannelsUseCase
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.mapper.StreamMapper
 import com.tinkoff.coursework.presentation.model.EntityUI
-import com.tinkoff.coursework.presentation.model.Stream
+import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
-import com.tinkoff.coursework.presentation.model.Topic
+import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.filterAsync
 import dagger.assisted.Assisted
@@ -23,7 +24,8 @@ import java.util.*
 class StreamViewModel @AssistedInject constructor(
     @Assisted private val type: StreamsGroup,
     private val getSubscribedChannelsUseCase: GetSubscribedChannelsUseCase,
-    private val getAllChannelsUseCase: GetAllChannelsUseCase
+    private val getAllChannelsUseCase: GetAllChannelsUseCase,
+    private val streamMapper: StreamMapper
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<StreamUIState> = BehaviorSubject.create()
@@ -35,14 +37,14 @@ class StreamViewModel @AssistedInject constructor(
         loadStreamsByType()
     }
 
-    private var streams: List<Stream>? = null
-    private var filteredStreams: List<Stream>? = null
+    private var streams: List<StreamUI>? = null
+    private var filteredStreams: List<StreamUI>? = null
 
     override fun onCleared() {
         compositeDisposable.dispose()
     }
 
-    fun onStreamClick(stream: Stream) {
+    fun onStreamClick(stream: StreamUI) {
         val newStream = stream.copy(isExpanded = stream.isExpanded.not())
         streams = streams?.map { s ->
             if (s.id == newStream.id) newStream else s
@@ -56,9 +58,9 @@ class StreamViewModel @AssistedInject constructor(
         submitState()
     }
 
-    fun onTopicClick(topic: Topic) {
+    fun onTopicClick(topic: TopicUI) {
         streams?.let {
-            val stream: Stream = it.find { s ->
+            val stream: StreamUI = it.find { s ->
                 s.topics.contains(topic)
             } ?: throw IllegalStateException()
             submitAction(StreamAction.ShowChatActivity(stream, topic))
@@ -77,7 +79,7 @@ class StreamViewModel @AssistedInject constructor(
                     },
                     action = { filteredStream ->
                         filteredStream?.let {
-                            it as List<Stream>
+                            it as List<StreamUI>
                             filteredStreams = it
                             currentState.data = buildAdapterItems(it)
                             submitState()
@@ -103,6 +105,10 @@ class StreamViewModel @AssistedInject constructor(
 
         }
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .map {
+                it.map(streamMapper::fromDomainModelToPresentationModel)
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data, err ->
                 data?.let {
@@ -128,7 +134,7 @@ class StreamViewModel @AssistedInject constructor(
         currentState = newState
     }
 
-    private fun buildAdapterItems(streams: List<Stream>?): List<EntityUI> {
+    private fun buildAdapterItems(streams: List<StreamUI>?): List<EntityUI> {
         val adapterItems: MutableList<EntityUI> = mutableListOf()
         streams?.forEach { s ->
             adapterItems.add(s)

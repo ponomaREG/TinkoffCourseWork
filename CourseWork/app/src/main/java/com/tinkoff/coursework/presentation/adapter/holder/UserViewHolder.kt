@@ -1,22 +1,29 @@
 package com.tinkoff.coursework.presentation.adapter.holder
 
-import androidx.core.view.isVisible
+import android.content.res.ColorStateList
 import com.tinkoff.coursework.databinding.ItemUserBinding
 import com.tinkoff.coursework.presentation.adapter.base.BaseViewHolder
-import com.tinkoff.coursework.presentation.model.User
+import com.tinkoff.coursework.presentation.model.UserUI
+import com.tinkoff.coursework.presentation.util.detectStatusColor
+import com.tinkoff.coursework.presentation.util.loadImageByUrl
 
 class UserViewHolder(
     private val binding: ItemUserBinding,
-    private val onUserClick: (User) -> Unit = {}
-) : BaseViewHolder<ItemUserBinding, User>(binding) {
+    private val onUserClick: (UserUI) -> Unit = {}
+) : BaseViewHolder<ItemUserBinding, UserUI>(binding) {
 
-    override fun bind(entityUI: User) {
+    override fun bind(entityUI: UserUI) {
         binding.apply {
-            itemUserName.text = entityUI.name
+            itemUserName.text = entityUI.fullName
             itemUserEmail.text = entityUI.email
-            itemUserAvatar.setImageResource(entityUI.avatar)
+            itemUserAvatar.loadImageByUrl(entityUI.avatarUrl)
             itemUserAvatar.clipToOutline = true
-            itemUserOnlineStatus.isVisible = entityUI.isOnline
+            itemUserOnlineStatus.imageTintList =
+                ColorStateList.valueOf(
+                    entityUI.status.detectStatusColor(
+                        binding.root.context
+                    )
+                )
             root.setOnClickListener {
                 onUserClick(entityUI)
             }

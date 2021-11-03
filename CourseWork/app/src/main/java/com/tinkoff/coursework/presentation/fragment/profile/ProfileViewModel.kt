@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.tinkoff.coursework.domain.usecase.GetOwnProfileInfoUseCase
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.mapper.UserMapper
 import com.tinkoff.coursework.presentation.util.addTo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getOwnProfileInfoUseCase: GetOwnProfileInfoUseCase
+    private val getOwnProfileInfoUseCase: GetOwnProfileInfoUseCase,
+    private val userMapper: UserMapper
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<ProfileUIState> = BehaviorSubject.create()
@@ -36,6 +38,8 @@ class ProfileViewModel @Inject constructor(
         submitState()
         getOwnProfileInfoUseCase()
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .map(userMapper::fromDomainModelToPresentationModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { user, error ->
                 user?.let {

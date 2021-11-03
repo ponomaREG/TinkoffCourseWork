@@ -11,7 +11,7 @@ import com.tinkoff.coursework.databinding.BottomSheetDialogReactionsBinding
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.viewtype.EmojiViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.model.Emoji
+import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -101,6 +101,6 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
     }
 
     interface OnEmojiPickListener {
-        fun onEmojiPicked(emoji: Emoji)
+        fun onEmojiPicked(emoji: EmojiUI)
     }
 }

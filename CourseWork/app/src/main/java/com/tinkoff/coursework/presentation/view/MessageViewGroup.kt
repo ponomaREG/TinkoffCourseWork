@@ -14,8 +14,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import com.tinkoff.coursework.R
-import com.tinkoff.coursework.presentation.model.Message
-import com.tinkoff.coursework.presentation.model.Reaction
+import com.tinkoff.coursework.presentation.model.MessageUI
+import com.tinkoff.coursework.presentation.model.ReactionUI
 import com.tinkoff.coursework.presentation.util.sumHorizontalMargins
 import com.tinkoff.coursework.presentation.util.sumVerticalMargins
 
@@ -24,8 +24,8 @@ class MessageViewGroup constructor(
     attributeSet: AttributeSet?
 ) : ViewGroup(context, attributeSet) {
 
-    private val imageViewIconAdd: ImageView
     private val avatarImageView: ImageView
+    private val imageViewIconAdd: ImageView
     private val usernameTextView: TextView
     private val messageTextView: TextView
     private val reactionsFlexBoxLayout: FlexBoxLayout
@@ -73,6 +73,7 @@ class MessageViewGroup constructor(
         style = Paint.Style.FILL
         color = ContextCompat.getColor(context, R.color.message_view_group_background_color)
     }
+
     private val radiusMessageBackground =
         resources.getDimensionPixelSize(R.dimen.message_viewgroup_radius).toFloat()
     private val backgroundMargin =
@@ -118,10 +119,10 @@ class MessageViewGroup constructor(
         )
         val backgroundRectLeft =
             avatarImageView.measuredHeight +
-                    avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
+                avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
         val backgroundRectRight =
             backgroundRectLeft +
-                    maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
+                maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
         backgroundRect.set(
             backgroundRectLeft.toFloat(),
             0f,
@@ -191,16 +192,22 @@ class MessageViewGroup constructor(
     }
 
     fun setMessage(
-        message: Message
+        messageUI: MessageUI,
+        avatarSetter: (ImageView) -> Unit = { avatar ->
+            avatar.setImageResource(R.mipmap.ic_launcher)
+        }
     ) {
-        avatarImageView.setImageResource(message.avatarRes)
-        usernameTextView.text = message.username
-        messageTextView.text = message.message
-        setReactions(message.reactions)
+        avatarSetter(avatarImageView)
+        var showUsername = messageUI.username
+        if (messageUI.isMyMessage) showUsername +=
+            context.getString(R.string.message_viewgroup_my_message_indicator)
+        usernameTextView.text = showUsername
+        messageTextView.text = messageUI.message
+        setReactions(messageUI.reactions)
     }
 
     fun setReactions(
-        reactions: List<Reaction>
+        reactions: List<ReactionUI>
     ) {
         reactionsFlexBoxLayout.removeAllViews()
         if (reactions.isNotEmpty()) {
@@ -210,7 +217,7 @@ class MessageViewGroup constructor(
                 emojiView.setPadding(emojiPadding.toInt())
                 emojiView.contentTextSize = emojiContentTextSize
                 emojiView.countOfVotes = reaction.countOfVotes
-                emojiView.emojiCode = reaction.emojiCode
+                emojiView.emojiCode = reaction.emojiUI.emojiCode
                 emojiView.isSelected = reaction.isSelected
                 emojiReactionViewListener?.let {
                     emojiView.setOnClickListener(emojiReactionViewListener!!, index)
@@ -240,8 +247,8 @@ class MessageViewGroup constructor(
         childOnLeftRect: Rect?,
         childOnTopRect: Rect?
     ) {
-        currentChildRect.left = (childOnLeftRect?.right ?: 0) +
-                (childOnLeft?.marginRight ?: 0) + marginLeft
+        currentChildRect.left = (childOnLeftRect?.right ?: 0) + (childOnLeft?.marginRight
+            ?: 0) + this.marginLeft
         currentChildRect.top = (childOnTopRect?.bottom ?: 0) + marginTop
         currentChildRect.right = currentChildRect.left + measuredWidth
         currentChildRect.bottom = currentChildRect.top + measuredHeight + marginBottom

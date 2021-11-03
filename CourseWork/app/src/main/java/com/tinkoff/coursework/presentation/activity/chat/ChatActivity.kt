@@ -18,17 +18,19 @@ import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.presentation.adapter.viewtype.DateDividerViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.MessageViewType
+import com.tinkoff.coursework.presentation.assisted_factory.ChatActivityAssistedFactory
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.dialog.emoji.BottomSheetDialogWithReactions
-import com.tinkoff.coursework.presentation.model.Emoji
-import com.tinkoff.coursework.presentation.model.Stream
-import com.tinkoff.coursework.presentation.model.Topic
+import com.tinkoff.coursework.presentation.model.EmojiUI
+import com.tinkoff.coursework.presentation.model.StreamUI
+import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.hideKeyboard
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmojiPickListener {
@@ -37,7 +39,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         private const val EXTRA_STREAM = "EXTRA_STREAM"
         private const val EXTRA_TOPIC = "EXTRA_TOPIC"
 
-        fun getIntent(context: Context, stream: Stream, topic: Topic): Intent {
+        fun getIntent(context: Context, stream: StreamUI, topic: TopicUI): Intent {
             val intentToChatActivity = Intent(context, ChatActivity::class.java)
             intentToChatActivity.putExtra(EXTRA_STREAM, stream)
             intentToChatActivity.putExtra(EXTRA_TOPIC, topic)
@@ -45,7 +47,15 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         }
     }
 
-    private val viewModel: ChatViewModel by viewModels()
+    @Inject
+    lateinit var assistedFactory: ChatActivityAssistedFactory
+
+    private val viewModel: ChatViewModel by viewModels {
+        assistedFactory.also {
+            it.stream = currentStream
+            it.topic = currentTopic
+        }
+    }
 
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())
 
@@ -56,10 +66,10 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val currentStream: Stream
+    private val currentStream: StreamUI
         get() = intent.getParcelableExtra(EXTRA_STREAM) ?: throw IllegalStateException()
 
-    private val currentTopic: Topic
+    private val currentTopic: TopicUI
         get() = intent.getParcelableExtra(EXTRA_TOPIC) ?: throw IllegalStateException()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +103,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onEmojiPicked(emoji: Emoji) {
+    override fun onEmojiPicked(emoji: EmojiUI) {
         viewModel.onEmojiAtBottomSheetDialogPicked(emoji)
     }
 

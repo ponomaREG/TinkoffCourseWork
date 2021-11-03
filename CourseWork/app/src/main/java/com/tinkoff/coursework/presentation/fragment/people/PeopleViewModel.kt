@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.tinkoff.coursework.domain.usecase.GetPeopleUseCase
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
-import com.tinkoff.coursework.presentation.model.User
+import com.tinkoff.coursework.presentation.mapper.UserMapper
+import com.tinkoff.coursework.presentation.model.UserUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.filterAsync
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PeopleViewModel @Inject constructor(
-    private val getPeopleUseCase: GetPeopleUseCase
+    private val getPeopleUseCase: GetPeopleUseCase,
+    private val userMapper: UserMapper
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<PeopleUIState> = BehaviorSubject.create()
@@ -30,7 +32,7 @@ class PeopleViewModel @Inject constructor(
         loadPeople()
     }
 
-    private var users: List<User>? = null
+    private var users: List<UserUI>? = null
 
     override fun onCleared() {
         compositeDisposable.dispose()
@@ -41,6 +43,10 @@ class PeopleViewModel @Inject constructor(
         submitState()
         getPeopleUseCase()
             .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .map { users ->
+                users.map(userMapper::fromDomainModelToPresentationModel)
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data, error ->
                 data?.let {
@@ -61,11 +67,11 @@ class PeopleViewModel @Inject constructor(
             if (searchInput.isNotEmpty()) {
                 it.filterAsync(
                     predicate = { user ->
-                        user.name.toLowerCase(Locale.ROOT).contains(searchInput)
+                        user.fullName.toLowerCase(Locale.ROOT).contains(searchInput)
                     },
                     action = { filteredPeople ->
                         filteredPeople?.let {
-                            currentState.peoples = it as List<User>
+                            currentState.peoples = it as List<UserUI>
                             submitState()
                         }
                     }
@@ -77,7 +83,7 @@ class PeopleViewModel @Inject constructor(
         }
     }
 
-    fun onUserClick(user: User) {
+    fun onUserClick(user: UserUI) {
         submitAction(PeopleAction.ShowUserProfile(user))
     }
 

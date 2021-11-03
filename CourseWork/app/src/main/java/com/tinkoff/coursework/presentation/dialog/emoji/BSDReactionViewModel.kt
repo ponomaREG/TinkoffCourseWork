@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.tinkoff.coursework.domain.usecase.GetEmojiesUseCase
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.mapper.EmojiMapper
 import com.tinkoff.coursework.presentation.util.addTo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BSDReactionViewModel @Inject constructor(
-    private val getEmojiesUseCase: GetEmojiesUseCase
+    private val getEmojiesUseCase: GetEmojiesUseCase,
+    private val emojiMapper: EmojiMapper
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<BSDReactionUIState> = BehaviorSubject.create()
@@ -36,7 +38,10 @@ class BSDReactionViewModel @Inject constructor(
         currentState.loadingState = LoadingState.LOADING
         submitState()
         getEmojiesUseCase()
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.computation())
+            .map {
+                it.map(emojiMapper::fromDomainModelToPresentationModel)
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data, err ->
                 data?.let {

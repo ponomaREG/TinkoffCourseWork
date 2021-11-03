@@ -16,9 +16,9 @@ import com.tinkoff.coursework.presentation.adapter.viewtype.StreamViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.TopicViewType
 import com.tinkoff.coursework.presentation.assisted_factory.StreamAssistedFactory
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.model.Stream
+import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
-import com.tinkoff.coursework.presentation.model.Topic
+import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -158,7 +158,7 @@ class StreamFragment : Fragment() {
         }
     }
 
-    private fun showChatActivity(stream: Stream, topic: Topic) {
+    private fun showChatActivity(stream: StreamUI, topic: TopicUI) {
         activity?.let { context ->
             context.startActivity(
                 ChatActivity.getIntent(context, stream, topic)

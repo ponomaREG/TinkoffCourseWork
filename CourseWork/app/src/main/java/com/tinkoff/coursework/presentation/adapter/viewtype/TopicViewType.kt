@@ -8,31 +8,31 @@ import com.tinkoff.coursework.presentation.adapter.base.BaseItemViewType
 import com.tinkoff.coursework.presentation.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.presentation.adapter.holder.TopicViewHolder
 import com.tinkoff.coursework.presentation.model.EntityUI
-import com.tinkoff.coursework.presentation.model.Topic
+import com.tinkoff.coursework.presentation.model.TopicUI
 
 class TopicViewType constructor(
-    private val onTopicClick: (Topic) -> Unit = {}
-) : BaseItemViewType<ItemTopicBinding, Topic> {
+    private val onTopicClick: (TopicUI) -> Unit = {}
+) : BaseItemViewType<ItemTopicBinding, TopicUI> {
 
-    override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is Topic
+    override fun isCorrectItem(entityUI: EntityUI): Boolean = entityUI is TopicUI
 
     override fun getLayoutID(): Int = R.layout.item_topic
 
     override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup
-    ): BaseViewHolder<ItemTopicBinding, Topic> {
+    ): BaseViewHolder<ItemTopicBinding, TopicUI> {
         val binding = ItemTopicBinding.inflate(layoutInflater, parent, false)
         return TopicViewHolder(binding, onTopicClick)
     }
 
-    override fun areItemsTheSame(oldItem: Topic, newItem: Topic): Boolean {
-        return oldItem.id == newItem.id
+    override fun areItemsTheSame(oldItem: TopicUI, newItem: TopicUI): Boolean {
+        return oldItem.name == newItem.name
     }
 
-    override fun areContentsTheSame(oldItem: Topic, newItem: Topic): Boolean {
+    override fun areContentsTheSame(oldItem: TopicUI, newItem: TopicUI): Boolean {
         return oldItem == newItem
     }
 
-    override fun getChangePayload(oldItem: Topic, newItem: Topic): Any? = null
+    override fun getChangePayload(oldItem: TopicUI, newItem: TopicUI): Any? = null
 }
