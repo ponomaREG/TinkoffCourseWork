@@ -1,6 +1,6 @@
 package com.tinkoff.coursework.domain.repository
 
-import com.tinkoff.coursework.presentation.model.Stream
+import com.tinkoff.coursework.domain.model.Stream
 import io.reactivex.Single
 
 interface ChannelRepository {

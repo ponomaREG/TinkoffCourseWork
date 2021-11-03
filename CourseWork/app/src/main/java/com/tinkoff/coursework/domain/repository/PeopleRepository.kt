@@ -1,6 +1,6 @@
 package com.tinkoff.coursework.domain.repository
 
-import com.tinkoff.coursework.presentation.model.User
+import com.tinkoff.coursework.domain.model.User
 import io.reactivex.Single
 
 interface PeopleRepository {

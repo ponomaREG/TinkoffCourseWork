@@ -1,6 +1,6 @@
 package com.tinkoff.coursework.domain.repository
 
-import com.tinkoff.coursework.presentation.model.Emoji
+import com.tinkoff.coursework.domain.model.Emoji
 import io.reactivex.Single
 
 interface EmojiRepository {
