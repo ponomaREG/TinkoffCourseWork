@@ -5,7 +5,7 @@ data class Message(
     val username: String,
     val message: String,
     val avatarUrl: String,
-    var reactions: List<Reaction>,
+    val reactions: List<Reaction>,
     val userId: Int,
     val timestamp: Long,
 )

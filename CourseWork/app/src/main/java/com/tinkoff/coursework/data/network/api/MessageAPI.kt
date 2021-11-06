@@ -2,10 +2,11 @@ package com.tinkoff.coursework.data.network.api
 
 import com.tinkoff.coursework.data.network.response.GetMessagesResponse
 import com.tinkoff.coursework.data.network.response.SendMessageResponse
-import io.reactivex.Completable
 import io.reactivex.Single
 import org.json.JSONArray
-import retrofit2.http.*
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface MessageAPI {
 
@@ -14,7 +15,7 @@ interface MessageAPI {
         @Query("content") content: String,
         @Query("to") to: List<Int>,
         @Query("topic") topic: String,
-        @Query("type") type: String = "stream"
+        @Query("type") type: String
     ): Single<SendMessageResponse>
 
     @GET("messages")
@@ -23,18 +24,15 @@ interface MessageAPI {
         @Query("num_before") numBefore: Int,
         @Query("num_after") numAfter: Int,
         @Query("narrow") narrow: JSONArray,
-        @Query("apply_markdown") applyMarkdown: Boolean = false
+        @Query("apply_markdown") applyMarkdown: Boolean
     ): Single<GetMessagesResponse>
 
-    @POST("messages/{message_id}/reactions")
-    fun sendReaction(
-        @Path("message_id") messageId: Int,
-        @Query("emoji_name") emojiName: String,
-    ): Completable
-
-    @DELETE("messages/{message_id}/reactions")
-    fun removeReaction(
-        @Path("message_id") messageId: Int,
-        @Query("emoji_code") emojiCode: String,
-    ): Completable
+    @GET("messages")
+    fun getMessages(
+        @Query("anchor") anchor: Int,
+        @Query("num_before") numBefore: Int,
+        @Query("num_after") numAfter: Int,
+        @Query("narrow") narrow: JSONArray,
+        @Query("apply_markdown") applyMarkdown: Boolean
+    ): Single<GetMessagesResponse>
 }

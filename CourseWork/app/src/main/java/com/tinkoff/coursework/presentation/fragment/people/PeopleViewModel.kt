@@ -43,7 +43,6 @@ class PeopleViewModel @Inject constructor(
         submitState()
         getPeopleUseCase()
             .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.computation())
             .map { users ->
                 users.map(userMapper::fromDomainModelToPresentationModel)
             }

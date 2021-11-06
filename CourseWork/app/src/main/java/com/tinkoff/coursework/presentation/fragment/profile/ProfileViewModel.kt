@@ -38,7 +38,6 @@ class ProfileViewModel @Inject constructor(
         submitState()
         getOwnProfileInfoUseCase()
             .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.computation())
             .map(userMapper::fromDomainModelToPresentationModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { user, error ->

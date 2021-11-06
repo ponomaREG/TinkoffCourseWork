@@ -6,5 +6,4 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class TopicUI(
     val name: String,
-    val newMessagesCount: Int = 0
 ) : EntityUI, Parcelable

@@ -2,10 +2,7 @@ package com.tinkoff.coursework.data.di
 
 import com.tinkoff.coursework.data.ext.addClient
 import com.tinkoff.coursework.data.ext.addJsonConverter
-import com.tinkoff.coursework.data.network.api.MessageAPI
-import com.tinkoff.coursework.data.network.api.StreamAPI
-import com.tinkoff.coursework.data.network.api.TopicAPI
-import com.tinkoff.coursework.data.network.api.UserAPI
+import com.tinkoff.coursework.data.network.api.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,4 +44,9 @@ object RetrofitModule {
     @Provides
     fun provideUserApi(retrofit: Retrofit) =
         retrofit.create(UserAPI::class.java)
+
+    @Singleton
+    @Provides
+    fun provideReactionApi(retrofit: Retrofit) =
+        retrofit.create(ReactionAPI::class.java)
 }

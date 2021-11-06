@@ -5,7 +5,7 @@ data class User(
     val avatarUrl: String,
     val fullName: String,
     val email: String,
-    var status: STATUS = STATUS.ONLINE
+    val status: STATUS
 )
 
 enum class STATUS {

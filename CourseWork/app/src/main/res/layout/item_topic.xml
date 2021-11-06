@@ -15,14 +15,4 @@
         android:textColor="@color/item_topic_name_text_color"
         android:textSize="@dimen/item_topic_name_text_size"
         tools:text="Testing" />
-
-    <TextView
-        android:id="@+id/item_topic_messagesCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/item_topic_messagesCount_margin_start"
-        android:layout_gravity="center"
-        android:textColor="@color/item_topic_messagesCount_text_color"
-        android:textSize="@dimen/item_topic_messagesCount_text_size"
-        tools:text="1240mes" />
 </LinearLayout>

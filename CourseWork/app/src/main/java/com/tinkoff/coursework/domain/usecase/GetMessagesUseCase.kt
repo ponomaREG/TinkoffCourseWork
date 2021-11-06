@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetMessagesUseCase @Inject constructor(
     private val messageRepositoryImpl: MessageRepository
 ) {
-    operator fun invoke(streamName: String, topicName: String): Single<List<Message>> {
-        return messageRepositoryImpl.fetchMessages(streamName, topicName)
+    operator fun invoke(streamName: String, topicName: String, anchor: Int, offset: Int): Single<List<Message>> {
+        return messageRepositoryImpl.fetchMessages(streamName, topicName, anchor, offset)
     }
 }

@@ -1,12 +1,12 @@
 package com.tinkoff.coursework.domain.usecase
 
 import com.tinkoff.coursework.domain.model.Emoji
-import com.tinkoff.coursework.domain.repository.MessageRepository
+import com.tinkoff.coursework.domain.repository.ReactionRepository
 import javax.inject.Inject
 
 class AddReactionToMessageUseCase @Inject constructor(
-    private val messageRepository: MessageRepository
+    private val reactionRepository: ReactionRepository
 ) {
     operator fun invoke(messageId: Int, emoji: Emoji) =
-        messageRepository.addReaction(messageId, emoji)
+        reactionRepository.addReaction(messageId, emoji)
 }

@@ -132,8 +132,8 @@ class MessageViewGroup constructor(
         setMeasuredDimension(
             resolveSize(
                 avatarWidth + maxOf(
-                    usernameWidth,
-                    messageWidth,
+                    usernameWidth + backgroundMargin,
+                    messageWidth + backgroundMargin,
                     reactionsFlexBoxWidth
                 ),
                 widthMeasureSpec
@@ -198,10 +198,11 @@ class MessageViewGroup constructor(
         }
     ) {
         avatarSetter(avatarImageView)
-        var showUsername = messageUI.username
-        if (messageUI.isMyMessage) showUsername +=
-            context.getString(R.string.message_viewgroup_my_message_indicator)
-        usernameTextView.text = showUsername
+        usernameTextView.text =
+            if (messageUI.isMyMessage) {
+                context.getString(R.string.message_viewgroup_my_message_indicator)
+            } else messageUI.username
+        avatarImageView.isInvisible = messageUI.isMyMessage
         messageTextView.text = messageUI.message
         setReactions(messageUI.reactions)
     }

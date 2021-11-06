@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class StreamUI(
     val id: Int,
     val name: String,
-    val topics: List<TopicUI> = emptyList(),
-    var isExpanded: Boolean = false
+    var topics: List<TopicUI>? = null,
+    var isExpanded: Boolean = false,
+    var isLoading: Boolean = false
 ) : EntityUI, Parcelable

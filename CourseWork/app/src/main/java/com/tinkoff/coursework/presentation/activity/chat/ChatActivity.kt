@@ -16,8 +16,10 @@ import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityChatBinding
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
+import com.tinkoff.coursework.presentation.adapter.paginator.PaginatorRecyclerView
 import com.tinkoff.coursework.presentation.adapter.viewtype.DateDividerViewType
-import com.tinkoff.coursework.presentation.adapter.viewtype.MessageViewType
+import com.tinkoff.coursework.presentation.adapter.viewtype.IncomingMessageViewType
+import com.tinkoff.coursework.presentation.adapter.viewtype.OutcomingMessageViewType
 import com.tinkoff.coursework.presentation.assisted_factory.ChatActivityAssistedFactory
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.dialog.emoji.BottomSheetDialogWithReactions
@@ -25,7 +27,6 @@ import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.addTo
-import com.tinkoff.coursework.presentation.util.hideKeyboard
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -57,6 +58,16 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         }
     }
 
+    private val paginator = PaginatorRecyclerView(
+        loadMoreItems = {
+            viewModel.loadMessages(
+                currentStream,
+                currentTopic
+            )
+        },
+        offset = ChatViewModel.PAGINATION_OFFSET
+    )
+
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())
 
     private val dialogWithReactions =
@@ -80,6 +91,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         initRecyclerView()
         setTextWatcher()
         setListener()
+        setPaginator()
     }
 
     override fun onPause() {
@@ -146,19 +158,30 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
             if (input.isNullOrEmpty().not()) {
                 viewModel.sendMessage(currentTopic, input.toString())
                 binding.chatInput.text = SpannableStringBuilder("")
-                hideKeyboard()
             }
         }
     }
 
+    private fun setPaginator() {
+        binding.rvMessages.addOnScrollListener(paginator)
+    }
+
     private fun getSupportedViewTypesForChatRv() = listOf(
-        MessageViewType(
+        OutcomingMessageViewType(
             onMessageLongClick = { messagePosition ->
                 viewModel.onMessageLongClick(messagePosition)
             },
             onEmojiClick = { message, adapterPosition, reactionInContainerPosition ->
                 viewModel.onEmojiClick(message, adapterPosition, reactionInContainerPosition)
-            }
+            },
+        ),
+        IncomingMessageViewType(
+            onMessageLongClick = { messagePosition ->
+                viewModel.onMessageLongClick(messagePosition)
+            },
+            onEmojiClick = { message, adapterPosition, reactionInContainerPosition ->
+                viewModel.onEmojiClick(message, adapterPosition, reactionInContainerPosition)
+            },
         ),
         DateDividerViewType()
     )
@@ -172,6 +195,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
                     messages?.let {
                         chatAdapter.setItems(it)
                     }
+                    paginator.isLoading = loadingNewMessages == LoadingState.LOADING
                     binding.rvMessages.isInvisible = loadingState == LoadingState.LOADING
                     binding.chatShimmer.isVisible = loadingState == LoadingState.LOADING
                     if (state.loadingState == LoadingState.LOADING) binding.chatShimmer.startShimmer()
@@ -197,6 +221,8 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
                                 showToast(it.message)
                             is ChatAction.ShowPreviouslyTypedMessage ->
                                 binding.chatInput.text = SpannableStringBuilder(it.message)
+                            is ChatAction.DisablePagination ->
+                                binding.rvMessages.removeOnScrollListener(paginator)
                         }
                     }
                 }

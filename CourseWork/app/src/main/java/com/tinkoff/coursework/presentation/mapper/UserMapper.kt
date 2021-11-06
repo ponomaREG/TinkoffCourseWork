@@ -1,30 +1,20 @@
 package com.tinkoff.coursework.presentation.mapper
 
 import com.tinkoff.coursework.domain.model.User
-import com.tinkoff.coursework.presentation.base.BaseMapper
 import com.tinkoff.coursework.presentation.model.UserUI
 import javax.inject.Inject
 import com.tinkoff.coursework.domain.model.STATUS as STATUS_DOMAIN
 import com.tinkoff.coursework.presentation.model.STATUS as STATUS_PRESENTATION
 
-class UserMapper @Inject constructor() : BaseMapper<User, UserUI> {
+class UserMapper @Inject constructor() {
 
-    override fun fromDomainModelToPresentationModel(domainModel: User): UserUI =
+    fun fromDomainModelToPresentationModel(domainModel: User): UserUI =
         UserUI(
             id = domainModel.id,
             fullName = domainModel.fullName,
             email = domainModel.email,
             avatarUrl = domainModel.avatarUrl,
             status = domainModel.status.convertDomainStatusToPresentationStatus(),
-        )
-
-    override fun fromPresentationModelToDomainModel(presentationModel: UserUI): User =
-        User(
-            id = presentationModel.id,
-            fullName = presentationModel.fullName,
-            email = presentationModel.email,
-            avatarUrl = presentationModel.avatarUrl,
-            status = presentationModel.status.convertPresentationStatusToDomainStatus()
         )
 
     private fun STATUS_DOMAIN.convertDomainStatusToPresentationStatus(): STATUS_PRESENTATION {

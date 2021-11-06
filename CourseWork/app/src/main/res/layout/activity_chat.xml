@@ -70,7 +70,7 @@
         android:visibility="invisible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:visibility="visible"
-        tools:listitem="@layout/item_message" />
+        tools:listitem="@layout/item_outcoming_message" />
 
     <LinearLayout
         android:id="@+id/chat_input_container"

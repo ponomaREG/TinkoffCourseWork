@@ -1,45 +1,66 @@
 package com.tinkoff.coursework.data.repository
 
+import com.tinkoff.coursework.data.ext.convertToJsonArray
 import com.tinkoff.coursework.data.mapper.MessageMapper
 import com.tinkoff.coursework.data.network.api.MessageAPI
+import com.tinkoff.coursework.data.network.api.UserAPI
+import com.tinkoff.coursework.data.network.model.NarrowNetwork
 import com.tinkoff.coursework.data.network.response.SendMessageResponse
-import com.tinkoff.coursework.data.util.NarrowBuilder
-import com.tinkoff.coursework.domain.model.Emoji
 import com.tinkoff.coursework.domain.model.Message
 import com.tinkoff.coursework.domain.repository.MessageRepository
-import io.reactivex.Completable
 import io.reactivex.Single
-import okhttp3.internal.toHexString
+import org.json.JSONArray
+import org.json.JSONObject
 import javax.inject.Inject
 
 class MessageRepositoryImpl @Inject constructor(
     private val messageAPI: MessageAPI,
+    private val userAPI: UserAPI,
     private val messageMapper: MessageMapper,
-    private val narrowBuilder: NarrowBuilder
 ) : MessageRepository {
 
-    override fun fetchMessages(streamName: String, topicName: String): Single<List<Message>> =
-        messageAPI.getMessages(
-            anchor = "newest",
-            numAfter = 0,
-            numBefore = 20,
-            narrow = narrowBuilder.buildNarrow(streamName, topicName)
-        )
-            .map { response ->
-                response.messages.map(messageMapper::fromNetworkModelToDomainModel)
-            }
-
-    override fun addReaction(messageId: Int, emoji: Emoji): Completable =
-        messageAPI.sendReaction(
-            messageId = messageId,
-            emojiName = emoji.emojiName
-        )
-
-    override fun removeReaction(messageId: Int, emoji: Emoji): Completable =
-        messageAPI.removeReaction(
-            messageId = messageId,
-            emojiCode = emoji.emojiCode.toHexString()
-        )
+    override fun fetchMessages(
+        streamName: String,
+        topicName: String,
+        anchor: Int,
+        offset: Int
+    ): Single<List<Message>> =
+        (if (anchor == -1) {
+            messageAPI.getMessages(
+                anchor = "newest",
+                numAfter = 0,
+                numBefore = offset,
+                narrow = listOf(
+                    NarrowNetwork(
+                        operator = "stream",
+                        operand = streamName
+                    ),
+                    NarrowNetwork(
+                        operator = "topic",
+                        operand = topicName
+                    ),
+                ).convertToJsonArray(),
+                applyMarkdown = false
+            )
+        } else
+            messageAPI.getMessages(
+                anchor = anchor,
+                numAfter = 0,
+                numBefore = offset,
+                narrow = listOf(
+                    NarrowNetwork(
+                        operator = "stream",
+                        operand = streamName
+                    ),
+                    NarrowNetwork(
+                        operator = "topic",
+                        operand = topicName
+                    ),
+                ).convertToJsonArray(),
+                applyMarkdown = false
+            )).map { response ->
+            response.messages.map(messageMapper::fromNetworkModelToDomainModel)
+        }
 
     override fun sendMessage(
         chatIds: List<Int>,
@@ -49,6 +70,22 @@ class MessageRepositoryImpl @Inject constructor(
         messageAPI.sendMessage(
             content = message.message,
             to = chatIds,
-            topic = topicName
+            topic = topicName,
+            type = "stream"
         )
+
+    private fun buildNarrow(stream: String, topicName: String): JSONArray {
+        val jsonObject = JSONObject()
+        jsonObject.put("operator", "stream")
+        jsonObject.put("operand", stream)
+
+        val jsonObjectTwo = JSONObject()
+        jsonObjectTwo.put("operator", "topic")
+        jsonObjectTwo.put("operand", topicName)
+
+        return JSONArray().apply {
+            put(jsonObject)
+            put(jsonObjectTwo)
+        }
+    }
 }

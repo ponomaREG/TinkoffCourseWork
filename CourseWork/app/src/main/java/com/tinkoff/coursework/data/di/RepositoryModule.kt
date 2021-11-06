@@ -1,13 +1,7 @@
 package com.tinkoff.coursework.data.di
 
-import com.tinkoff.coursework.data.repository.ChannelRepositoryImpl
-import com.tinkoff.coursework.data.repository.EmojiRepositoryImpl
-import com.tinkoff.coursework.data.repository.MessageRepositoryImpl
-import com.tinkoff.coursework.data.repository.PeopleRepositoryImpl
-import com.tinkoff.coursework.domain.repository.ChannelRepository
-import com.tinkoff.coursework.domain.repository.EmojiRepository
-import com.tinkoff.coursework.domain.repository.MessageRepository
-import com.tinkoff.coursework.domain.repository.PeopleRepository
+import com.tinkoff.coursework.data.repository.*
+import com.tinkoff.coursework.domain.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -41,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindEmojiRepository(
         emojiRepositoryImpl: EmojiRepositoryImpl
     ): EmojiRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindReactionRepository(
+        reactionRepositoryImpl: ReactionRepositoryImpl
+    ): ReactionRepository
 }

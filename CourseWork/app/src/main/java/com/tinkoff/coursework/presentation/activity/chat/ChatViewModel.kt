@@ -1,15 +1,12 @@
 package com.tinkoff.coursework.presentation.activity.chat
 
 import androidx.lifecycle.ViewModel
-import com.tinkoff.coursework.domain.usecase.AddReactionToMessageUseCase
-import com.tinkoff.coursework.domain.usecase.GetMessagesUseCase
-import com.tinkoff.coursework.domain.usecase.RemoveReactionToMessageUseCase
-import com.tinkoff.coursework.domain.usecase.SendMessageUseCase
+import com.tinkoff.coursework.domain.usecase.*
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.const.MY_USER_ID
 import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.mapper.EmojiMapper
 import com.tinkoff.coursework.presentation.mapper.MessageMapper
+import com.tinkoff.coursework.presentation.mapper.UserMapper
 import com.tinkoff.coursework.presentation.model.*
 import com.tinkoff.coursework.presentation.util.addTo
 import dagger.assisted.Assisted
@@ -25,19 +22,29 @@ class ChatViewModel @AssistedInject constructor(
     private val sendMessageUseCase: SendMessageUseCase,
     private val addReactionToMessageUseCase: AddReactionToMessageUseCase,
     private val removeReactionToMessageUseCase: RemoveReactionToMessageUseCase,
+    private val getOwnProfileInfoUseCase: GetOwnProfileInfoUseCase,
     private val messageMapper: MessageMapper,
     private val emojiMapper: EmojiMapper,
+    private val userMapper: UserMapper,
     @Assisted private val stream: StreamUI,
     @Assisted private val topic: TopicUI
 ) : ViewModel() {
+
+    companion object {
+        const val PAGINATION_OFFSET = 20
+    }
 
     val observableState: BehaviorSubject<ChatUIState> = BehaviorSubject.create()
     val observableAction: PublishSubject<ChatAction> = PublishSubject.create()
     private var currentState: ChatUIState = ChatUIState()
     private val compositeDisposable = CompositeDisposable()
 
+    private var olderMessageId: Int = -1
+
+    private var myUserInfo: UserUI? = null
+
     init {
-        loadMessages(stream, topic)
+        initLoading()
     }
 
     private var clickedMessagePosition: Int = -1
@@ -47,23 +54,50 @@ class ChatViewModel @AssistedInject constructor(
         compositeDisposable.dispose()
     }
 
-    fun loadMessages(stream: StreamUI, topic: TopicUI) {
+    fun initLoading() {
         currentState.loadingState = LoadingState.LOADING
         updateState()
-        getMessagesUseCase(stream.name, topic.name)
+        getOwnProfileInfoUseCase()
             .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.computation())
+            .map(userMapper::fromDomainModelToPresentationModel)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { userInfo, error ->
+                userInfo?.let { userUI ->
+                    myUserInfo = userUI
+                    loadMessages(stream, topic)
+                }
+                error?.let { e ->
+                    currentState.messages
+                    currentState.loadingInput = LoadingState.ERROR
+                    submitAction(ChatAction.ShowToastMessage(e.parseError().message))
+                }
+                updateState()
+            }.addTo(compositeDisposable)
+    }
+
+    fun loadMessages(
+        stream: StreamUI,
+        topic: TopicUI,
+    ) {
+        currentState.loadingNewMessages = LoadingState.LOADING
+        updateState()
+        getMessagesUseCase(stream.name, topic.name, olderMessageId, PAGINATION_OFFSET)
+            .subscribeOn(Schedulers.io())
             .map {
                 it.map {
-                    messageMapper.fromDomainModelToPresentationModel(it)
+                    messageMapper.fromDomainModelToPresentationModel(it, myUserInfo!!.id)
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data, error ->
                 data?.let { t ->
-                    messages = t.toMutableList()
+                    if (t.size == PAGINATION_OFFSET - 1) submitAction(ChatAction.DisablePagination)
+                    if (olderMessageId == -1) messages = t.toMutableList()
+                    else messages.addAll(0, t.toMutableList().dropLast(1))
+                    olderMessageId = t.first().id
                     currentState.loadingState = LoadingState.SUCCESS
-                    currentState.messages = t
+                    currentState.loadingNewMessages = LoadingState.SUCCESS
+                    currentState.messages = messages
                 }
                 error?.let { e ->
                     currentState.loadingState = LoadingState.ERROR
@@ -76,37 +110,36 @@ class ChatViewModel @AssistedInject constructor(
 
     fun onEmojiAtBottomSheetDialogPicked(emoji: EmojiUI) {
         submitAction(ChatAction.HideBottomSheetDialog)
-        val message = messages[clickedMessagePosition]
-        if (message is MessageUI) {
+        val clickedMessage = messages[clickedMessagePosition]
+        if (clickedMessage is MessageUI) {
             currentState.loadingInput = LoadingState.LOADING
             updateState()
-            addReaction(
-                message,
+            addReactionRemotely(
+                clickedMessage,
                 emoji,
                 action = {
                     currentState.loadingInput = LoadingState.SUCCESS
-                    val newMessage = message.copy(reactions = message.reactions.toMutableList())
-                    val alreadyExistsReactionInd =
-                        newMessage.reactions.indexOfFirst { it.emojiUI.emojiCode == emoji.emojiCode }
-                    if (alreadyExistsReactionInd == -1) {
-                        newMessage.reactions.add(
+                    val copyOfMessage = clickedMessage.deepCopy()
+                    if (isReactionAlreadyAddedIntoMessage(copyOfMessage, emoji)) {
+                        val alreadyExistsReaction = copyOfMessage.reactions.find { reactionUI ->
+                            reactionUI.emojiUI.emojiCode == emoji.emojiCode
+                        }
+                        if (alreadyExistsReaction!!.isSelected.not()) {
+                            alreadyExistsReaction.apply {
+                                usersWhoClicked.add(myUserInfo!!.id)
+                                isSelected = true
+                            }
+                        }
+                    } else {
+                        copyOfMessage.reactions.add(
                             ReactionUI(
                                 emojiUI = emoji,
-                                usersWhoClicked = mutableListOf(MY_USER_ID)
+                                usersWhoClicked = mutableListOf(myUserInfo!!.id),
+                                isSelected = true
                             )
                         )
-                    } else {
-                        val alreadyExistsReaction =
-                            newMessage.reactions[alreadyExistsReactionInd].copy()
-                        if (alreadyExistsReaction.isSelected.not()) {
-                            alreadyExistsReaction.apply {
-                                usersWhoClicked.add(MY_USER_ID)
-                            }
-                            newMessage.reactions[alreadyExistsReactionInd] =
-                                alreadyExistsReaction
-                        }
                     }
-                    messages[clickedMessagePosition] = newMessage
+                    messages[clickedMessagePosition] = copyOfMessage
                     currentState.messages = messages
                 },
                 err = {
@@ -122,20 +155,18 @@ class ChatViewModel @AssistedInject constructor(
     }
 
     fun onEmojiClick(messageUI: MessageUI, adapterPosition: Int, reactionInContainerPosition: Int) {
-        val messageCopy = messageUI.copy(reactions = messageUI.reactions.toMutableList())
-        val modelReaction = messageCopy.reactions[reactionInContainerPosition].copy(
-            usersWhoClicked = messageCopy.reactions[reactionInContainerPosition].usersWhoClicked.toMutableList()
-        )
-        messageCopy.reactions[reactionInContainerPosition] = modelReaction
+        val messageCopy = messageUI.deepCopy()
+        val modelReaction = messageCopy.reactions[reactionInContainerPosition]
         currentState.loadingInput = LoadingState.LOADING
         updateState()
         if (modelReaction.isSelected.not()) {
-            addReaction(
+            addReactionRemotely(
                 messageCopy,
                 modelReaction.emojiUI,
                 action = {
                     currentState.loadingInput = LoadingState.SUCCESS
-                    modelReaction.usersWhoClicked.add(MY_USER_ID)
+                    modelReaction.usersWhoClicked.add(myUserInfo!!.id)
+                    modelReaction.isSelected = true
                     messages[adapterPosition] = messageCopy
                     currentState.messages = messages
 
@@ -146,12 +177,13 @@ class ChatViewModel @AssistedInject constructor(
                 }
             )
         } else {
-            removeReaction(
+            removeReactionRemotely(
                 messageCopy,
                 modelReaction.emojiUI,
                 action = {
                     currentState.loadingInput = LoadingState.SUCCESS
-                    modelReaction.usersWhoClicked.remove(MY_USER_ID)
+                    modelReaction.usersWhoClicked.remove(myUserInfo!!.id)
+                    modelReaction.isSelected = false
                     if (modelReaction.countOfVotes == 0) {
                         messageCopy.reactions.removeAt(reactionInContainerPosition)
                     }
@@ -167,13 +199,15 @@ class ChatViewModel @AssistedInject constructor(
     }
 
     fun sendMessage(topic: TopicUI, input: String) {
+        if (myUserInfo == null) return
         val newMessage = MessageUI(
             id = -1,
-            username = "Пользователь",
+            username = myUserInfo!!.fullName,
             message = input,
-            avatarUrl = "https://www.interfax.ru/ftproot/textphotos/2021/03/22/700vv.jpg",
+            avatarUrl = myUserInfo!!.avatarUrl,
             reactions = mutableListOf(),
-            senderId = MY_USER_ID
+            senderId = myUserInfo!!.id,
+            isMyMessage = true
         )
         currentState.loadingInput = LoadingState.LOADING
         updateState()
@@ -199,17 +233,7 @@ class ChatViewModel @AssistedInject constructor(
             ).addTo(compositeDisposable)
     }
 
-    private fun submitAction(action: ChatAction) {
-        observableAction.onNext(action)
-    }
-
-    private fun updateState() {
-        val newState = currentState.copy()
-        observableState.onNext(currentState)
-        currentState = newState
-    }
-
-    private fun addReaction(
+    private fun addReactionRemotely(
         messageUI: MessageUI,
         emoji: EmojiUI,
         action: () -> Unit,
@@ -233,7 +257,7 @@ class ChatViewModel @AssistedInject constructor(
             ).addTo(compositeDisposable)
     }
 
-    private fun removeReaction(
+    private fun removeReactionRemotely(
         messageUI: MessageUI,
         emoji: EmojiUI,
         action: () -> Unit,
@@ -255,5 +279,19 @@ class ChatViewModel @AssistedInject constructor(
                     updateState()
                 }
             ).addTo(compositeDisposable)
+    }
+
+    private fun isReactionAlreadyAddedIntoMessage(message: MessageUI, emoji: EmojiUI): Boolean {
+        return message.reactions.indexOfFirst { it.emojiUI.emojiCode == emoji.emojiCode } != -1
+    }
+
+    private fun submitAction(action: ChatAction) {
+        observableAction.onNext(action)
+    }
+
+    private fun updateState() {
+        val newState = currentState.copy()
+        observableState.onNext(currentState)
+        currentState = newState
     }
 }

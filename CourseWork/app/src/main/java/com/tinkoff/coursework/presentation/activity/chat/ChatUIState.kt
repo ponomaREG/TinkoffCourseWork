@@ -6,5 +6,6 @@ import com.tinkoff.coursework.presentation.model.EntityUI
 
 data class ChatUIState(
     var messages: List<EntityUI>? = null,
-    var loadingInput: LoadingState? = null
+    var loadingInput: LoadingState? = null,
+    var loadingNewMessages: LoadingState? = null
 ) : BaseUIState()

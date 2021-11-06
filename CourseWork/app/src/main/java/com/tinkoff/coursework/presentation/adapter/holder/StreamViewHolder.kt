@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.presentation.adapter.holder
 
+import androidx.core.view.isGone
 import com.tinkoff.coursework.databinding.ItemStreamBinding
 import com.tinkoff.coursework.presentation.adapter.base.BaseViewHolder
 import com.tinkoff.coursework.presentation.model.StreamUI
@@ -20,8 +21,9 @@ class StreamViewHolder constructor(
     }
 
     private fun updateView(entityUI: StreamUI) {
-        val rotation = if (entityUI.isExpanded) 180f
-        else 0f
+        val rotation = if (entityUI.isExpanded) 180f else 0f
+        binding.itemStreamLoadingIndicator.isGone = entityUI.isLoading.not()
+        binding.itemStreamExpandArrow.isGone = entityUI.isLoading
         binding.itemStreamExpandArrow.rotation = rotation
         binding.root.setOnClickListener {
             onStreamClick(entityUI)

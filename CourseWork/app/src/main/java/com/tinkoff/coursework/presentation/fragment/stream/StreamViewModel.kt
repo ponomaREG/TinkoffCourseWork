@@ -2,10 +2,12 @@ package com.tinkoff.coursework.presentation.fragment.stream
 
 import androidx.lifecycle.ViewModel
 import com.tinkoff.coursework.domain.usecase.GetAllChannelsUseCase
+import com.tinkoff.coursework.domain.usecase.GetStreamTopicsUseCase
 import com.tinkoff.coursework.domain.usecase.GetSubscribedChannelsUseCase
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.mapper.StreamMapper
+import com.tinkoff.coursework.presentation.mapper.TopicMapper
 import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
@@ -25,7 +27,9 @@ class StreamViewModel @AssistedInject constructor(
     @Assisted private val type: StreamsGroup,
     private val getSubscribedChannelsUseCase: GetSubscribedChannelsUseCase,
     private val getAllChannelsUseCase: GetAllChannelsUseCase,
-    private val streamMapper: StreamMapper
+    private val getStreamTopicsUseCase: GetStreamTopicsUseCase,
+    private val streamMapper: StreamMapper,
+    private val topicMapper: TopicMapper
 ) : ViewModel() {
 
     val stateObservable: BehaviorSubject<StreamUIState> = BehaviorSubject.create()
@@ -45,23 +49,20 @@ class StreamViewModel @AssistedInject constructor(
     }
 
     fun onStreamClick(stream: StreamUI) {
-        val newStream = stream.copy(isExpanded = stream.isExpanded.not())
-        streams = streams?.map { s ->
-            if (s.id == newStream.id) newStream else s
+        if (stream.topics != null) {
+            val newStream = stream.copy()
+            newStream.isExpanded = newStream.isExpanded.not()
+            buildWithMapping(newStream)
+            submitState()
+        } else {
+            loadStreamTopics(stream)
         }
-        if (filteredStreams != null) {
-            filteredStreams = filteredStreams?.map { s ->
-                if (s.id == newStream.id) newStream else s
-            }
-            currentState.data = buildAdapterItems(filteredStreams)
-        } else currentState.data = buildAdapterItems(streams)
-        submitState()
     }
 
     fun onTopicClick(topic: TopicUI) {
         streams?.let {
             val stream: StreamUI = it.find { s ->
-                s.topics.contains(topic)
+                s.topics?.contains(topic) == true
             } ?: throw IllegalStateException()
             submitAction(StreamAction.ShowChatActivity(stream, topic))
         }
@@ -102,10 +103,8 @@ class StreamViewModel @AssistedInject constructor(
                 getAllChannelsUseCase()
             StreamsGroup.SUBSCRIBED ->
                 getSubscribedChannelsUseCase()
-
         }
             .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.computation())
             .map {
                 it.map(streamMapper::fromDomainModelToPresentationModel)
             }
@@ -124,6 +123,48 @@ class StreamViewModel @AssistedInject constructor(
             }.addTo(compositeDisposable)
     }
 
+    private fun loadStreamTopics(stream: StreamUI) {
+        if (stream.isLoading) return
+        stream.copy().also {
+            it.isLoading = true
+            buildWithMapping(it)
+        }
+        submitState()
+        getStreamTopicsUseCase(stream.id)
+            .subscribeOn(Schedulers.io())
+            .map { networkTopics ->
+                networkTopics.map(topicMapper::fromDomainModelToPresentationModel)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { topics, error ->
+                topics?.let {
+                    val newStream = stream.copy()
+                    newStream.apply {
+                        isExpanded = true
+                        isLoading = false
+                        this.topics = topics
+                    }
+                    buildWithMapping(newStream)
+                }
+                error?.let { e ->
+                    currentState.loadingState = LoadingState.ERROR
+                }
+                submitState()
+            }.addTo(compositeDisposable)
+    }
+
+    private fun buildWithMapping(newStream: StreamUI) {
+        streams = streams?.map { s ->
+            if (s.id == newStream.id) newStream else s
+        }
+        if (filteredStreams != null) {
+            filteredStreams = filteredStreams?.map { s ->
+                if (s.id == newStream.id) newStream else s
+            }
+            currentState.data = buildAdapterItems(filteredStreams)
+        } else currentState.data = buildAdapterItems(streams)
+    }
+
     private fun submitAction(action: StreamAction) {
         actionObservable.onNext(action)
     }
@@ -139,7 +180,7 @@ class StreamViewModel @AssistedInject constructor(
         streams?.forEach { s ->
             adapterItems.add(s)
             if (s.isExpanded) {
-                adapterItems.addAll(s.topics)
+                adapterItems.addAll(s.topics!!)
             }
         }
         return adapterItems

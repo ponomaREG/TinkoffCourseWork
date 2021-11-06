@@ -8,16 +8,17 @@ class MessageMapper @Inject constructor(
     private val reactionMapper: ReactionMapper
 ) {
 
-    fun fromDomainModelToPresentationModel(domainModel: Message): MessageUI =
+    fun fromDomainModelToPresentationModel(domainModel: Message, myUserId: Int): MessageUI =
         MessageUI(
             id = domainModel.id,
             username = domainModel.username,
             message = domainModel.message,
             avatarUrl = domainModel.avatarUrl,
             reactions = domainModel.reactions.map {
-                reactionMapper.fromDomainModelToPresentationModel(it)
+                reactionMapper.fromDomainModelToPresentationModel(it, myUserId)
             }.toMutableList(),
-            senderId = domainModel.userId
+            senderId = domainModel.userId,
+            isMyMessage = domainModel.userId == myUserId
         )
 
     fun fromPresentationModelToDomainModel(

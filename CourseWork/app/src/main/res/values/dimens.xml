@@ -84,4 +84,6 @@
     <dimen name="shimmer_profile_text_width">240dp</dimen>
     <dimen name="chat_input_loading_indicator_size">39dp</dimen>
     <dimen name="fragment_profile_onlineStatus_size">30dp</dimen>
+    <dimen name="item_stream_loading_indicator_size">30dp</dimen>
+    <dimen name="item_message_outcoming_message_margin_end">30dp</dimen>
 </resources>
