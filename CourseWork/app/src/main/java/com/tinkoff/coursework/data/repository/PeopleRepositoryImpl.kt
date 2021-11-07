@@ -19,7 +19,7 @@ class PeopleRepositoryImpl @Inject constructor(
             .flatMapObservable { response ->
                 Observable.fromIterable(response.users)
             }.filter {
-                it.isBot.not()
+                it.isBot.not() && it.isActive
             }.concatMap { userNetwork ->
                 userAPI.getUserPresence(userNetwork.id)
                     .map { presenceResponse ->

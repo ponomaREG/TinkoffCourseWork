@@ -9,5 +9,6 @@ data class UserNetwork(
     @SerialName("avatar_url") val avatarUrl: String,
     @SerialName("full_name") val fullName: String,
     @SerialName("email") val email: String,
-    @SerialName("is_bot") val isBot: Boolean
+    @SerialName("is_bot") val isBot: Boolean,
+    @SerialName("is_active") val isActive: Boolean
 )
