@@ -50,4 +50,5 @@ ext {
     serilizationConverter = "1.2.2"
     loggingInterceptor = "4.9.0"
     rxJavaRetrofitAdapter = "2.3.0'"
+    roomVersion="3.0.0"
 }
