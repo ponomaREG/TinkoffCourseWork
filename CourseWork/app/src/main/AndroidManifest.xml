@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.tinkoff.coursework">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -22,6 +23,12 @@
         <activity
             android:name=".presentation.activity.chat.ChatActivity"
             android:theme="@style/Theme.CourseWork.ChatActivity"></activity>
+
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            tools:node="remove"
+            android:exported="false" />
     </application>
 
 </manifest>
