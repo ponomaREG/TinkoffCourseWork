@@ -22,7 +22,7 @@ class ReactionMapper @Inject constructor() {
             formattedReactions.add(
                 Reaction(
                     emoji = Emoji(
-                        emojiCode = Integer.parseInt(emojiCode, EMOJI_RADIX),
+                        emojiCode = Integer.parseInt(transformEmojiCode(emojiCode), EMOJI_RADIX),
                         emojiName = groupedReactions[emojiCode]!!.first().emojiName,
                     ),
                     usersWhoClicked = groupedReactions[emojiCode]!!.map { it.userId }
@@ -30,5 +30,15 @@ class ReactionMapper @Inject constructor() {
             )
         }
         return formattedReactions.toList()
+    }
+
+    // Иногда с бэка прилетает что-то наподобие "0031-20E3" из-за чего краш прилетает
+    // А также иногда там приходят кастомные емоджи, а пока такой функционал я не завез
+    private fun transformEmojiCode(emojiCode: String): String {
+        if (emojiCode.indexOf('-') != -1) {
+            return emojiCode.split('-')[0]
+        }
+        if (emojiCode == "zulip") return "1f4a4"
+        return emojiCode
     }
 }

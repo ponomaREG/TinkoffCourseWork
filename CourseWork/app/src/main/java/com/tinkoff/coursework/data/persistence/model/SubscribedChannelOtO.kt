@@ -3,10 +3,10 @@ package com.tinkoff.coursework.data.persistence.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "topic",
-    primaryKeys = ["name", "streamId"],
+    tableName = "subscribedChannels",
     foreignKeys = [
         ForeignKey(
             entity = StreamDB::class,
@@ -18,7 +18,6 @@ import androidx.room.ForeignKey
         )
     ]
 )
-data class TopicDB(
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "streamId") val streamId: Int
+data class SubscribedChannelOtO(
+    @PrimaryKey @ColumnInfo(name = "streamId") val streamId: Int
 )
