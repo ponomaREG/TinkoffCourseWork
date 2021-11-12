@@ -49,6 +49,8 @@ ext {
     serilizationConverterForRetrofit = "0.8.0"
     serilizationConverter = "1.2.2"
     loggingInterceptor = "4.9.0"
-    rxJavaRetrofitAdapter = "2.3.0'"
-    roomVersion="2.3.0"
+    rxJavaRetrofitAdapter = "2.4.0'"
+    roomVersion = "2.3.0"
+    workManagerVersion = "2.5.0"
+    hiltWorker = "1.0.0"
 }

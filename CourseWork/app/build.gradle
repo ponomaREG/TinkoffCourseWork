@@ -12,6 +12,10 @@ android {
     buildToolsVersion "30.0.0"
 
     defaultConfig {
+        configurations.all {
+            resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
+        }
+
         applicationId "com.tinkoff.coursework"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
@@ -65,7 +69,12 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serilizationConverter"
 
     implementation "com.google.dagger:hilt-android:$hiltAndroid"
+    implementation "androidx.hilt:hilt-work:$hiltWorker"
+    kapt "androidx.hilt:hilt-compiler:$hiltWorker"
     kapt "com.google.dagger:hilt-android-compiler:$hiltAndroid"
+
+    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+    implementation "androidx.work:work-rxjava2:$workManagerVersion"
 
     implementation "com.github.bumptech.glide:glide:$glide"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
