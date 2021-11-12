@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class PaginatorRecyclerView constructor(
     private val loadMoreItems: () -> Unit,
-    private val offset: Int = 0
+    private val anchorElement: Int = 5,
 ) : RecyclerView.OnScrollListener() {
 
     var isLoading: Boolean = false
@@ -13,7 +13,7 @@ class PaginatorRecyclerView constructor(
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         if (isLoading) return
         val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return
-        if (layoutManager.findLastVisibleItemPosition() - offset < 0) {
+        if (layoutManager.findFirstVisibleItemPosition() - anchorElement < 0) {
             loadMoreItems()
         }
     }

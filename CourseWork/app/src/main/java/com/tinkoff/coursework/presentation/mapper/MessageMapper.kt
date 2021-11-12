@@ -18,7 +18,8 @@ class MessageMapper @Inject constructor(
                 reactionMapper.fromDomainModelToPresentationModel(it, myUserId)
             }.toMutableList(),
             senderId = domainModel.userId,
-            isMyMessage = domainModel.userId == myUserId
+            isMyMessage = domainModel.userId == myUserId,
+            timestamp = domainModel.timestamp
         )
 
     fun fromPresentationModelToDomainModel(

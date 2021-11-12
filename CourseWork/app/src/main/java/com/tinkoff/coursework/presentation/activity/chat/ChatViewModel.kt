@@ -9,8 +9,10 @@ import com.tinkoff.coursework.presentation.mapper.MessageMapper
 import com.tinkoff.coursework.presentation.mapper.UserMapper
 import com.tinkoff.coursework.presentation.model.*
 import com.tinkoff.coursework.presentation.util.addTo
+import com.tinkoff.coursework.presentation.util.convertToDate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -20,6 +22,8 @@ import io.reactivex.subjects.PublishSubject
 class ChatViewModel @AssistedInject constructor(
     private val getMessagesUseCase: GetMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
+    private val cacheMessagesUseCase: CacheMessagesUseCase,
+    private val getCacheMessagesUseCase: GetCacheMessagesUseCase,
     private val addReactionToMessageUseCase: AddReactionToMessageUseCase,
     private val removeReactionToMessageUseCase: RemoveReactionToMessageUseCase,
     private val getOwnProfileInfoUseCase: GetOwnProfileInfoUseCase,
@@ -48,7 +52,7 @@ class ChatViewModel @AssistedInject constructor(
     }
 
     private var clickedMessagePosition: Int = -1
-    private lateinit var messages: MutableList<EntityUI>
+    private lateinit var messages: MutableList<MessageUI>
 
     override fun onCleared() {
         compositeDisposable.dispose()
@@ -64,11 +68,11 @@ class ChatViewModel @AssistedInject constructor(
             .subscribe { userInfo, error ->
                 userInfo?.let { userUI ->
                     myUserInfo = userUI
+                    loadCacheMessages(stream, topic)
                     loadMessages(stream, topic)
                 }
                 error?.let { e ->
-                    currentState.messages
-                    currentState.loadingInput = LoadingState.ERROR
+                    currentState.loadingState = LoadingState.ERROR
                     submitAction(ChatAction.ShowToastMessage(e.parseError().message))
                 }
                 updateState()
@@ -97,13 +101,16 @@ class ChatViewModel @AssistedInject constructor(
                     olderMessageId = t.first().id
                     currentState.loadingState = LoadingState.SUCCESS
                     currentState.loadingNewMessages = LoadingState.SUCCESS
-                    currentState.messages = messages
+                    buildMessages() {
+                        updateState()
+                    }
+                    cacheMessages()
                 }
                 error?.let { e ->
                     currentState.loadingState = LoadingState.ERROR
                     submitAction(ChatAction.ShowToastMessage(e.parseError().message))
+                    updateState()
                 }
-                updateState()
             }.addTo(compositeDisposable)
 
     }
@@ -111,42 +118,42 @@ class ChatViewModel @AssistedInject constructor(
     fun onEmojiAtBottomSheetDialogPicked(emoji: EmojiUI) {
         submitAction(ChatAction.HideBottomSheetDialog)
         val clickedMessage = messages[clickedMessagePosition]
-        if (clickedMessage is MessageUI) {
-            currentState.loadingInput = LoadingState.LOADING
-            updateState()
-            addReactionRemotely(
-                clickedMessage,
-                emoji,
-                action = {
-                    currentState.loadingInput = LoadingState.SUCCESS
-                    val copyOfMessage = clickedMessage.deepCopy()
-                    if (isReactionAlreadyAddedIntoMessage(copyOfMessage, emoji)) {
-                        val alreadyExistsReaction = copyOfMessage.reactions.find { reactionUI ->
-                            reactionUI.emojiUI.emojiCode == emoji.emojiCode
-                        }
-                        if (alreadyExistsReaction!!.isSelected.not()) {
-                            alreadyExistsReaction.apply {
-                                usersWhoClicked.add(myUserInfo!!.id)
-                                isSelected = true
-                            }
-                        }
-                    } else {
-                        copyOfMessage.reactions.add(
-                            ReactionUI(
-                                emojiUI = emoji,
-                                usersWhoClicked = mutableListOf(myUserInfo!!.id),
-                                isSelected = true
-                            )
-                        )
+        currentState.loadingInput = LoadingState.LOADING
+        updateState()
+        addReactionRemotely(
+            clickedMessage,
+            emoji,
+            action = {
+                currentState.loadingInput = LoadingState.SUCCESS
+                val copyOfMessage = clickedMessage.deepCopy()
+                if (isReactionAlreadyAddedIntoMessage(copyOfMessage, emoji)) {
+                    val alreadyExistsReaction = copyOfMessage.reactions.find { reactionUI ->
+                        reactionUI.emojiUI.emojiCode == emoji.emojiCode
                     }
-                    messages[clickedMessagePosition] = copyOfMessage
-                    currentState.messages = messages
-                },
-                err = {
-                    currentState.loadingInput = LoadingState.ERROR
+                    if (alreadyExistsReaction!!.isSelected.not()) {
+                        alreadyExistsReaction.apply {
+                            usersWhoClicked.add(myUserInfo!!.id)
+                            isSelected = true
+                        }
+                    }
+                } else {
+                    copyOfMessage.reactions.add(
+                        ReactionUI(
+                            emojiUI = emoji,
+                            usersWhoClicked = mutableListOf(myUserInfo!!.id),
+                            isSelected = true
+                        )
+                    )
                 }
-            )
-        }
+                messages[clickedMessagePosition] = copyOfMessage
+                buildMessages() {
+                    updateState()
+                }
+            },
+            err = {
+                currentState.loadingInput = LoadingState.ERROR
+            }
+        )
     }
 
     fun onMessageLongClick(messagePosition: Int) {
@@ -168,7 +175,9 @@ class ChatViewModel @AssistedInject constructor(
                     modelReaction.usersWhoClicked.add(myUserInfo!!.id)
                     modelReaction.isSelected = true
                     messages[adapterPosition] = messageCopy
-                    currentState.messages = messages
+                    buildMessages() {
+                        updateState()
+                    }
 
                 },
                 err = {
@@ -188,7 +197,9 @@ class ChatViewModel @AssistedInject constructor(
                         messageCopy.reactions.removeAt(reactionInContainerPosition)
                     }
                     messages[adapterPosition] = messageCopy
-                    currentState.messages = messages
+                    buildMessages() {
+                        updateState()
+                    }
                 },
                 err = {
                     currentState.loadingInput = LoadingState.ERROR
@@ -207,7 +218,8 @@ class ChatViewModel @AssistedInject constructor(
             avatarUrl = myUserInfo!!.avatarUrl,
             reactions = mutableListOf(),
             senderId = myUserInfo!!.id,
-            isMyMessage = true
+            isMyMessage = true,
+            timestamp = System.currentTimeMillis()
         )
         currentState.loadingInput = LoadingState.LOADING
         updateState()
@@ -220,8 +232,9 @@ class ChatViewModel @AssistedInject constructor(
                     response.newMessageId?.let {
                         newMessage.id = it
                         messages.add(newMessage)
-                        currentState.messages = messages
-                        updateState()
+                        buildMessages() {
+                            updateState()
+                        }
                     }
                 },
                 { e ->
@@ -231,6 +244,39 @@ class ChatViewModel @AssistedInject constructor(
                     updateState()
                 }
             ).addTo(compositeDisposable)
+    }
+
+    private fun loadCacheMessages(stream: StreamUI, topic: TopicUI) {
+        getCacheMessagesUseCase(stream.id, topic.name)
+            .subscribeOn(Schedulers.io())
+            .map {
+                it.map { messageDomain ->
+                    messageMapper.fromDomainModelToPresentationModel(messageDomain, myUserInfo!!.id)
+                }
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { data, error ->
+                data?.let {
+                    if (it.isNotEmpty()) {
+                        currentState.loadingState = LoadingState.SUCCESS
+                        messages = it.toMutableList()
+                        buildMessages {
+                            updateState()
+                        }
+                    }
+                }
+                error?.let {
+
+                }
+            }.addTo(compositeDisposable)
+    }
+
+    private fun cacheMessages() {
+        if (messages.size <= 50) cacheMessagesUseCase.invoke(messages.map {
+            messageMapper.fromPresentationModelToDomainModel(it, it.timestamp)
+        }, stream.id, topic.name)
+            .subscribeOn(Schedulers.io())
+            .subscribe().addTo(compositeDisposable)
     }
 
     private fun addReactionRemotely(
@@ -283,6 +329,33 @@ class ChatViewModel @AssistedInject constructor(
 
     private fun isReactionAlreadyAddedIntoMessage(message: MessageUI, emoji: EmojiUI): Boolean {
         return message.reactions.indexOfFirst { it.emojiUI.emojiCode == emoji.emojiCode } != -1
+    }
+
+    private fun buildMessages(onComplete: () -> Unit) {
+        Single.fromCallable {
+            messages = messages.distinct().toMutableList()
+            messages.sortBy { it.id }
+            val dateMessages: Map<DateDivider, List<MessageUI>> = messages.groupBy {
+                DateDivider(it.timestamp.convertToDate())
+            }
+            dateMessages.flatMap { (key, value) ->
+                val list = mutableListOf<EntityUI>(key)
+                list.addAll(value)
+                list
+            }
+        }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { entities, error ->
+                entities?.let {
+                    currentState.messages = it
+                    onComplete()
+                }
+                error?.let {
+
+                }
+            }.addTo(compositeDisposable)
+
     }
 
     private fun submitAction(action: ChatAction) {

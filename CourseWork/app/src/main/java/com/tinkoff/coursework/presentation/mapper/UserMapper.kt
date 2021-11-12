@@ -21,15 +21,8 @@ class UserMapper @Inject constructor() {
         return when (this) {
             STATUS_DOMAIN.ONLINE -> STATUS_PRESENTATION.ONLINE
             STATUS_DOMAIN.IDLE -> STATUS_PRESENTATION.IDLE
+            STATUS_DOMAIN.UNDEFINED -> STATUS_PRESENTATION.UNDEFINED
             else -> STATUS_PRESENTATION.OFFLINE
-        }
-    }
-
-    private fun STATUS_PRESENTATION.convertPresentationStatusToDomainStatus(): STATUS_DOMAIN {
-        return when (this) {
-            STATUS_PRESENTATION.ONLINE -> STATUS_DOMAIN.ONLINE
-            STATUS_PRESENTATION.IDLE -> STATUS_DOMAIN.IDLE
-            else -> STATUS_DOMAIN.OFFLINE
         }
     }
 }

@@ -109,18 +109,25 @@ class StreamViewModel @AssistedInject constructor(
                 it.map(streamMapper::fromDomainModelToPresentationModel)
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { data, err ->
-                data?.let {
-                    streams = it
-                    currentState.loadingState = LoadingState.SUCCESS
+            .subscribe(
+                { streamsRepo ->
+                    streams = streamsRepo
                     currentState.data = streams
-                }
-                err?.let { e ->
+                    if (streamsRepo.isNotEmpty()) {
+                        currentState.loadingState = LoadingState.SUCCESS
+                        submitState()
+                    }
+                },
+                { e ->
                     currentState.loadingState = LoadingState.ERROR
                     submitAction(StreamAction.ShotToastMessage(e.parseError().message))
+                    submitState()
+                },
+                {
+                    currentState.loadingState = LoadingState.SUCCESS
+                    submitState()
                 }
-                submitState()
-            }.addTo(compositeDisposable)
+            ).addTo(compositeDisposable)
     }
 
     private fun loadStreamTopics(stream: StreamUI) {
@@ -136,8 +143,8 @@ class StreamViewModel @AssistedInject constructor(
                 networkTopics.map(topicMapper::fromDomainModelToPresentationModel)
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { topics, error ->
-                topics?.let {
+            .subscribe(
+                { topics ->
                     val newStream = stream.copy()
                     newStream.apply {
                         isExpanded = true
@@ -145,12 +152,18 @@ class StreamViewModel @AssistedInject constructor(
                         this.topics = topics
                     }
                     buildWithMapping(newStream)
-                }
-                error?.let { e ->
+                    if (topics.isNotEmpty()) {
+                        submitState()
+                    }
+                },
+                { e ->
                     currentState.loadingState = LoadingState.ERROR
+                    submitState()
+                },
+                {
+                    submitState()
                 }
-                submitState()
-            }.addTo(compositeDisposable)
+            ).addTo(compositeDisposable)
     }
 
     private fun buildWithMapping(newStream: StreamUI) {

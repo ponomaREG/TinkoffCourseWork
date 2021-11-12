@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.work.*
 import com.tinkoff.coursework.R
+import com.tinkoff.coursework.data.worker.SyncWorker
 import com.tinkoff.coursework.databinding.ActivityMainBinding
 import com.tinkoff.coursework.presentation.fragment.channels.ChannelsFragment
 import com.tinkoff.coursework.presentation.fragment.people.PeopleFragment
 import com.tinkoff.coursework.presentation.fragment.profile.ProfileFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
         initNavigation()
+        launchPeriodicSyncWorker()
     }
 
     private fun initNavigation() {
@@ -49,6 +53,24 @@ class MainActivity : AppCompatActivity() {
                 .commit()
             true
         }
+    }
+
+    private fun launchPeriodicSyncWorker() {
+        val periodicWorker = PeriodicWorkRequest.Builder(
+            SyncWorker::class.java,
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS
+        ).setConstraints(
+            Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresBatteryNotLow(true)
+                .build()
+        ).build()
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "SYNC",
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorker
+        )
     }
 
 

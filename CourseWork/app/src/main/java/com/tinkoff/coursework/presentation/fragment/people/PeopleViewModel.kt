@@ -47,18 +47,25 @@ class PeopleViewModel @Inject constructor(
                 users.map(userMapper::fromDomainModelToPresentationModel)
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { data, error ->
-                data?.let {
+            .subscribe(
+                { data ->
                     users = data
                     currentState.peoples = data
-                    currentState.loadingState = LoadingState.SUCCESS
-                }
-                error?.let { e ->
+                    if (data.isNotEmpty()) {
+                        currentState.loadingState = LoadingState.SUCCESS
+                        submitState()
+                    }
+                },
+                { e ->
                     currentState.loadingState = LoadingState.ERROR
                     submitAction(PeopleAction.ShowToastMessage(e.parseError().message))
+                    submitState()
+                },
+                {
+                    currentState.loadingState = LoadingState.SUCCESS
+                    submitState()
                 }
-                submitState()
-            }.addTo(compositeDisposable)
+            ).addTo(compositeDisposable)
     }
 
     fun filter(searchInput: String) {

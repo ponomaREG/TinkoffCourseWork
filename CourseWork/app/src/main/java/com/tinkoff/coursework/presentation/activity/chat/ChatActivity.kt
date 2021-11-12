@@ -64,8 +64,7 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
                 currentStream,
                 currentTopic
             )
-        },
-        offset = ChatViewModel.PAGINATION_OFFSET
+        }
     )
 
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())

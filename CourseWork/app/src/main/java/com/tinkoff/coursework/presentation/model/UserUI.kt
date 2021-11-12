@@ -12,5 +12,5 @@ data class UserUI(
 ) : EntityUI
 
 enum class STATUS {
-    ONLINE, IDLE, OFFLINE
+    ONLINE, IDLE, OFFLINE, UNDEFINED
 }
