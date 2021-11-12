@@ -2,11 +2,13 @@ package com.tinkoff.coursework.domain.repository
 
 import com.tinkoff.coursework.domain.model.Stream
 import com.tinkoff.coursework.domain.model.Topic
-import io.reactivex.Single
+import io.reactivex.Completable
+import io.reactivex.Observable
 
 interface ChannelRepository {
 
-    fun getAllChannels(): Single<List<Stream>>
-    fun getSubscribedChannels(): Single<List<Stream>>
-    fun getStreamTopics(streamId: Int): Single<List<Topic>>
+    fun getAllChannels(): Observable<List<Stream>>
+    fun getSubscribedChannels(): Observable<List<Stream>>
+    fun getStreamTopics(streamId: Int): Observable<List<Topic>>
+    fun syncData(): Completable
 }

@@ -9,5 +9,5 @@ data class User(
 )
 
 enum class STATUS {
-    ONLINE, IDLE, OFFLINE
+    ONLINE, IDLE, OFFLINE, UNDEFINED
 }
