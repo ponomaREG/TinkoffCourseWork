@@ -167,19 +167,19 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
 
     private fun getSupportedViewTypesForChatRv() = listOf(
         OutcomingMessageViewType(
-            onMessageLongClick = { messagePosition ->
-                viewModel.onMessageLongClick(messagePosition)
+            onMessageLongClick = { message ->
+                viewModel.onMessageLongClick(message)
             },
-            onEmojiClick = { message, adapterPosition, reactionInContainerPosition ->
-                viewModel.onEmojiClick(message, adapterPosition, reactionInContainerPosition)
+            onEmojiClick = { message, reactionInContainerPosition ->
+                viewModel.onEmojiClick(message, reactionInContainerPosition)
             },
         ),
         IncomingMessageViewType(
-            onMessageLongClick = { messagePosition ->
-                viewModel.onMessageLongClick(messagePosition)
+            onMessageLongClick = { message ->
+                viewModel.onMessageLongClick(message)
             },
-            onEmojiClick = { message, adapterPosition, reactionInContainerPosition ->
-                viewModel.onEmojiClick(message, adapterPosition, reactionInContainerPosition)
+            onEmojiClick = { message, reactionInContainerPosition ->
+                viewModel.onEmojiClick(message, reactionInContainerPosition)
             },
         ),
         DateDividerViewType()

@@ -36,6 +36,7 @@ class ChatViewModel @AssistedInject constructor(
 
     companion object {
         const val PAGINATION_OFFSET = 20
+        const val MAX_CACHE_MESSAGES = 50
     }
 
     val observableState: BehaviorSubject<ChatUIState> = BehaviorSubject.create()
@@ -156,13 +157,18 @@ class ChatViewModel @AssistedInject constructor(
         )
     }
 
-    fun onMessageLongClick(messagePosition: Int) {
-        clickedMessagePosition = messagePosition
+    fun onMessageLongClick(clickedMessage: MessageUI) {
+        clickedMessagePosition = messages.indexOfFirst {
+            it.id == clickedMessage.id
+        }
         submitAction(ChatAction.OpenBottomSheetDialog)
     }
 
-    fun onEmojiClick(messageUI: MessageUI, adapterPosition: Int, reactionInContainerPosition: Int) {
-        val messageCopy = messageUI.deepCopy()
+    fun onEmojiClick(clickedMessage: MessageUI, reactionInContainerPosition: Int) {
+        clickedMessagePosition = messages.indexOfFirst {
+            it.id == clickedMessage.id
+        }
+        val messageCopy = clickedMessage.deepCopy()
         val modelReaction = messageCopy.reactions[reactionInContainerPosition]
         currentState.loadingInput = LoadingState.LOADING
         updateState()
@@ -174,11 +180,10 @@ class ChatViewModel @AssistedInject constructor(
                     currentState.loadingInput = LoadingState.SUCCESS
                     modelReaction.usersWhoClicked.add(myUserInfo!!.id)
                     modelReaction.isSelected = true
-                    messages[adapterPosition] = messageCopy
+                    messages[clickedMessagePosition] = messageCopy
                     buildMessages() {
                         updateState()
                     }
-
                 },
                 err = {
                     currentState.loadingInput = LoadingState.ERROR
@@ -196,7 +201,7 @@ class ChatViewModel @AssistedInject constructor(
                     if (modelReaction.countOfVotes == 0) {
                         messageCopy.reactions.removeAt(reactionInContainerPosition)
                     }
-                    messages[adapterPosition] = messageCopy
+                    messages[clickedMessagePosition] = messageCopy
                     buildMessages() {
                         updateState()
                     }
@@ -272,7 +277,7 @@ class ChatViewModel @AssistedInject constructor(
     }
 
     private fun cacheMessages() {
-        if (messages.size <= 50) cacheMessagesUseCase.invoke(messages.map {
+        if (messages.size <= MAX_CACHE_MESSAGES) cacheMessagesUseCase.invoke(messages.map {
             messageMapper.fromPresentationModelToDomainModel(it, it.timestamp)
         }, stream.id, topic.name)
             .subscribeOn(Schedulers.io())

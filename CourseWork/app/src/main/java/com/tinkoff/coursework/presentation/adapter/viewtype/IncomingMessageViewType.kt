@@ -11,8 +11,8 @@ import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.MessageUI
 
 class IncomingMessageViewType(
-    private val onMessageLongClick: (Int) -> Unit = {},
-    private val onEmojiClick: (MessageUI, Int, Int) -> Unit = { _, _, _ -> }
+    private val onMessageLongClick: (MessageUI) -> Unit = {},
+    private val onEmojiClick: (MessageUI, Int) -> Unit = { _, _ -> }
 ) : BaseItemViewType<ItemIncomingMessageBinding, MessageUI> {
     override fun isCorrectItem(entityUI: EntityUI): Boolean =
         if (entityUI is MessageUI) {

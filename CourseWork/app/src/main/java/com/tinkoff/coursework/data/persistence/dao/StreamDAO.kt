@@ -75,15 +75,3 @@ abstract class StreamDAO {
         updateSubscribeRelation()
     }
 }
-//
-//    @Transaction
-//    fun clearAndInsert(streams: List<StreamDB>, isSubscribed: Boolean) =
-//        clearAll()
-//            .andThen(insertStreams(streams))
-//            .andThen {
-//                if(isSubscribed) subscribeStreams(
-//                    streams.map { streamDB ->
-//                        SubscribedChannelOtO(streamDB.id)
-//                    }
-//                )
-//            }

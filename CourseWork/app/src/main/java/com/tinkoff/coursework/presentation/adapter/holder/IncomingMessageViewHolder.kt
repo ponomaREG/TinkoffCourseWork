@@ -8,8 +8,8 @@ import com.tinkoff.coursework.presentation.view.MessageViewGroup
 
 class IncomingMessageViewHolder(
     private val binding: ItemIncomingMessageBinding,
-    private val onMessageLongClick: (Int) -> Unit = {},
-    private val onEmojiClick: (MessageUI, Int, Int) -> Unit = { _, _, _ -> }
+    private val onMessageLongClick: (MessageUI) -> Unit = {},
+    private val onEmojiClick: (MessageUI, Int) -> Unit = { _, _ -> }
 ) : BaseViewHolder<ItemIncomingMessageBinding, MessageUI>(binding) {
 
     override fun bind(entityUI: MessageUI) {
@@ -20,15 +20,15 @@ class IncomingMessageViewHolder(
             }
         )
         binding.root.setOnLongClickListener {
-            onMessageLongClick(adapterPosition)
+            onMessageLongClick(entityUI)
             true
         }
         binding.root.setOnAddClickListenerClick { icAdd ->
-            onMessageLongClick(adapterPosition)
+            onMessageLongClick(entityUI)
         }
         binding.root.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
             override fun click(reactionInContainerPosition: Int) {
-                onEmojiClick(entityUI, adapterPosition, reactionInContainerPosition)
+                onEmojiClick(entityUI, reactionInContainerPosition)
             }
         })
     }
@@ -38,7 +38,7 @@ class IncomingMessageViewHolder(
         binding.root.setReactions(entityUI.reactions)
         binding.root.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
             override fun click(reactionInContainerPosition: Int) {
-                onEmojiClick(entityUI, adapterPosition, reactionInContainerPosition)
+                onEmojiClick(entityUI, reactionInContainerPosition)
             }
         })
     }

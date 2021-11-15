@@ -41,4 +41,10 @@ abstract class RepositoryModule {
     abstract fun bindReactionRepository(
         reactionRepositoryImpl: ReactionRepositoryImpl
     ): ReactionRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindSyncerRepository(
+        syncRepository: SyncRepositoryImpl
+    ): SyncRepository
 }

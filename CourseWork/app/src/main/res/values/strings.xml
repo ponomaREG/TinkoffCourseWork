@@ -15,4 +15,5 @@
     <string name="fragment_profile_onlineStatus">online</string>
     <string name="fragment_profile_offlineStatus">offline</string>
     <string name="message_viewgroup_my_message_indicator"> (Вы)</string>
+    <string name="worker_success_updating">База данных успешно обновлена</string>
 </resources>
