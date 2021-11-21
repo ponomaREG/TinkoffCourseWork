@@ -47,4 +47,10 @@ abstract class RepositoryModule {
     abstract fun bindSyncerRepository(
         syncRepository: SyncRepositoryImpl
     ): SyncRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindFileRepository(
+        fileRepository: FileRepositoryImpl
+    ): FileRepository
 }

@@ -2,6 +2,7 @@ package com.tinkoff.coursework.data.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.tinkoff.coursework.data.persistence.model.UserDB
 import io.reactivex.Completable
@@ -10,7 +11,7 @@ import io.reactivex.Single
 @Dao
 interface UserDAO {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUsers(users: List<UserDB>): Completable
 
     @Query("DELETE FROM user;")

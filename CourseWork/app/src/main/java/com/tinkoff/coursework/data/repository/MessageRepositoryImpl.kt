@@ -4,7 +4,6 @@ import com.tinkoff.coursework.data.ext.convertToJsonArray
 import com.tinkoff.coursework.data.mapper.MessageMapper
 import com.tinkoff.coursework.data.network.api.MessageAPI
 import com.tinkoff.coursework.data.network.model.NarrowNetwork
-import com.tinkoff.coursework.data.network.response.SendMessageResponse
 import com.tinkoff.coursework.data.persistence.dao.MessageDAO
 import com.tinkoff.coursework.domain.model.Message
 import com.tinkoff.coursework.domain.repository.MessageRepository
@@ -78,11 +77,15 @@ class MessageRepositoryImpl @Inject constructor(
         chatIds: List<Int>,
         topicName: String,
         message: Message
-    ): Single<SendMessageResponse> =
+    ): Single<Message> =
         messageAPI.sendMessage(
             content = message.message,
             to = chatIds,
             topic = topicName,
             type = "stream"
-        )
+        ).map {
+            message.copy(
+                id = it.newMessageId!!
+            )
+        }
 }

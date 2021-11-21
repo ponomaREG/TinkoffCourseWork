@@ -49,4 +49,9 @@ object RetrofitModule {
     @Provides
     fun provideReactionApi(retrofit: Retrofit) =
         retrofit.create(ReactionAPI::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFileApi(retrofit: Retrofit) =
+        retrofit.create(FileAPI::class.java)
 }

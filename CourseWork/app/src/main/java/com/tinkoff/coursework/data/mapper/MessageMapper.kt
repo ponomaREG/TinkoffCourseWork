@@ -3,33 +3,43 @@ package com.tinkoff.coursework.data.mapper
 import com.tinkoff.coursework.data.network.model.MessageNetwork
 import com.tinkoff.coursework.data.persistence.model.MessageDB
 import com.tinkoff.coursework.domain.model.Message
+import com.tinkoff.coursework.domain.util.MessageContentParser
 import javax.inject.Inject
 
 class MessageMapper @Inject constructor(
-    private val reactionMapper: ReactionMapper
+    private val reactionMapper: ReactionMapper,
+    private val messageContentParser: MessageContentParser
 ) {
 
-    fun fromNetworkModelToDomainModel(networkModel: MessageNetwork): Message =
-        Message(
+    fun fromNetworkModelToDomainModel(networkModel: MessageNetwork): Message {
+        val (transformMessage, hyperlinks) =
+            messageContentParser.parseMessageContent(networkModel.content)
+        return Message(
             id = networkModel.id,
             username = networkModel.userName,
-            message = networkModel.content,
+            message = transformMessage,
             avatarUrl = networkModel.avatarUrl,
             reactions = reactionMapper.fromNetworkModelListToDomainModelList(networkModel.reactions),
             userId = networkModel.userId,
-            timestamp = networkModel.timestamp
+            timestamp = networkModel.timestamp,
+            messageHyperlinks = hyperlinks
         )
+    }
 
-    fun fromPersistenceModelToDomainModel(persistenceModel: MessageDB): Message =
-        Message(
+    fun fromPersistenceModelToDomainModel(persistenceModel: MessageDB): Message {
+        val (transformMessage, hyperlinks) =
+            messageContentParser.parseMessageContent(persistenceModel.content)
+        return Message(
             id = persistenceModel.id,
             username = persistenceModel.userName,
-            message = persistenceModel.content,
+            message = transformMessage,
             avatarUrl = persistenceModel.avatarUrl,
             reactions = listOf(),
             userId = persistenceModel.userId,
-            timestamp = persistenceModel.timestamp
+            timestamp = persistenceModel.timestamp,
+            messageHyperlinks = hyperlinks
         )
+    }
 
     fun fromDomainModelToDatabaseModel(domainModel: Message, streamId: Int, topicName: String): MessageDB =
         MessageDB(

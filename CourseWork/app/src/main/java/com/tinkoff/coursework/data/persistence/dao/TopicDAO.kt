@@ -22,7 +22,7 @@ abstract class TopicDAO {
             clearAndInsertSynch(topics)
         }
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertTopicsSynch(topics: List<TopicDB>)
 
     @Query("DELETE FROM topic;")

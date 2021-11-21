@@ -33,7 +33,7 @@ abstract class StreamDAO {
     @Query("SELECT * FROM stream WHERE id in (SELECT streamId from subscribedChannels);")
     abstract fun getSubscribedStreams(): Single<List<StreamDB>>
 
-    @Query("DELETE FROM stream;")
+    @Query("DELETE FROM stream WHERE id in (SELECT streamId from subscribedChannels);")
     abstract fun clearStreamsWhichSubscribedSynch()
 
     @Query("DELETE FROM subscribedChannels;")
@@ -57,8 +57,8 @@ abstract class StreamDAO {
 
     @Transaction
     open fun clearSubscribedStreamsAndInsertSynch(streams: List<StreamDB>) {
-        clearTableSubscribedChannelsSynch()
         clearStreamsWhichSubscribedSynch()
+        clearTableSubscribedChannelsSynch()
         insertStreamsSynch(streams)
         streams.forEach {
             subscribeStreamSynch(
