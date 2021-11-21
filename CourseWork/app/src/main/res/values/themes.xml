@@ -16,5 +16,6 @@
 
     <style name="Theme.CourseWork.ChatActivity">
         <item name="colorPrimaryVariant">@color/colorPrimaryVariantChat</item>
+        <item name="android:textColorLink">@color/text_hyperlink_color</item>
     </style>
 </resources>

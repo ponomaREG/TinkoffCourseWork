@@ -16,4 +16,6 @@
     <string name="fragment_profile_offlineStatus">offline</string>
     <string name="message_viewgroup_my_message_indicator"> (Вы)</string>
     <string name="worker_success_updating">База данных успешно обновлена</string>
+    <string name="uri_browsing_chooser">Выберите браузер</string>
+    <string name="file_uploaded_template">%1$s [%2$s](%3$s)</string>
 </resources>
