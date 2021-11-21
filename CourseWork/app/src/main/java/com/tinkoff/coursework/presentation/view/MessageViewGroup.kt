@@ -5,6 +5,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +19,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import com.tinkoff.coursework.R
+import com.tinkoff.coursework.presentation.model.MessageHyperlinkUI
 import com.tinkoff.coursework.presentation.model.MessageUI
 import com.tinkoff.coursework.presentation.model.ReactionUI
 import com.tinkoff.coursework.presentation.util.sumHorizontalMargins
@@ -195,7 +201,8 @@ class MessageViewGroup constructor(
         messageUI: MessageUI,
         avatarSetter: (ImageView) -> Unit = { avatar ->
             avatar.setImageResource(R.mipmap.ic_launcher)
-        }
+        },
+        onLinkInMessageClick: (MessageHyperlinkUI) -> Unit = {}
     ) {
         avatarSetter(avatarImageView)
         usernameTextView.text =
@@ -203,7 +210,11 @@ class MessageViewGroup constructor(
                 context.getString(R.string.message_viewgroup_my_message_indicator)
             } else messageUI.username
         avatarImageView.isInvisible = messageUI.isMyMessage
-        messageTextView.text = messageUI.message
+        if (messageUI.hyperlinks.isNotEmpty()) setMessageTextWithClickableSpan(
+            messageUI,
+            onLinkInMessageClick
+        )
+        else messageTextView.text = messageUI.message
         setReactions(messageUI.reactions)
     }
 
@@ -288,6 +299,33 @@ class MessageViewGroup constructor(
         setOnClickListener {
             emojiClickListener.click(position)
         }
+    }
+
+    private fun setMessageTextWithClickableSpan(
+        messageUI: MessageUI,
+        click: (MessageHyperlinkUI) -> Unit
+    ) {
+        val spannableText = SpannableString(messageUI.message)
+        messageUI.hyperlinks.forEach { hyperlink ->
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    click(hyperlink)
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    ds.isUnderlineText = true
+                    ds.color = ds.linkColor
+                }
+            }
+            spannableText.setSpan(
+                clickableSpan,
+                hyperlink.from,
+                hyperlink.to - 1,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        messageTextView.movementMethod = LinkMovementMethod.getInstance()
+        messageTextView.text = spannableText
     }
 
     interface OnEmojiClickListener {

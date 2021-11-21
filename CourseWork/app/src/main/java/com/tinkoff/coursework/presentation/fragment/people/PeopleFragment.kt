@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentPeopleBinding
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
@@ -20,11 +18,14 @@ import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.core.ElmStoreCompat
+import vivid.money.elmslie.core.store.Store
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class PeopleFragment : Fragment() {
+class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
 
     companion object {
         fun newInstance(): PeopleFragment {
@@ -32,17 +33,21 @@ class PeopleFragment : Fragment() {
         }
     }
 
+    @Inject
+    lateinit var peopleActor: PeopleActor
+
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: PeopleViewModel by viewModels()
     private val compositeDisposable = CompositeDisposable()
 
     private val peopleAdapter = DelegateAdapter(
         listOf(
             UserViewType(
                 onUserClick = {
-                    viewModel.onUserClick(it)
+                    store.accept(
+                        PeopleEvent.Ui.UserClick(it)
+                    )
                 }
             )
         )
@@ -60,8 +65,6 @@ class PeopleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRecyclerView()
         attachTextWatcher()
-        observeState()
-        observeActions()
     }
 
     override fun onDestroyView() {
@@ -73,6 +76,51 @@ class PeopleFragment : Fragment() {
         super.onDestroy()
         compositeDisposable.dispose()
     }
+
+    override val initEvent: PeopleEvent
+        get() = PeopleEvent.Ui.LoadPeople
+
+    override fun createStore(): Store<PeopleEvent, PeopleAction, PeopleUIState> =
+        ElmStoreCompat(
+            initialState = PeopleUIState(),
+            reducer = PeopleReducer(),
+            actor = peopleActor
+        )
+
+    override fun render(state: PeopleUIState) {
+        state.apply {
+            binding.recyclerView.isInvisible = state.loadingState == LoadingState.LOADING
+            binding.peopleShimmer.apply {
+                isVisible = state.loadingState == LoadingState.LOADING
+                if (isVisible) startShimmer() else stopShimmer()
+            }
+            if (filteredPeople == null) {
+                people?.let {
+                    it.forEach { user ->
+                        user.colorStateList = ColorStateList.valueOf(
+                            user.status.detectStatusColor(requireContext())
+                        )
+                    }
+                    peopleAdapter.setItems(it)
+                }
+            } else {
+                filteredPeople!!.forEach { user ->
+                    user.colorStateList = ColorStateList.valueOf(
+                        user.status.detectStatusColor(requireContext())
+                    )
+                }
+                peopleAdapter.setItems(filteredPeople!!)
+            }
+        }
+    }
+
+    override fun handleEffect(effect: PeopleAction) = when (effect) {
+        is PeopleAction.ShowToastMessage ->
+            requireContext().showToast(effect.message)
+        is PeopleAction.ShowUserProfile ->
+            requireContext().showToast(effect.user.toString())
+    }
+
 
     private fun initRecyclerView() {
         binding.recyclerView.adapter = peopleAdapter
@@ -88,43 +136,9 @@ class PeopleFragment : Fragment() {
 
     private fun attachTextWatcher() {
         binding.fragmentPeopleSearchInput.doAfterTextChangedWithDelay { input ->
-            viewModel.filter(input)
+            store.accept(
+                PeopleEvent.Ui.FilterPeople(input)
+            )
         }.addTo(compositeDisposable)
-    }
-
-    private fun observeState() {
-        viewModel.stateObservable
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { state ->
-                state.apply {
-                    binding.recyclerView.isInvisible = state.loadingState == LoadingState.LOADING
-                    binding.peopleShimmer.apply {
-                        isVisible = state.loadingState == LoadingState.LOADING
-                        if (isVisible) startShimmer() else stopShimmer()
-                    }
-                    peoples?.let {
-                        it.forEach { user ->
-                            user.colorStateList = ColorStateList.valueOf(
-                                user.status.detectStatusColor(requireContext())
-                            )
-                        }
-                        peopleAdapter.setItems(it)
-                    }
-                }
-            }.addTo(compositeDisposable)
-    }
-
-    private fun observeActions() {
-        viewModel.actionObservable
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { action ->
-                when (action) {
-                    is PeopleAction.ShowToastMessage ->
-                        requireContext().showToast(action.message)
-                    is PeopleAction.ShowUserProfile ->
-                        requireContext().showToast(action.user.toString())
-                }
-            }.addTo(compositeDisposable)
     }
 }

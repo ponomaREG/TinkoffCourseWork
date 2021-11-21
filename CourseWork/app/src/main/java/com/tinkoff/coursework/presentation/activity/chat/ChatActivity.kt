@@ -2,12 +2,12 @@ package com.tinkoff.coursework.presentation.activity.chat
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.MenuItem
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -20,25 +20,25 @@ import com.tinkoff.coursework.presentation.adapter.paginator.PaginatorRecyclerVi
 import com.tinkoff.coursework.presentation.adapter.viewtype.DateDividerViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.IncomingMessageViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.OutcomingMessageViewType
-import com.tinkoff.coursework.presentation.assisted_factory.ChatActivityAssistedFactory
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.dialog.emoji.BottomSheetDialogWithReactions
 import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.TopicUI
-import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import vivid.money.elmslie.android.base.ElmActivity
+import vivid.money.elmslie.core.ElmStoreCompat
+import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmojiPickListener {
+class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSheetDialogWithReactions.OnEmojiPickListener {
 
     companion object {
         private const val EXTRA_STREAM = "EXTRA_STREAM"
         private const val EXTRA_TOPIC = "EXTRA_TOPIC"
+        private const val PAGINATION_OFFSET = 20
 
         fun getIntent(context: Context, stream: StreamUI, topic: TopicUI): Intent {
             val intentToChatActivity = Intent(context, ChatActivity::class.java)
@@ -49,20 +49,23 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
     }
 
     @Inject
-    lateinit var assistedFactory: ChatActivityAssistedFactory
+    lateinit var chatActor: ChatActor
 
-    private val viewModel: ChatViewModel by viewModels {
-        assistedFactory.also {
-            it.stream = currentStream
-            it.topic = currentTopic
+    override val initEvent: ChatEvent
+        get() = ChatEvent.Ui.InitEvent
+
+    private val filePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            contentResolver.openInputStream(it)?.let { inpStr ->
+                store.accept(ChatEvent.Ui.UploadFile(inpStr))
+            }
         }
     }
 
     private val paginator = PaginatorRecyclerView(
         loadMoreItems = {
-            viewModel.loadMessages(
-                currentStream,
-                currentTopic
+            store.accept(
+                ChatEvent.Ui.LoadMessages
             )
         }
     )
@@ -73,8 +76,6 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         BottomSheetDialogWithReactions.newInstance()
 
     private lateinit var binding: ActivityChatBinding
-
-    private val compositeDisposable = CompositeDisposable()
 
     private val currentStream: StreamUI
         get() = intent.getParcelableExtra(EXTRA_STREAM) ?: throw IllegalStateException()
@@ -90,23 +91,11 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
         initRecyclerView()
         setTextWatcher()
         setListener()
-        setPaginator()
     }
 
     override fun onPause() {
         super.onPause()
         binding.chatShimmer.stopShimmer()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        observeActions()
-        observerState()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        compositeDisposable.clear()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -115,7 +104,66 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
     }
 
     override fun onEmojiPicked(emoji: EmojiUI) {
-        viewModel.onEmojiAtBottomSheetDialogPicked(emoji)
+        store.accept(
+            ChatEvent.Ui.EmojiPicked(
+                emoji
+            )
+        )
+    }
+
+    override fun createStore(): Store<ChatEvent, ChatAction, ChatUIState> {
+        return ElmStoreCompat(
+            initialState = ChatUIState(
+                currentStream = currentStream,
+                currentTopic = currentTopic,
+                olderMessageId = -1,
+                paginationOffset = PAGINATION_OFFSET
+            ),
+            reducer = ChatReducer(),
+            actor = chatActor
+        )
+    }
+
+    override fun render(state: ChatUIState) {
+        state.apply {
+            chatEntities?.let {
+                chatAdapter.setItems(it)
+            }
+            paginator.isLoading = loadingNewMessages == LoadingState.LOADING
+            binding.rvMessages.isInvisible = loadingState == LoadingState.LOADING
+            binding.chatShimmer.isVisible = loadingState == LoadingState.LOADING
+            if (state.loadingState == LoadingState.LOADING) binding.chatShimmer.startShimmer()
+            else binding.chatShimmer.stopShimmer()
+            binding.chatBtnAction.isGone = loadingInput == LoadingState.LOADING
+            binding.chatInputLoadingIndicator.isGone = binding.chatBtnAction.isGone.not()
+        }
+    }
+
+    override fun handleEffect(effect: ChatAction): Unit = when (effect) {
+        is ChatAction.OpenBottomSheetDialog ->
+            dialogWithReactions.show(supportFragmentManager, null)
+        is ChatAction.HideBottomSheetDialog -> dialogWithReactions.dismiss()
+        is ChatAction.ShowToastMessage ->
+            showToast(effect.message)
+        is ChatAction.ShowPreviouslyTypedMessage ->
+            binding.chatInput.text = SpannableStringBuilder(effect.message)
+        is ChatAction.DisablePagination ->
+            binding.rvMessages.removeOnScrollListener(paginator)
+        ChatAction.EnablePagination -> setPaginator()
+        is ChatAction.OpenUriInBrowser -> {
+            startActivityForBrowsingUri(effect.uri)
+        }
+        ChatAction.OpenFilePicker -> {
+            filePicker.launch("image/*")
+        }
+        is ChatAction.ShowFileUrlWithName -> {
+            binding.chatInput.text = SpannableStringBuilder(String.format(
+                getString(R.string.file_uploaded_template),
+                binding.chatInput.text.toString(),
+                effect.name,
+                effect.uri.toString()
+            ))
+        }
     }
 
     private fun initActionBar() {
@@ -153,10 +201,16 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
 
     private fun setListener() {
         binding.chatBtnAction.setOnClickListener {
-            val input = binding.chatInput.text
-            if (input.isNullOrEmpty().not()) {
-                viewModel.sendMessage(currentTopic, input.toString())
+            if (binding.chatInput.text.isNotEmpty()) {
+                val input = binding.chatInput.text
+                store.accept(
+                    ChatEvent.Ui.SendMessage(input.toString())
+                )
                 binding.chatInput.text = SpannableStringBuilder("")
+            } else {
+                store.accept(
+                    ChatEvent.Ui.CallFilePicker
+                )
             }
         }
     }
@@ -168,63 +222,45 @@ class ChatActivity : AppCompatActivity(), BottomSheetDialogWithReactions.OnEmoji
     private fun getSupportedViewTypesForChatRv() = listOf(
         OutcomingMessageViewType(
             onMessageLongClick = { message ->
-                viewModel.onMessageLongClick(message)
+                store.accept(
+                    ChatEvent.Ui.CallEmojiPicker(message)
+                )
             },
             onEmojiClick = { message, reactionInContainerPosition ->
-                viewModel.onEmojiClick(message, reactionInContainerPosition)
+                store.accept(
+                    ChatEvent.Ui.EmojiClick(
+                        message,
+                        reactionInContainerPosition
+                    )
+                )
             },
+            onClickableTextClick = { messageHyperlink ->
+                store.accept(ChatEvent.Ui.ClickableTextAtMessageClick(messageHyperlink))
+            }
         ),
         IncomingMessageViewType(
             onMessageLongClick = { message ->
-                viewModel.onMessageLongClick(message)
+                store.accept(
+                    ChatEvent.Ui.CallEmojiPicker(message)
+                )
             },
             onEmojiClick = { message, reactionInContainerPosition ->
-                viewModel.onEmojiClick(message, reactionInContainerPosition)
+                store.accept(
+                    ChatEvent.Ui.EmojiClick(
+                        message,
+                        reactionInContainerPosition
+                    )
+                )
             },
+            onClickableTextClick = { messageHyperlink ->
+                store.accept(ChatEvent.Ui.ClickableTextAtMessageClick(messageHyperlink))
+            }
         ),
         DateDividerViewType()
     )
 
-    private fun observerState() {
-        viewModel.observableState
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { state ->
-                state.apply {
-                    messages?.let {
-                        chatAdapter.setItems(it)
-                    }
-                    paginator.isLoading = loadingNewMessages == LoadingState.LOADING
-                    binding.rvMessages.isInvisible = loadingState == LoadingState.LOADING
-                    binding.chatShimmer.isVisible = loadingState == LoadingState.LOADING
-                    if (state.loadingState == LoadingState.LOADING) binding.chatShimmer.startShimmer()
-                    else binding.chatShimmer.stopShimmer()
-                    binding.chatBtnAction.isGone = loadingInput == LoadingState.LOADING
-                    binding.chatInputLoadingIndicator.isGone = binding.chatBtnAction.isGone.not()
-                }
-            }.addTo(compositeDisposable)
-    }
-
-    private fun observeActions() {
-        compositeDisposable.add(
-            viewModel.observableAction
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { action ->
-                    action?.let {
-                        when (it) {
-                            is ChatAction.OpenBottomSheetDialog ->
-                                dialogWithReactions.show(supportFragmentManager, null)
-                            is ChatAction.HideBottomSheetDialog ->
-                                if (dialogWithReactions.isAdded) dialogWithReactions.dismiss()
-                            is ChatAction.ShowToastMessage ->
-                                showToast(it.message)
-                            is ChatAction.ShowPreviouslyTypedMessage ->
-                                binding.chatInput.text = SpannableStringBuilder(it.message)
-                            is ChatAction.DisablePagination ->
-                                binding.rvMessages.removeOnScrollListener(paginator)
-                        }
-                    }
-                }
-        )
+    private fun startActivityForBrowsingUri(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(Intent.createChooser(intent, getString(R.string.uri_browsing_chooser)))
     }
 }

@@ -6,28 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.tinkoff.coursework.databinding.FragmentSpecificStreamsBinding
 import com.tinkoff.coursework.presentation.activity.chat.ChatActivity
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.viewtype.StreamViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.TopicViewType
-import com.tinkoff.coursework.presentation.assisted_factory.StreamAssistedFactory
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.model.TopicUI
-import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.core.ElmStoreCompat
+import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class StreamFragment : Fragment() {
+class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     companion object {
         private const val ARGS_TYPE = "ARGS_TYPE"
@@ -49,14 +47,9 @@ class StreamFragment : Fragment() {
     }
 
     @Inject
-    lateinit var streamAssistedFactory: StreamAssistedFactory
+    lateinit var actor: StreamActor
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private val viewModel: StreamViewModel by viewModels {
-        streamAssistedFactory.also {
-            it.type = type
-        }
-    }
 
     private var _binding: FragmentSpecificStreamsBinding? = null
     private val binding get() = _binding!!
@@ -65,12 +58,16 @@ class StreamFragment : Fragment() {
         listOf(
             StreamViewType(
                 onStreamClick = { stream ->
-                    viewModel.onStreamClick(stream)
+                    store.accept(
+                        StreamEvent.Ui.StreamClick(stream)
+                    )
                 }
             ),
             TopicViewType(
                 onTopicClick = { topic ->
-                    viewModel.onTopicClick(topic)
+                    store.accept(
+                        StreamEvent.Ui.TopicClick(topic)
+                    )
                 }
             )
         )
@@ -90,8 +87,6 @@ class StreamFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initRecyclerView()
-        observeState()
-        observeAction()
         subscribeToFilter()
     }
 
@@ -114,36 +109,33 @@ class StreamFragment : Fragment() {
         }
     }
 
-    private fun observeState() {
-        viewModel.stateObservable
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { state ->
-                state.apply {
-                    binding.rvSpecificStreams.isInvisible =
-                        state.loadingState == LoadingState.LOADING
-                    binding.streamShimmer.apply {
-                        isVisible = state.loadingState == LoadingState.LOADING
-                        if (isVisible) startShimmer() else stopShimmer()
-                    }
-                    data?.let {
-                        streamAdapter.setItems(it)
-                    }
-                }
-            }.addTo(compositeDisposable)
+    override val initEvent: StreamEvent
+        get() = StreamEvent.Ui.LoadStreams(type)
+
+    override fun createStore(): Store<StreamEvent, StreamAction, StreamUIState> =
+        ElmStoreCompat(
+            initialState = StreamUIState(),
+            reducer = StreamReducer(),
+            actor = actor
+        )
+
+    override fun render(state: StreamUIState) {
+        state.apply {
+            binding.rvSpecificStreams.isInvisible =
+                state.loadingState == LoadingState.LOADING
+            binding.streamShimmer.apply {
+                isVisible = state.loadingState == LoadingState.LOADING
+                if (isVisible) startShimmer() else stopShimmer()
+            }
+            data?.let {
+                streamAdapter.setItems(it)
+            }
+        }
     }
 
-    private fun observeAction() {
-        viewModel.actionObservable
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { action ->
-                action?.let {
-                    when (it) {
-                        is StreamAction.ShowChatActivity -> showChatActivity(it.stream, it.topic)
-                        is StreamAction.ShotToastMessage -> requireContext().showToast(it.message)
-                    }
-                }
-            }.addTo(compositeDisposable)
+    override fun handleEffect(effect: StreamAction): Unit = when (effect) {
+        is StreamAction.ShowChatActivity -> showChatActivity(effect.stream, effect.topic)
+        is StreamAction.ShotToastMessage -> requireContext().showToast(effect.message)
     }
 
     private fun subscribeToFilter() {
@@ -153,7 +145,9 @@ class StreamFragment : Fragment() {
         ) { _, args ->
             val searchInput = args.getString(ARGS_FILTER_STRING)
             searchInput?.let {
-                viewModel.filterStreams(it)
+                store.accept(
+                    StreamEvent.Ui.FilterStreams(it)
+                )
             }
         }
     }

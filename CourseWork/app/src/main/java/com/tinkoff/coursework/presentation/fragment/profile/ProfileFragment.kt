@@ -7,21 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import com.tinkoff.coursework.databinding.FragmentProfileBinding
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.UserUI
-import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.loadImageByUrl
 import com.tinkoff.coursework.presentation.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.core.ElmStoreCompat
+import vivid.money.elmslie.core.store.Store
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProfileFragment : Fragment() {
+class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>() {
 
     companion object {
         fun newInstance(): ProfileFragment {
@@ -29,11 +28,11 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    @Inject
+    lateinit var actor: ProfileActor
+
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: ProfileViewModel by viewModels()
-    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,19 +43,39 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        observeState()
-        observeActions()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.dispose()
+    override val initEvent: ProfileEvent
+        get() = ProfileEvent.Ui.LoadOwnUserInfo
+
+    override fun createStore(): Store<ProfileEvent, ProfileAction, ProfileUIState> {
+        return ElmStoreCompat(
+            initialState = ProfileUIState(),
+            reducer = ProfileReducer(),
+            actor = actor
+        )
+    }
+
+    override fun render(state: ProfileUIState) {
+        state.apply {
+            binding.fragmentProfileOnlineStatus.isInvisible =
+                state.loadingState == LoadingState.LOADING
+            binding.profileShimmer.apply {
+                isVisible = loadingState == LoadingState.LOADING
+                if (isVisible) startShimmer() else stopShimmer()
+            }
+            data?.let {
+                renderProfile(it)
+            }
+        }
+    }
+
+    override fun handleEffect(effect: ProfileAction): Unit = when (effect) {
+        is ProfileAction.ShowToastMessage ->
+            requireContext().showToast(effect.message)
     }
 
     private fun renderProfile(profile: UserUI) {
@@ -68,35 +87,5 @@ class ProfileFragment : Fragment() {
                 profile.status.detectStatusColor(requireContext())
             )
         }
-    }
-
-    private fun observeState() {
-        viewModel.stateObservable
-            .distinctUntilChanged()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { state ->
-                state.apply {
-                    binding.fragmentProfileOnlineStatus.isInvisible =
-                        state.loadingState == LoadingState.LOADING
-                    binding.profileShimmer.apply {
-                        isVisible = loadingState == LoadingState.LOADING
-                        if (isVisible) startShimmer() else stopShimmer()
-                    }
-                    data?.let {
-                        renderProfile(it)
-                    }
-                }
-            }.addTo(compositeDisposable)
-    }
-
-    private fun observeActions() {
-        viewModel.actionObservable
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { action ->
-                when (action) {
-                    is ProfileAction.ShowToastMessage ->
-                        requireContext().showToast(action.message)
-                }
-            }.addTo(compositeDisposable)
     }
 }

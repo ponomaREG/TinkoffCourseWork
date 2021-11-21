@@ -5,11 +5,12 @@ import com.tinkoff.coursework.presentation.model.MessageUI
 import javax.inject.Inject
 
 class MessageMapper @Inject constructor(
-    private val reactionMapper: ReactionMapper
+    private val reactionMapper: ReactionMapper,
+    private val messageHyperlinkMapper: MessageHyperlinkMapper
 ) {
 
-    fun fromDomainModelToPresentationModel(domainModel: Message, myUserId: Int): MessageUI =
-        MessageUI(
+    fun fromDomainModelToPresentationModel(domainModel: Message, myUserId: Int): MessageUI {
+        return MessageUI(
             id = domainModel.id,
             username = domainModel.username,
             message = domainModel.message,
@@ -19,12 +20,14 @@ class MessageMapper @Inject constructor(
             }.toMutableList(),
             senderId = domainModel.userId,
             isMyMessage = domainModel.userId == myUserId,
-            timestamp = domainModel.timestamp
+            timestamp = domainModel.timestamp,
+            hyperlinks =
+            domainModel.messageHyperlinks.map(messageHyperlinkMapper::fromDomainModelToPresentationModel)
         )
+    }
 
     fun fromPresentationModelToDomainModel(
         presentationModel: MessageUI,
-        timestamp: Long
     ): Message =
         Message(
             id = presentationModel.id,
@@ -33,6 +36,8 @@ class MessageMapper @Inject constructor(
             avatarUrl = presentationModel.avatarUrl,
             reactions = presentationModel.reactions.map(reactionMapper::fromPresentationModelToDomainModel),
             userId = presentationModel.senderId,
-            timestamp = timestamp
+            timestamp = presentationModel.timestamp,
+            messageHyperlinks =
+            presentationModel.hyperlinks.map(messageHyperlinkMapper::fromPresentationModelToDomainModel)
         )
 }
