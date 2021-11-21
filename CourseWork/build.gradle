@@ -20,6 +20,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -53,4 +54,5 @@ ext {
     roomVersion = "2.3.0"
     workManagerVersion = "2.5.0"
     hiltWorker = "1.0.0"
+    elmsilie = "1.2.0"
 }
