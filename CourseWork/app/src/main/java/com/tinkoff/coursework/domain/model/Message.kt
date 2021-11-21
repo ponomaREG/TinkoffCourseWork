@@ -8,4 +8,5 @@ data class Message(
     val reactions: List<Reaction>,
     val userId: Int,
     val timestamp: Long,
+    val messageHyperlinks: List<MessageHyperlink>
 )
