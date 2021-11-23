@@ -12,32 +12,32 @@ class MessageMapper @Inject constructor(
 ) {
 
     fun fromNetworkModelToDomainModel(networkModel: MessageNetwork): Message {
-        val (transformMessage, hyperlinks) =
+        val parseMessageResult =
             messageContentParser.parseMessageContent(networkModel.content)
         return Message(
             id = networkModel.id,
             username = networkModel.userName,
-            message = transformMessage,
+            message = parseMessageResult.formattedMessage,
             avatarUrl = networkModel.avatarUrl,
             reactions = reactionMapper.fromNetworkModelListToDomainModelList(networkModel.reactions),
             userId = networkModel.userId,
             timestamp = networkModel.timestamp,
-            messageHyperlinks = hyperlinks
+            messageHyperlinks = parseMessageResult.hyperlinks
         )
     }
 
     fun fromPersistenceModelToDomainModel(persistenceModel: MessageDB): Message {
-        val (transformMessage, hyperlinks) =
+        val parseMessageResult =
             messageContentParser.parseMessageContent(persistenceModel.content)
         return Message(
             id = persistenceModel.id,
             username = persistenceModel.userName,
-            message = transformMessage,
+            message = parseMessageResult.formattedMessage,
             avatarUrl = persistenceModel.avatarUrl,
             reactions = listOf(),
             userId = persistenceModel.userId,
             timestamp = persistenceModel.timestamp,
-            messageHyperlinks = hyperlinks
+            messageHyperlinks = parseMessageResult.hyperlinks
         )
     }
 

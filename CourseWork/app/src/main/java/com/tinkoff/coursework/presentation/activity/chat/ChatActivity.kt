@@ -56,9 +56,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
 
     private val filePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
-            contentResolver.openInputStream(it)?.let { inpStr ->
-                store.accept(ChatEvent.Ui.UploadFile(inpStr))
-            }
+            store.accept(ChatEvent.Ui.UploadFile(it))
         }
     }
 
@@ -116,7 +114,6 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             initialState = ChatUIState(
                 currentStream = currentStream,
                 currentTopic = currentTopic,
-                olderMessageId = -1,
                 paginationOffset = PAGINATION_OFFSET
             ),
             reducer = ChatReducer(),

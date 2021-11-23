@@ -128,14 +128,15 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
                 if (isVisible) startShimmer() else stopShimmer()
             }
             data?.let {
-                streamAdapter.setItems(it)
+                if(it.isEmpty()) streamAdapter.clear()
+                else streamAdapter.setItems(it)
             }
         }
     }
 
     override fun handleEffect(effect: StreamAction): Unit = when (effect) {
         is StreamAction.ShowChatActivity -> showChatActivity(effect.stream, effect.topic)
-        is StreamAction.ShotToastMessage -> requireContext().showToast(effect.message)
+        is StreamAction.ShowToastMessage -> requireContext().showToast(effect.message)
     }
 
     private fun subscribeToFilter() {

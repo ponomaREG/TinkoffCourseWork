@@ -6,17 +6,17 @@ import com.tinkoff.coursework.presentation.model.*
 import java.io.InputStream
 
 data class ChatUIState(
+    val currentTopic: TopicUI,
+    val currentStream: StreamUI,
+    val messages: List<MessageUI> = mutableListOf(),
+    val paginationOffset: Int = -1,
+    val olderMessageId: Int = -1,
+    val clickedMessageId: Int = -1,
     val chatEntities: List<EntityUI>? = null,
-    val messages: List<MessageUI>? = null,
     val loadingInput: LoadingState? = null,
     val loadingNewMessages: LoadingState? = null,
     val loadingState: LoadingState? = null,
     val currentUser: UserUI? = null,
-    val currentTopic: TopicUI? = null,
-    val currentStream: StreamUI? = null,
-    val paginationOffset: Int? = null,
-    val olderMessageId: Int? = null,
-    val clickerMessageId: Int? = null
 )
 
 sealed class ChatAction {
@@ -41,7 +41,7 @@ sealed class ChatEvent {
         data class EmojiClick(val contextMessage: MessageUI, val emojiPosition: Int) : Ui()
         data class CallEmojiPicker(val contextMessage: MessageUI) : Ui()
         data class SendMessage(val message: String) : Ui()
-        data class UploadFile(val inputStream: InputStream) : Ui()
+        data class UploadFile(val uri: Uri) : Ui()
         data class ClickableTextAtMessageClick(val messageHyperlinkUI: MessageHyperlinkUI) : Ui()
         object CallFilePicker : Ui()
     }
@@ -104,6 +104,6 @@ sealed class ChatCommand {
     ) : ChatCommand()
 
     data class UploadFile(
-        val inputStream: InputStream
+        val uri: Uri
     ) : ChatCommand()
 }

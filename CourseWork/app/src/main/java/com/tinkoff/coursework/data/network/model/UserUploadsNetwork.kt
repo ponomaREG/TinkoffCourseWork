@@ -4,6 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HyperlinkNetwork(
-    @SerialName("uri") val hyperlink: String
+data class UserUploadsNetwork(
+    @SerialName("uri") val uri: String
 )

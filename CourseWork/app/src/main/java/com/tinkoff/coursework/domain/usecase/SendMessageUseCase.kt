@@ -11,14 +11,12 @@ class SendMessageUseCase @Inject constructor(
 ) {
     operator fun invoke(chatIds: List<Int>, topicId: String, message: Message) =
         messageRepository.sendMessage(chatIds, topicId, message)
-            .doAfterSuccess {
-            }
             .map {
-                val (transformMessage, hyperlinks) =
+                val parseMessageResult =
                     messageContentParser.parseMessageContent(it.message)
                 it.copy(
-                    message = transformMessage,
-                    messageHyperlinks = hyperlinks
+                    message = parseMessageResult.formattedMessage,
+                    messageHyperlinks = parseMessageResult.hyperlinks
                 )
             }
 }

@@ -7,23 +7,27 @@ import javax.inject.Inject
 
 class MessageContentParser @Inject constructor() {
 
-    //Паттерн для вложений сообщений вида : [imageName](https://internet.com/image.png)
-    val pattern = Pattern.compile(
-        "\\[.+\\]\\(https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&\\/\\/=]*)"
-    )
-    val patternZulip = Pattern.compile("\\[.+\\]\\(\\/[-a-zA-Z0-9@:%._\\+~#=]([-a-zA-Z0-9()@:%_\\+.~#?&\\/\\/=]*)")
-
     companion object {
         private const val ZULIP_STORAGE_LINK = "https://tinkoff-android-fall21.zulipchat.com"
     }
 
-    fun parseMessageContent(message: String): Pair<String, List<MessageHyperlink>> {
+    //Паттерн для вложений сообщений вида : [imageName](https://internet.com/image.png)
+    private val pattern = Pattern.compile(
+        "\\[.+\\]\\(https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&\\/\\/=]*)"
+    )
+    private val patternZulip = Pattern.compile("\\[.+\\]\\(\\/[-a-zA-Z0-9@:%._\\+~#=]([-a-zA-Z0-9()@:%_\\+.~#?&\\/\\/=]*)")
+
+
+    fun parseMessageContent(message: String): ParseMessageResult {
         val messagesHyperlinks: MutableList<MessageHyperlink> = mutableListOf()
         val matcher = pattern.matcher(message)
         var transformMessage = transform(matcher, message, false, messagesHyperlinks)
         val matcherZulip = patternZulip.matcher(transformMessage)
         transformMessage = transform(matcherZulip, transformMessage, true, messagesHyperlinks)
-        return transformMessage to messagesHyperlinks
+        return ParseMessageResult(
+            formattedMessage = transformMessage,
+            hyperlinks = messagesHyperlinks
+        )
     }
 
     private fun transform(
@@ -37,22 +41,22 @@ class MessageContentParser @Inject constructor() {
             val start = matcher.start()
             val end = matcher.end()
             val hyperlinkFile = message.substring(start, end)
-            val (name, hyperlink) = parseMessageAndHyperlink(hyperlinkFile)
-            transformMessage = transformMessage.replace(hyperlinkFile, name)
-
+            val extractMessageResult = parseMessageAndHyperlink(hyperlinkFile)
+            transformMessage = transformMessage.replace(hyperlinkFile, extractMessageResult.name)
             hyperlinks.add(
                 MessageHyperlink(
                     from = start,
-                    to = start + name.length + 1,
-                    name = name,
-                    hyperlink = if (isZulipStorage) ZULIP_STORAGE_LINK + hyperlink else hyperlink,
+                    to = start + extractMessageResult.name.length + 1,
+                    name = extractMessageResult.name,
+                    hyperlink =
+                    if (isZulipStorage) ZULIP_STORAGE_LINK + extractMessageResult.uri else extractMessageResult.uri,
                 )
             )
         }
         return transformMessage
     }
 
-    private fun parseMessageAndHyperlink(message: String): Pair<String, String> {
+    private fun parseMessageAndHyperlink(message: String): ExtractMessageResult {
         val leftSquareBracket = 0
         var rightSquareBracket = -1
         var leftBracket = -1
@@ -62,7 +66,19 @@ class MessageContentParser @Inject constructor() {
             if (l == '(' && leftBracket == -1) leftBracket = ind
             if (l == ')' && rightBracket == -1) rightBracket = ind
         }
-        return message.substring(leftSquareBracket + 1, rightSquareBracket) to
-            message.substring(leftBracket + 1, rightBracket)
+        return ExtractMessageResult(
+            name = message.substring(leftSquareBracket + 1, rightSquareBracket),
+            uri = message.substring(leftBracket + 1, rightBracket)
+        )
     }
+
+    data class ParseMessageResult(
+        val formattedMessage: String,
+        val hyperlinks: List<MessageHyperlink>
+    )
+
+    private data class ExtractMessageResult(
+        val name: String,
+        val uri: String
+    )
 }

@@ -127,7 +127,7 @@ class ChatActor constructor(
             }
 
         //Команды для файлов
-        is ChatCommand.UploadFile -> uploadFileUseCase(command.inputStream)
+        is ChatCommand.UploadFile -> uploadFileUseCase(command.uri)
             .mapEvents(
                 { link ->
                     ChatEvent.Internal.FileUploaded(

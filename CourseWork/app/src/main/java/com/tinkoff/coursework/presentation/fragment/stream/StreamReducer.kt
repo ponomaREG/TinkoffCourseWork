@@ -1,6 +1,7 @@
 package com.tinkoff.coursework.presentation.fragment.stream
 
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
@@ -128,12 +129,12 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         }
         is StreamEvent.Internal.ErrorLoadedStreams -> {
             effects {
-                +StreamAction.ShotToastMessage(event.error.stackTraceToString())
+                +StreamAction.ShowToastMessage(event.error.parseError().message)
             }
         }
         is StreamEvent.Internal.ErrorLoadedTopics -> {
             effects {
-                +StreamAction.ShotToastMessage(event.error.stackTraceToString())
+                +StreamAction.ShowToastMessage(event.error.parseError().message)
             }
         }
     }

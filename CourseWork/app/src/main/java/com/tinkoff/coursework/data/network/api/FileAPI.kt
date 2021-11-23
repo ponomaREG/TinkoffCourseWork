@@ -1,6 +1,6 @@
 package com.tinkoff.coursework.data.network.api
 
-import com.tinkoff.coursework.data.network.model.HyperlinkNetwork
+import com.tinkoff.coursework.data.network.model.UserUploadsNetwork
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
@@ -13,5 +13,5 @@ interface FileAPI {
     @POST("user_uploads")
     fun uploadFile(
         @Part body: MultipartBody.Part
-    ): Single<HyperlinkNetwork>
+    ): Single<UserUploadsNetwork>
 }

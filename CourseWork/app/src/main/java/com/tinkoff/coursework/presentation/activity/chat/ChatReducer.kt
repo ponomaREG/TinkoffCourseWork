@@ -2,6 +2,7 @@ package com.tinkoff.coursework.presentation.activity.chat
 
 import androidx.core.net.toUri
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.model.DateDivider
 import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.MessageUI
@@ -28,10 +29,10 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 }
                 commands {
                     +ChatCommand.LoadMessages(
-                        state.currentStream!!.name,
-                        state.currentTopic!!.name,
-                        state.olderMessageId!!,
-                        state.paginationOffset!!,
+                        state.currentStream.name,
+                        state.currentTopic.name,
+                        state.olderMessageId,
+                        state.paginationOffset,
                         state.currentUser!!.id
                     )
                 }
@@ -57,8 +58,8 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     )
                     commands {
                         +ChatCommand.SendMessage(
-                            state.currentStream!!.id,
-                            state.currentTopic!!.name,
+                            state.currentStream.id,
+                            state.currentTopic.name,
                             newMessage
                         )
                     }
@@ -87,8 +88,8 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         loadingInput = LoadingState.LOADING,
                     )
                 }
-                val clickedMessage = state.messages!!.find {
-                    it.id == state.clickerMessageId
+                val clickedMessage = state.messages.find {
+                    it.id == state.clickedMessageId
                 }
                 clickedMessage?.let { message ->
                     val clickedReaction = message.reactions.find { reaction ->
@@ -123,7 +124,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
             is ChatEvent.Ui.CallEmojiPicker -> {
                 state {
                     copy(
-                        clickerMessageId = event.contextMessage.id
+                        clickedMessageId = event.contextMessage.id
                     )
                 }
                 effects {
@@ -150,7 +151,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     )
                 }
                 commands {
-                    +ChatCommand.UploadFile(event.inputStream)
+                    +ChatCommand.UploadFile(event.uri)
                 }
             }
             is ChatEvent.Ui.ClickableTextAtMessageClick -> {
@@ -170,12 +171,12 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     val newCurrentMessages =
                         if (event.items.isNullOrEmpty().not()) {
                             if (olderMessageId == -1) event.items
-                            else event.items + messages!!
+                            else event.items + messages
                         } else {
                             effects {
                                 +ChatAction.DisablePagination
                             }
-                            messages!!
+                            messages
                         }
                     if (olderMessageId == -1 && event.items.isNullOrEmpty().not()) {
                         effects {
@@ -198,12 +199,12 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         chatEntities = newCurrentMessages.buildEntities()
                     )
                 }
-                if (state.messages!!.size <= MAX_CACHE_MESSAGES) {
+                if (state.messages.size <= MAX_CACHE_MESSAGES) {
                     commands {
                         +ChatCommand.CacheMessages(
-                            state.messages!!,
-                            state.currentStream!!.id,
-                            state.currentTopic!!.name
+                            state.messages,
+                            state.currentStream.id,
+                            state.currentTopic.name
                         )
                     }
                 }
@@ -225,22 +226,22 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 }
                 commands {
                     +ChatCommand.LoadCacheMessages(
-                        state.currentStream!!.id,
-                        state.currentTopic!!.name,
+                        state.currentStream.id,
+                        state.currentTopic.name,
                         event.userUI.id
                     )
                     +ChatCommand.LoadMessages(
-                        state.currentStream!!.name,
-                        state.currentTopic!!.name,
-                        state.olderMessageId!!,
-                        state.paginationOffset!!,
+                        state.currentStream.name,
+                        state.currentTopic.name,
+                        state.olderMessageId,
+                        state.paginationOffset,
                         state.currentUser!!.id
                     )
                 }
             }
             is ChatEvent.Internal.ErrorLoading -> {
                 effects {
-                    +ChatAction.ShowToastMessage(event.error.stackTraceToString())
+                    +ChatAction.ShowToastMessage(event.error.parseError().message)
                 }
             }
             is ChatEvent.Internal.CacheMessagesLoaded -> {
@@ -271,7 +272,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     maybeClickedReaction.usersWhoClicked.add(state.currentUser!!.id)
                     maybeClickedReaction.isSelected = true
                 }
-                val newMessages = state.messages!!.map {
+                val newMessages = state.messages.map {
                     if (it.id == newMessage.id) newMessage
                     else it
                 }
@@ -293,7 +294,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     reaction.usersWhoClicked.remove(state.currentUser!!.id)
                     if (reaction.usersWhoClicked.isEmpty()) newMessage.reactions.remove(reaction)
                 }
-                val newMessages = state.messages!!.map {
+                val newMessages = state.messages.map {
                     if (it.id == newMessage.id) newMessage
                     else it
                 }
@@ -307,7 +308,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
             }
             is ChatEvent.Internal.SuccessSendMessage -> {
                 event.message.id = event.newMessageId
-                val newMessages = state.messages!!.toMutableList().apply { add(event.message) }
+                val newMessages = state.messages.toMutableList().apply { add(event.message) }
                 state {
                     copy(
                         messages = newMessages,

@@ -7,7 +7,7 @@ import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.model.TopicUI
 
 data class StreamUIState(
-    var streams: List<StreamUI>? = null,
+    var streams: List<StreamUI> = mutableListOf(),
     val filteredStreams: List<StreamUI>? = null,
     var data: List<EntityUI>? = null,
     val loadingState: LoadingState? = null
@@ -15,7 +15,7 @@ data class StreamUIState(
 
 sealed class StreamAction {
     data class ShowChatActivity(val stream: StreamUI, val topic: TopicUI) : StreamAction()
-    data class ShotToastMessage(val message: String) : StreamAction()
+    data class ShowToastMessage(val message: String) : StreamAction()
 }
 
 sealed class StreamEvent {
