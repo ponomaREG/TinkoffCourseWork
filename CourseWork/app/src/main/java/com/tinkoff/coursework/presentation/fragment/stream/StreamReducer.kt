@@ -32,7 +32,7 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         }
         is StreamEvent.Ui.StreamClick -> {
             if (event.stream.topics == null) {
-                val newStreams = state.streams!!.mapWithNew(event.stream.copy(isLoading = true))
+                val newStreams = state.streams.mapWithNew(event.stream.copy(isLoading = true))
                 val newFilteredStreams = state.filteredStreams?.mapWithNew(event.stream.copy(isLoading = true))
                 state {
                     copy(
@@ -49,7 +49,7 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
                     )
                 }
             } else {
-                val newStreams = state.streams!!.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
+                val newStreams = state.streams.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
                 val newFilteredStreams = state.filteredStreams?.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
                 state {
                     copy(
@@ -63,7 +63,7 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
             }
         }
         is StreamEvent.Ui.TopicClick -> {
-            val stream: StreamUI = state.streams!!.find { s ->
+            val stream: StreamUI = state.streams.find { s ->
                 s.topics?.contains(event.topic) == true
             } ?: throw IllegalStateException()
             effects {
@@ -75,9 +75,9 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         }
 
         is StreamEvent.Ui.FilterStreams -> {
-            if (state.streams != null) {
+            if (state.streams.isNotEmpty()) {
                 if (event.query.isNotEmpty()) {
-                    val filteredStreams = state.streams!!.filter(
+                    val filteredStreams = state.streams.filter(
                         predicate = { stream ->
                             stream.name
                                 .toLowerCase(Locale.ROOT)
@@ -115,7 +115,7 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
             } else state
         }
         is StreamEvent.Internal.LoadedTopics -> {
-            val newStreams = state.streams!!.mapWithNew(event.stream.copy(
+            val newStreams = state.streams.mapWithNew(event.stream.copy(
                 isLoading = false,
                 isExpanded = true,
                 topics = event.topics

@@ -128,8 +128,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
                 if (isVisible) startShimmer() else stopShimmer()
             }
             data?.let {
-                if(it.isEmpty()) streamAdapter.clear()
-                else streamAdapter.setItems(it)
+                streamAdapter.setItems(it)
             }
         }
     }
