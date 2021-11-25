@@ -2,7 +2,6 @@ package com.tinkoff.coursework.domain.usecase
 
 import android.net.Uri
 import com.tinkoff.coursework.domain.repository.FileRepository
-import java.io.InputStream
 import javax.inject.Inject
 
 class UploadFileUseCase @Inject constructor(
