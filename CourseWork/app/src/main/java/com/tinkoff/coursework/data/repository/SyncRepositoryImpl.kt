@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.work.*
 import com.tinkoff.coursework.data.worker.SyncWorker
 import com.tinkoff.coursework.domain.repository.SyncRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
+
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SyncRepositoryImpl @Inject constructor(
-    @ApplicationContext private val applicationContext: Context
+    private val applicationContext: Context
 ) : SyncRepository {
 
     override fun launchSyncerData() {
