@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.21'
 }
 
@@ -68,10 +67,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serilizationConverter"
 
-    implementation "com.google.dagger:hilt-android:$hiltAndroid"
-    implementation "androidx.hilt:hilt-work:$hiltWorker"
-    kapt "androidx.hilt:hilt-compiler:$hiltWorker"
-    kapt "com.google.dagger:hilt-android-compiler:$hiltAndroid"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
     implementation "androidx.work:work-rxjava2:$workManagerVersion"

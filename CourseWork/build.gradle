@@ -9,7 +9,6 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltPlugin"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -53,6 +52,6 @@ ext {
     rxJavaRetrofitAdapter = "2.4.0'"
     roomVersion = "2.3.0"
     workManagerVersion = "2.5.0"
-    hiltWorker = "1.0.0"
     elmsilie = "1.2.0"
+    daggerVersion = "2.35"
 }
