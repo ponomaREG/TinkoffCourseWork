@@ -3,7 +3,6 @@ package com.tinkoff.coursework.presentation.activity.chat
 import android.net.Uri
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.*
-import java.io.InputStream
 
 data class ChatUIState(
     val currentTopic: TopicUI,

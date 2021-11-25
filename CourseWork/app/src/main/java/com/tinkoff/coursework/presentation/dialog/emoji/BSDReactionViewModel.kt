@@ -6,7 +6,6 @@ import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.mapper.EmojiMapper
 import com.tinkoff.coursework.presentation.util.addTo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -14,7 +13,6 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
-@HiltViewModel
 class BSDReactionViewModel @Inject constructor(
     private val getEmojiesUseCase: GetEmojiesUseCase,
     private val emojiMapper: EmojiMapper

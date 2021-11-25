@@ -6,14 +6,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.work.*
+import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityMainBinding
 import com.tinkoff.coursework.presentation.fragment.channels.ChannelsFragment
 import com.tinkoff.coursework.presentation.fragment.people.PeopleFragment
 import com.tinkoff.coursework.presentation.fragment.profile.ProfileFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -35,15 +35,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initNavigation() {
+        val app = application as? CourseWorkApp ?: return
+        app.activateStreamComponent()
         binding.mainBnv.setOnItemSelectedListener { item ->
             currentFragment = when (item.itemId) {
                 R.id.main_bnv_channels -> {
+                    app.deactivateAllComponents()
+                    app.activateStreamComponent()
                     ChannelsFragment.newInstance()
                 }
                 R.id.main_bnv_people -> {
+                    app.deactivateAllComponents()
+                    app.activatePeopleComponent()
                     PeopleFragment.newInstance()
                 }
                 R.id.main_bnv_profile -> {
+                    app.deactivateAllComponents()
+                    app.activateProfileComponent()
                     ProfileFragment.newInstance()
                 }
                 else -> return@setOnItemSelectedListener false

@@ -14,11 +14,9 @@ import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
-import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-@AndroidEntryPoint
 class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
 
     companion object {

@@ -12,6 +12,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityChatBinding
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
@@ -26,13 +27,11 @@ import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.showToast
-import dagger.hilt.android.AndroidEntryPoint
 import vivid.money.elmslie.android.base.ElmActivity
 import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
-@AndroidEntryPoint
 class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSheetDialogWithReactions.OnEmojiPickListener {
 
     companion object {
@@ -85,6 +84,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        injectDependency()
         initActionBar()
         initRecyclerView()
         setTextWatcher()
@@ -94,6 +94,12 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
     override fun onPause() {
         super.onPause()
         binding.chatShimmer.stopShimmer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val app = application as? CourseWorkApp ?: throw java.lang.IllegalStateException()
+        app.deactivateChatComponent()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -161,6 +167,12 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
                 effect.uri.toString()
             ))
         }
+    }
+
+    private fun injectDependency() {
+        val app = application as? CourseWorkApp ?: return
+        app.activateChatComponent()
+        app.chatComponent?.inject(this) ?: throw java.lang.IllegalStateException()
     }
 
     private fun initActionBar() {

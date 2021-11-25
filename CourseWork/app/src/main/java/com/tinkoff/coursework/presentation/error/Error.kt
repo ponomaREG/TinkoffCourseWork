@@ -7,6 +7,7 @@ sealed class Error(val message: String) {
     object MockError : Error("Это тестовое исключение")
     data class UnexpectedError(val throwable: Throwable) :
         Error("Неизвестная ошибка. Ошибка: $throwable")
+
     object NetworkError : Error("Проблемы с соединением")
 }
 

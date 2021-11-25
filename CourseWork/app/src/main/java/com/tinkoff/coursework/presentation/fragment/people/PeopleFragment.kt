@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentPeopleBinding
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
@@ -17,14 +18,14 @@ import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.util.showToast
-import dagger.hilt.android.AndroidEntryPoint
+
 import io.reactivex.disposables.CompositeDisposable
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
-@AndroidEntryPoint
+
 class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
 
     companion object {
@@ -52,6 +53,11 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
             )
         )
     )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectDependency()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -121,6 +127,10 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
             requireContext().showToast(effect.user.toString())
     }
 
+    private fun injectDependency() {
+        val app = activity?.application as? CourseWorkApp ?: return
+        app.peopleComponent?.inject(this) ?: throw java.lang.IllegalStateException()
+    }
 
     private fun initRecyclerView() {
         binding.recyclerView.adapter = peopleAdapter

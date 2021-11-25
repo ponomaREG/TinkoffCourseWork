@@ -7,19 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.databinding.FragmentProfileBinding
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.UserUI
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.loadImageByUrl
 import com.tinkoff.coursework.presentation.util.showToast
-import dagger.hilt.android.AndroidEntryPoint
+
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
-@AndroidEntryPoint
+
 class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>() {
 
     companion object {
@@ -33,6 +34,11 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectDependency()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,6 +82,11 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>
     override fun handleEffect(effect: ProfileAction): Unit = when (effect) {
         is ProfileAction.ShowToastMessage ->
             requireContext().showToast(effect.message)
+    }
+
+    private fun injectDependency() {
+        val app = activity?.application as? CourseWorkApp ?: return
+        app.profileComponent?.inject(this) ?: throw java.lang.IllegalStateException()
     }
 
     private fun renderProfile(profile: UserUI) {

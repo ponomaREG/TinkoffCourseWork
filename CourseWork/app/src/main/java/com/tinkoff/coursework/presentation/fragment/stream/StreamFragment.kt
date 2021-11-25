@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.databinding.FragmentSpecificStreamsBinding
 import com.tinkoff.coursework.presentation.activity.chat.ChatActivity
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
@@ -17,14 +18,14 @@ import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.showToast
-import dagger.hilt.android.AndroidEntryPoint
+
 import io.reactivex.disposables.CompositeDisposable
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
-@AndroidEntryPoint
+
 class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     companion object {
@@ -75,6 +76,11 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     private val type: StreamsGroup
         get() = requireArguments().getSerializable(ARGS_TYPE) as StreamsGroup
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectDependency()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -136,6 +142,11 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
     override fun handleEffect(effect: StreamAction): Unit = when (effect) {
         is StreamAction.ShowChatActivity -> showChatActivity(effect.stream, effect.topic)
         is StreamAction.ShowToastMessage -> requireContext().showToast(effect.message)
+    }
+
+    private fun injectDependency() {
+        val app = activity?.application as? CourseWorkApp ?: return
+        app.streamComponent?.inject(this) ?: throw java.lang.IllegalStateException()
     }
 
     private fun subscribeToFilter() {

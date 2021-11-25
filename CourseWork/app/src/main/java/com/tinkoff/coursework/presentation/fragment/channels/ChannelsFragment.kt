@@ -13,10 +13,8 @@ import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.viewpager.StreamsStateAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
 
-@AndroidEntryPoint
 class ChannelsFragment : Fragment() {
 
     companion object {
