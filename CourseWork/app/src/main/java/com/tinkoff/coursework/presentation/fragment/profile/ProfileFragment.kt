@@ -7,14 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.databinding.FragmentProfileBinding
+import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.di.profile.DaggerProfileComponent
+import com.tinkoff.coursework.presentation.di.profile.ProfileComponent
 import com.tinkoff.coursework.presentation.model.UserUI
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.loadImageByUrl
 import com.tinkoff.coursework.presentation.util.showToast
-
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
@@ -32,12 +33,15 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>
     @Inject
     lateinit var actor: ProfileActor
 
+    private lateinit var profileComponent: ProfileComponent
+
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injectDependency()
+        profileComponent = DaggerProfileComponent.factory().create(getAppComponent())
+        profileComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -82,11 +86,6 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>
     override fun handleEffect(effect: ProfileAction): Unit = when (effect) {
         is ProfileAction.ShowToastMessage ->
             requireContext().showToast(effect.message)
-    }
-
-    private fun injectDependency() {
-        val app = activity?.application as? CourseWorkApp ?: return
-        app.profileComponent?.inject(this) ?: throw java.lang.IllegalStateException()
     }
 
     private fun renderProfile(profile: UserUI) {

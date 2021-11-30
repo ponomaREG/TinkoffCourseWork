@@ -26,9 +26,10 @@ object ChatModule {
         messageMapper: MessageMapper,
         userMapper: UserMapper,
         emojiMapper: EmojiMapper,
-    ): ChatActor = ChatActor(
-        getOwnProfileInfoUseCase, getCacheMessagesUseCase, getMessagesUseCase, cacheMessagesUseCase,
-        addReactionToMessageUseCase, removeReactionToMessageUseCase, uploadFileUseCase,
-        sendMessageUseCase, messageMapper, userMapper, emojiMapper,
-    )
+    ): ChatActor =
+        ChatActor(
+            getOwnProfileInfoUseCase, getCacheMessagesUseCase, getMessagesUseCase, cacheMessagesUseCase,
+            addReactionToMessageUseCase, removeReactionToMessageUseCase, uploadFileUseCase,
+            sendMessageUseCase, messageMapper, userMapper, emojiMapper,
+        )
 }

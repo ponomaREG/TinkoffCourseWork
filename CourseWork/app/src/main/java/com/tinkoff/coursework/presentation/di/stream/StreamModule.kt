@@ -21,11 +21,12 @@ object StreamModule {
         getStreamTopicsUseCase: GetStreamTopicsUseCase,
         streamMapper: StreamMapper,
         topicMapper: TopicMapper
-    ): StreamActor = StreamActor(
-        getSubscribedChannelsUseCase,
-        getAllChannelsUseCase,
-        getStreamTopicsUseCase,
-        streamMapper,
-        topicMapper
-    )
+    ): StreamActor =
+        StreamActor(
+            getSubscribedChannelsUseCase,
+            getAllChannelsUseCase,
+            getStreamTopicsUseCase,
+            streamMapper,
+            topicMapper
+        )
 }

@@ -7,18 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentPeopleBinding
+import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.presentation.adapter.viewtype.UserViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.di.people.DaggerPeopleComponent
+import com.tinkoff.coursework.presentation.di.people.PeopleComponent
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.util.showToast
-
 import io.reactivex.disposables.CompositeDisposable
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
@@ -36,6 +37,8 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
 
     @Inject
     lateinit var peopleActor: PeopleActor
+
+    private lateinit var peopleComponent: PeopleComponent
 
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
@@ -56,7 +59,8 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injectDependency()
+        peopleComponent = DaggerPeopleComponent.factory().create(getAppComponent())
+        peopleComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -125,11 +129,6 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
             requireContext().showToast(effect.message)
         is PeopleAction.ShowUserProfile ->
             requireContext().showToast(effect.user.toString())
-    }
-
-    private fun injectDependency() {
-        val app = activity?.application as? CourseWorkApp ?: return
-        app.peopleComponent?.inject(this) ?: throw java.lang.IllegalStateException()
     }
 
     private fun initRecyclerView() {

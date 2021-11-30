@@ -12,9 +12,9 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityChatBinding
+import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.presentation.adapter.paginator.PaginatorRecyclerView
@@ -22,6 +22,8 @@ import com.tinkoff.coursework.presentation.adapter.viewtype.DateDividerViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.IncomingMessageViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.OutcomingMessageViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.di.chat.ChatComponent
+import com.tinkoff.coursework.presentation.di.chat.DaggerChatComponent
 import com.tinkoff.coursework.presentation.dialog.emoji.BottomSheetDialogWithReactions
 import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.model.StreamUI
@@ -59,6 +61,8 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
         }
     }
 
+    private lateinit var chatComponent: ChatComponent
+
     private val paginator = PaginatorRecyclerView(
         loadMoreItems = {
             store.accept(
@@ -94,12 +98,6 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
     override fun onPause() {
         super.onPause()
         binding.chatShimmer.stopShimmer()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        val app = application as? CourseWorkApp ?: throw java.lang.IllegalStateException()
-        app.deactivateChatComponent()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -170,9 +168,8 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
     }
 
     private fun injectDependency() {
-        val app = application as? CourseWorkApp ?: return
-        app.activateChatComponent()
-        app.chatComponent?.inject(this) ?: throw java.lang.IllegalStateException()
+        chatComponent = DaggerChatComponent.factory().create(getAppComponent())
+        chatComponent.inject(this)
     }
 
     private fun initActionBar() {

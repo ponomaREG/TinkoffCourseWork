@@ -7,18 +7,19 @@ import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.tinkoff.coursework.CourseWorkApp
 import com.tinkoff.coursework.databinding.FragmentSpecificStreamsBinding
+import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.activity.chat.ChatActivity
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.viewtype.StreamViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.TopicViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.di.stream.DaggerStreamComponent
+import com.tinkoff.coursework.presentation.di.stream.StreamComponent
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.model.TopicUI
 import com.tinkoff.coursework.presentation.util.showToast
-
 import io.reactivex.disposables.CompositeDisposable
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
@@ -52,6 +53,8 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
+    private lateinit var streamComponent: StreamComponent
+
     private var _binding: FragmentSpecificStreamsBinding? = null
     private val binding get() = _binding!!
 
@@ -79,7 +82,8 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injectDependency()
+        streamComponent = DaggerStreamComponent.factory().create(getAppComponent())
+        streamComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -142,11 +146,6 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
     override fun handleEffect(effect: StreamAction): Unit = when (effect) {
         is StreamAction.ShowChatActivity -> showChatActivity(effect.stream, effect.topic)
         is StreamAction.ShowToastMessage -> requireContext().showToast(effect.message)
-    }
-
-    private fun injectDependency() {
-        val app = activity?.application as? CourseWorkApp ?: return
-        app.streamComponent?.inject(this) ?: throw java.lang.IllegalStateException()
     }
 
     private fun subscribeToFilter() {

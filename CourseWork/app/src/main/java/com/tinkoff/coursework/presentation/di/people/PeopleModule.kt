@@ -15,6 +15,5 @@ object PeopleModule {
     fun providePeopleActor(
         getPeopleUseCase: GetPeopleUseCase,
         userMapper: UserMapper
-    ): PeopleActor = PeopleActor(
-        getPeopleUseCase, userMapper)
+    ): PeopleActor = PeopleActor(getPeopleUseCase, userMapper)
 }
