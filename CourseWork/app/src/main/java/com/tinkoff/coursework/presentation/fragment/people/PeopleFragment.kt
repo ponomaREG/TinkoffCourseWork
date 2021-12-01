@@ -38,8 +38,6 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
     @Inject
     lateinit var peopleActor: PeopleActor
 
-    private lateinit var peopleComponent: PeopleComponent
-
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
 
@@ -59,8 +57,7 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        peopleComponent = DaggerPeopleComponent.factory().create(getAppComponent())
-        peopleComponent.inject(this)
+        DaggerPeopleComponent.factory().create(getAppComponent()).inject(this)
     }
 
     override fun onCreateView(

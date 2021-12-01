@@ -33,15 +33,12 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>
     @Inject
     lateinit var actor: ProfileActor
 
-    private lateinit var profileComponent: ProfileComponent
-
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        profileComponent = DaggerProfileComponent.factory().create(getAppComponent())
-        profileComponent.inject(this)
+        DaggerProfileComponent.factory().create(getAppComponent()).inject(this)
     }
 
     override fun onCreateView(

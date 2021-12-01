@@ -53,8 +53,6 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    private lateinit var streamComponent: StreamComponent
-
     private var _binding: FragmentSpecificStreamsBinding? = null
     private val binding get() = _binding!!
 
@@ -82,8 +80,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        streamComponent = DaggerStreamComponent.factory().create(getAppComponent())
-        streamComponent.inject(this)
+        DaggerStreamComponent.factory().create(getAppComponent()).inject(this)
     }
 
     override fun onCreateView(

@@ -61,8 +61,6 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
         }
     }
 
-    private lateinit var chatComponent: ChatComponent
-
     private val paginator = PaginatorRecyclerView(
         loadMoreItems = {
             store.accept(
@@ -168,8 +166,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
     }
 
     private fun injectDependency() {
-        chatComponent = DaggerChatComponent.factory().create(getAppComponent())
-        chatComponent.inject(this)
+        DaggerChatComponent.factory().create(getAppComponent()).inject(this)
     }
 
     private fun initActionBar() {
