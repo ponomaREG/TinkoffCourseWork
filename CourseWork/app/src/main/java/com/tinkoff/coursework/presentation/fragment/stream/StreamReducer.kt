@@ -137,6 +137,9 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
                 +StreamAction.ShowToastMessage(event.error.parseError().message)
             }
         }
+        is StreamEvent.Ui.CreateTopicClick -> {
+
+        }
     }
 
     private fun buildAdapterItems(streams: List<StreamUI>?): List<EntityUI> {

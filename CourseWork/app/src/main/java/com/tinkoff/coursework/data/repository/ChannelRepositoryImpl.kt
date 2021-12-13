@@ -4,6 +4,7 @@ import com.tinkoff.coursework.data.mapper.StreamMapper
 import com.tinkoff.coursework.data.mapper.TopicMapper
 import com.tinkoff.coursework.data.network.api.StreamAPI
 import com.tinkoff.coursework.data.network.api.TopicAPI
+import com.tinkoff.coursework.data.network.model.StreamSubscriptionsNetwork
 import com.tinkoff.coursework.data.persistence.dao.StreamDAO
 import com.tinkoff.coursework.data.persistence.dao.TopicDAO
 import com.tinkoff.coursework.domain.model.Stream
@@ -12,6 +13,7 @@ import com.tinkoff.coursework.domain.repository.ChannelRepository
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.lang.IllegalStateException
 import javax.inject.Inject
 
 class ChannelRepositoryImpl @Inject constructor(
@@ -52,6 +54,26 @@ class ChannelRepositoryImpl @Inject constructor(
                 ).andThen(Single.just(it))
             }
         return Single.concat(topicDatabase, topicApi).toObservable()
+    }
+
+    override fun createStream(streamName: String): Completable {
+        val streamSubscriptionsNetwork = StreamSubscriptionsNetwork(
+            name = streamName,
+            description = ""
+        )
+        return streamAPI.subscribeToStream(
+            listOf(
+                streamSubscriptionsNetwork
+            )
+        )
+            .flatMapCompletable {
+                if(it.result == "success") Completable.complete()
+                else Completable.error(IllegalStateException()) //TODO: Добавить наконец нормальную обработку ошибок
+            }
+    }
+
+    override fun createTopic(streamName: String, topicName: String): Completable {//Not yet implemented
+        return Completable.complete()  //TODO: Убрать
     }
 
     override fun syncData(): Completable {

@@ -44,6 +44,14 @@
                     android:layout_weight="2"
                     android:src="@drawable/ic_search" />
 
+                <ImageView
+                    android:id="@+id/fragment_searches_icon_create"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1.5"
+                    android:src="@drawable/ic_plus" />
+
             </LinearLayout>
 
             <com.google.android.material.tabs.TabLayout

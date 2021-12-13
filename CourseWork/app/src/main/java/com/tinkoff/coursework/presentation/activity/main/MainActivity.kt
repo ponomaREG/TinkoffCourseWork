@@ -9,6 +9,7 @@ import androidx.work.*
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityMainBinding
 import com.tinkoff.coursework.presentation.fragment.channels.ChannelsFragment
+import com.tinkoff.coursework.presentation.fragment.create_manager.CreateManagerFragment
 import com.tinkoff.coursework.presentation.fragment.people.PeopleFragment
 import com.tinkoff.coursework.presentation.fragment.profile.ProfileFragment
 
@@ -31,6 +32,13 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
         initNavigation()
+    }
+
+    fun showCreateFragment() {
+        val createManagerFragment = CreateManagerFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(binding.mainContainer.id, createManagerFragment)
+            .commit()
     }
 
     private fun initNavigation() {

@@ -13,3 +13,6 @@ annotation class ProfileScope
 
 @Scope
 annotation class PeopleScope
+
+@Scope
+annotation class CreateManagerScope

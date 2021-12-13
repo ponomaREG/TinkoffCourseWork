@@ -18,6 +18,14 @@
         tools:text="#general" />
 
     <ImageView
+        android:id="@+id/item_stream_create_topic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        android:src="@drawable/ic_plus"/>
+
+    <ImageView
         android:id="@+id/item_stream_expand_arrow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

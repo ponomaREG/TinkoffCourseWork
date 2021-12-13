@@ -86,4 +86,5 @@
     <dimen name="fragment_profile_onlineStatus_size">30dp</dimen>
     <dimen name="item_stream_loading_indicator_size">30dp</dimen>
     <dimen name="item_message_outcoming_message_margin_end">30dp</dimen>
+    <dimen name="ragment_create_manager_text_size">18sp</dimen>
 </resources>

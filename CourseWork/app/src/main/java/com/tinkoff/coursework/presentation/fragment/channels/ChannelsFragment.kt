@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.FragmentContainerStreamsBinding
+import com.tinkoff.coursework.presentation.activity.main.MainActivity
 import com.tinkoff.coursework.presentation.fragment.stream.StreamFragment
 import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.util.addTo
@@ -45,6 +46,7 @@ class ChannelsFragment : Fragment() {
         initStateAdapter()
         attachTabLayoutToViewPager()
         attachTextWatcher()
+        attachListeners()
     }
 
     override fun onDestroyView() {
@@ -96,5 +98,11 @@ class ChannelsFragment : Fragment() {
                 args
             )
         }.addTo(compositeDisposable)
+    }
+
+    private fun attachListeners() {
+        binding.fragmentSearchesIconCreate.setOnClickListener {
+            (requireActivity() as? MainActivity)?.showCreateFragment()
+        }
     }
 }

@@ -7,7 +7,8 @@ import com.tinkoff.coursework.presentation.model.StreamUI
 
 class StreamViewHolder constructor(
     private val binding: ItemStreamBinding,
-    private val onStreamClick: (StreamUI) -> Unit = { _ -> }
+    private val onStreamClick: (StreamUI) -> Unit = { _ -> },
+    private val onCreateTopicClick: (StreamUI) -> Unit = { _ ->}
 ) : BaseViewHolder<ItemStreamBinding, StreamUI>(binding) {
 
     override fun bind(entityUI: StreamUI) {

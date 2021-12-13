@@ -19,7 +19,7 @@ object RetrofitModule {
             .addClient()
             .addJsonConverter()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .baseUrl("https://tinkoff-android-fall21.zulipchat.com/api/v1/")
+            .baseUrl("https://test-ponomareg-tinkoff.zulipchat.com/api/v1/")
             .build()
 
     @Singleton

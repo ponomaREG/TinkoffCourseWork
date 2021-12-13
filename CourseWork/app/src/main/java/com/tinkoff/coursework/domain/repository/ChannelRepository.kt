@@ -10,5 +10,7 @@ interface ChannelRepository {
     fun getAllChannels(): Observable<List<Stream>>
     fun getSubscribedChannels(): Observable<List<Stream>>
     fun getStreamTopics(streamId: Int): Observable<List<Topic>>
+    fun createStream(streamName: String): Completable
+    fun createTopic(streamName: String, topicName: String): Completable
     fun syncData(): Completable
 }
