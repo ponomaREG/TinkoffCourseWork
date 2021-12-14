@@ -35,6 +35,7 @@ class MessageViewGroup constructor(
     private val usernameTextView: TextView
     private val messageTextView: TextView
     private val reactionsFlexBoxLayout: FlexBoxLayout
+    private val topicNameTextView: TextView
 
     private val emojiContentTextSize: Float
     private val emojiBackgroundId: Int
@@ -48,6 +49,7 @@ class MessageViewGroup constructor(
         usernameTextView = findViewById(R.id.username)
         messageTextView = findViewById(R.id.message)
         reactionsFlexBoxLayout = findViewById(R.id.reactions)
+        topicNameTextView = findViewById(R.id.topicName)
         avatarImageView.clipToOutline = true
         imageViewIconAdd = ImageView(context).apply {
             setImageResource(R.drawable.ic_plus_emoji)
@@ -72,6 +74,7 @@ class MessageViewGroup constructor(
 
     private val avatarRect = Rect()
     private val usernameRect = Rect()
+    private val topicNameRect = Rect()
     private val messageRect = Rect()
     private val reactionsRect = Rect()
     private val backgroundRect = RectF()
@@ -88,6 +91,7 @@ class MessageViewGroup constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val avatarLayoutParams = avatarImageView.layoutParams as MarginLayoutParams
         val userNameLayoutParams = usernameTextView.layoutParams as MarginLayoutParams
+        val topicNameLayoutParams = topicNameTextView.layoutParams as MarginLayoutParams
         val messageLayoutParams = messageTextView.layoutParams as MarginLayoutParams
         val reactionsFlexBoxLayoutParams = reactionsFlexBoxLayout.layoutParams as MarginLayoutParams
 
@@ -106,6 +110,14 @@ class MessageViewGroup constructor(
             heightMeasureSpec,
             0,
             userNameLayoutParams
+        )
+        val (topicNameHeight, topicNameWidth) = measureChildWithMarginsAndGetSize(
+            topicNameTextView,
+            widthMeasureSpec,
+            usernameWidth,
+            heightMeasureSpec,
+            0,
+            topicNameLayoutParams
         )
         val (messageHeight, messageWidth) = measureChildWithMarginsAndGetSize(
             messageTextView,
@@ -128,7 +140,7 @@ class MessageViewGroup constructor(
                 avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
         val backgroundRectRight =
             backgroundRectLeft +
-                maxOf(usernameWidth, messageWidth).toFloat() + 2 * backgroundMargin
+                maxOf(usernameWidth + topicNameWidth, messageWidth).toFloat() + 2 * backgroundMargin
         backgroundRect.set(
             backgroundRectLeft.toFloat(),
             0f,
@@ -138,7 +150,7 @@ class MessageViewGroup constructor(
         setMeasuredDimension(
             resolveSize(
                 avatarWidth + maxOf(
-                    usernameWidth + backgroundMargin,
+                    usernameWidth + topicNameWidth + backgroundMargin,
                     messageWidth + backgroundMargin,
                     reactionsFlexBoxWidth
                 ),
@@ -165,6 +177,12 @@ class MessageViewGroup constructor(
             usernameRect,
             avatarImageView,
             avatarRect,
+            null
+        )
+        topicNameTextView.layout(
+            topicNameRect,
+            usernameTextView,
+            usernameRect,
             null
         )
         messageTextView.layout(
@@ -202,7 +220,8 @@ class MessageViewGroup constructor(
         avatarSetter: (ImageView) -> Unit = { avatar ->
             avatar.setImageResource(R.mipmap.ic_launcher)
         },
-        onLinkInMessageClick: (MessageHyperlinkUI) -> Unit = {}
+        onLinkInMessageClick: (MessageHyperlinkUI) -> Unit = {},
+        onTopicClick: (MessageUI) -> Unit = {}
     ) {
         avatarSetter(avatarImageView)
         usernameTextView.text =
@@ -210,6 +229,13 @@ class MessageViewGroup constructor(
                 context.getString(R.string.message_viewgroup_my_message_indicator)
             } else messageUI.username
         avatarImageView.isInvisible = messageUI.isMyMessage
+        if(messageUI.isUniqueTopicInAllChat) topicNameTextView.visibility = View.GONE
+        else {
+            topicNameTextView.text = messageUI.topicName
+            topicNameTextView.setOnClickListener {
+                onTopicClick(messageUI)
+            }
+        }
         if (messageUI.hyperlinks.isNotEmpty()) setMessageTextWithClickableSpan(
             messageUI,
             onLinkInMessageClick

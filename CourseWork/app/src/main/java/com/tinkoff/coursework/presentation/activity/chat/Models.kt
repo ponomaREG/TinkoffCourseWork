@@ -28,6 +28,7 @@ sealed class ChatAction {
     data class OpenUriInBrowser(val uri: Uri) : ChatAction()
     object OpenFilePicker : ChatAction()
     data class ShowFileUrlWithName(val name: String, val uri: Uri) : ChatAction()
+    data class OpenChatWithSortingByTopic(val topic: TopicUI): ChatAction()
 }
 
 sealed class ChatEvent {
@@ -39,10 +40,11 @@ sealed class ChatEvent {
         data class EmojiPicked(val emojiUI: EmojiUI) : Ui()
         data class EmojiClick(val contextMessage: MessageUI, val emojiPosition: Int) : Ui()
         data class CallEmojiPicker(val contextMessage: MessageUI) : Ui()
-        data class SendMessage(val message: String) : Ui()
+        data class SendMessage(val message: String, val toTopic: String?) : Ui()
         data class UploadFile(val uri: Uri) : Ui()
         data class ClickableTextAtMessageClick(val messageHyperlinkUI: MessageHyperlinkUI) : Ui()
         object CallFilePicker : Ui()
+        data class OnMessageTopicClick(val message: MessageUI): Ui()
     }
 
     sealed class Internal : ChatEvent() {
@@ -89,16 +91,12 @@ sealed class ChatCommand {
 
     data class CacheMessages(
         val messages: List<MessageUI>,
-        val streamId: Int,
-        val topicName: String?
     ) : ChatCommand()
 
     data class AddReaction(val message: MessageUI, val emojiUI: EmojiUI) : ChatCommand()
     data class RemoveReaction(val message: MessageUI, val emojiUI: EmojiUI) : ChatCommand()
 
     data class SendMessage(
-        val streamId: Int,
-        val topicName: String?,
         val message: MessageUI
     ) : ChatCommand()
 

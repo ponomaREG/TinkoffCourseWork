@@ -27,6 +27,17 @@
         tools:text="Иванов Иван" />
 
     <TextView
+        android:id="@+id/topicName"
+        android:layout_marginTop="@dimen/message_viewgroup_username_margin_top"
+        android:layout_marginStart="@dimen/message_viewgroup_topicname_margin_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/message_view_group_topic_name_text_color"
+        android:textSize="@dimen/message_viewgroup_username_text_size"
+        android:textStyle="bold"
+        tools:text="topicName" />
+
+    <TextView
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -13,5 +13,5 @@ data class MessageDB(
     @ColumnInfo(name = "userId") val userId: Int,
     @ColumnInfo(name = "avatarUrl") val avatarUrl: String,
     @ColumnInfo(name = "streamId") val streamId: Int,
-    @ColumnInfo(name = "topicName") val topicName: String?
+    @ColumnInfo(name = "topicName") val topicName: String
 )

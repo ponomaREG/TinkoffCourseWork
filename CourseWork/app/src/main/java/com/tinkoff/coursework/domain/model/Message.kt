@@ -8,5 +8,7 @@ data class Message(
     val reactions: List<Reaction>,
     val userId: Int,
     val timestamp: Long,
+    val streamId: Int,
+    val topicName: String,
     val messageHyperlinks: List<MessageHyperlink>
 )

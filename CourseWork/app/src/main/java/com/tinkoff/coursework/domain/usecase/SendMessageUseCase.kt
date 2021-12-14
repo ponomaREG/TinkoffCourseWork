@@ -9,8 +9,8 @@ class SendMessageUseCase @Inject constructor(
     private val messageRepository: MessageRepository,
     private val messageContentParser: MessageContentParser
 ) {
-    operator fun invoke(chatIds: List<Int>, topicId: String, message: Message) =
-        messageRepository.sendMessage(chatIds, topicId, message)
+    operator fun invoke(chatIds: List<Int>, message: Message) =
+        messageRepository.sendMessage(chatIds, message)
             .map {
                 val parseMessageResult =
                     messageContentParser.parseMessageContent(it.message)

@@ -170,6 +170,15 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
                 effect.uri.toString()
             ))
         }
+        is ChatAction.OpenChatWithSortingByTopic -> {
+            startActivity(
+                getIntent(
+                    this,
+                    currentStream,
+                    effect.topic
+                )
+            )
+        }
     }
 
     private fun injectDependency() {
@@ -216,7 +225,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             if (binding.chatInput.text.isNotEmpty()) {
                 val input = binding.chatInput.text
                 store.accept(
-                    ChatEvent.Ui.SendMessage(input.toString())
+                    ChatEvent.Ui.SendMessage(input.toString(),null) //TODO: Заменить когда появится плашка выбора топика
                 )
                 binding.chatInput.text = SpannableStringBuilder("")
             } else {
@@ -248,6 +257,9 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             },
             onClickableTextClick = { messageHyperlink ->
                 store.accept(ChatEvent.Ui.ClickableTextAtMessageClick(messageHyperlink))
+            },
+            onTopicNameClick = { message ->
+                store.accept(ChatEvent.Ui.OnMessageTopicClick(message))
             }
         ),
         IncomingMessageViewType(
@@ -266,6 +278,9 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             },
             onClickableTextClick = { messageHyperlink ->
                 store.accept(ChatEvent.Ui.ClickableTextAtMessageClick(messageHyperlink))
+            },
+            onTopicNameClick = { message ->
+                store.accept(ChatEvent.Ui.OnMessageTopicClick(message))
             }
         ),
         DateDividerViewType()

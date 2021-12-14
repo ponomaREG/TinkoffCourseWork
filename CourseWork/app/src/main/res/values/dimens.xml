@@ -87,4 +87,5 @@
     <dimen name="item_stream_loading_indicator_size">30dp</dimen>
     <dimen name="item_message_outcoming_message_margin_end">30dp</dimen>
     <dimen name="ragment_create_manager_text_size">18sp</dimen>
+    <dimen name="message_viewgroup_topicname_margin_start">5dp</dimen>
 </resources>

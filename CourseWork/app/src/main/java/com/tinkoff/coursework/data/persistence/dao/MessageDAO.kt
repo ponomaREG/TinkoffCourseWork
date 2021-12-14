@@ -27,7 +27,7 @@ abstract class MessageDAO {
     abstract fun getMessagesByStream(streamId: Int): Single<List<MessageDB>>
 
     @Query("DELETE FROM message WHERE streamId == :streamId and topicName == :topicName;")
-    abstract fun clearMessagesByStreamAndTopicSynch(streamId: Int, topicName: String?)
+    abstract fun clearMessagesByStreamAndTopicSynch(streamId: Int, topicName: String)
 
     @Transaction
     open fun clearAllAndInsertSynch(messages: List<MessageDB>) {

@@ -35,7 +35,11 @@ class ChatActor constructor(
             { list ->
                 ChatEvent.Internal.MessagesLoaded(
                     list.map {
-                        messageMapper.fromDomainModelToPresentationModel(it, command.myUserId)
+                        messageMapper.fromDomainModelToPresentationModel(
+                            it,
+                            command.myUserId,
+                            command.topicName != null
+                        )
                     }
                 )
             },
@@ -45,8 +49,7 @@ class ChatActor constructor(
         )
 
         is ChatCommand.SendMessage -> sendMessageUseCase(
-            listOf(command.streamId),
-            command.topicName!!,
+            listOf(command.message.streamId),
             messageMapper.fromPresentationModelToDomainModel(
                 command.message
             )
@@ -56,7 +59,8 @@ class ChatActor constructor(
                     ChatEvent.Internal.SuccessSendMessage(
                         messageMapper.fromDomainModelToPresentationModel(
                             response,
-                            command.message.senderId
+                            command.message.senderId,
+                            command.message.isUniqueTopicInAllChat
                         ),
                         response.id
                     )
@@ -73,7 +77,11 @@ class ChatActor constructor(
             { list ->
                 ChatEvent.Internal.CacheMessagesLoaded(
                     list.map {
-                        messageMapper.fromDomainModelToPresentationModel(it, command.myUserId)
+                        messageMapper.fromDomainModelToPresentationModel(
+                            it,
+                            command.myUserId,
+                            command.topicName != null
+                        )
                     }
                 )
             },
@@ -85,9 +93,7 @@ class ChatActor constructor(
         is ChatCommand.CacheMessages -> cacheMessagesUseCase(
             command.messages.map {
                 messageMapper.fromPresentationModelToDomainModel(it)
-            },
-            command.streamId,
-            command.topicName
+            }
         ).mapEvents(
             ChatEvent.Internal.SuccessCacheMessages,
             ChatEvent.Internal.ErrorCacheMessages

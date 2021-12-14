@@ -11,7 +11,8 @@ class IncomingMessageViewHolder(
     private val binding: ItemIncomingMessageBinding,
     private val onMessageLongClick: (MessageUI) -> Unit = {},
     private val onEmojiClick: (MessageUI, Int) -> Unit = { _, _ -> },
-    private val onClickableTextClick: (MessageHyperlinkUI) -> Unit = {}
+    private val onClickableTextClick: (MessageHyperlinkUI) -> Unit = {},
+    private val onTopicNameClick: (MessageUI) -> Unit = { _ -> }
 ) : BaseViewHolder<ItemIncomingMessageBinding, MessageUI>(binding) {
 
     override fun bind(entityUI: MessageUI) {
@@ -20,7 +21,8 @@ class IncomingMessageViewHolder(
             avatarSetter = { avatar ->
                 avatar.loadImageByUrl(entityUI.avatarUrl)
             },
-            onLinkInMessageClick = onClickableTextClick
+            onLinkInMessageClick = onClickableTextClick,
+            onTopicClick = onTopicNameClick
         )
         binding.root.setOnLongClickListener {
             onMessageLongClick(entityUI)

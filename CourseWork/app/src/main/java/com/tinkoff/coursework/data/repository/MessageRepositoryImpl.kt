@@ -96,9 +96,9 @@ class MessageRepositoryImpl @Inject constructor(
             list.map(messageMapper::fromPersistenceModelToDomainModel)
         }
 
-    override fun saveMessages(messages: List<Message>, streamId: Int, topicName: String?): Completable =
+    override fun saveMessages(messages: List<Message>): Completable =
         messageDAO.clearAllAndInsert(messages.map { message ->
-            messageMapper.fromDomainModelToDatabaseModel(message, streamId, topicName)
+            messageMapper.fromDomainModelToDatabaseModel(message)
         })
 
     override fun fetchCacheTopicMessages(
@@ -111,13 +111,12 @@ class MessageRepositoryImpl @Inject constructor(
 
     override fun sendMessage(
         chatIds: List<Int>,
-        topicName: String,
         message: Message
     ): Single<Message> =
         messageAPI.sendMessage(
             content = message.message,
             to = chatIds,
-            topic = topicName,
+            topic = message.topicName,
             type = "stream"
         ).map {
             message.copy(

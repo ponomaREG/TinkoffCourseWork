@@ -12,4 +12,6 @@ data class MessageNetwork(
     @SerialName("sender_id") val userId: Int,
     @SerialName("reactions") var reactions: List<ReactionNetwork>,
     @SerialName("avatar_url") val avatarUrl: String,
+    @SerialName("subject") val topicName: String,
+    @SerialName("stream_id") val streamId: Int
 )

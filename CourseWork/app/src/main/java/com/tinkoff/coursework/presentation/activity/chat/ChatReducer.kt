@@ -3,10 +3,7 @@ package com.tinkoff.coursework.presentation.activity.chat
 import androidx.core.net.toUri
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
-import com.tinkoff.coursework.presentation.model.DateDivider
-import com.tinkoff.coursework.presentation.model.EntityUI
-import com.tinkoff.coursework.presentation.model.MessageUI
-import com.tinkoff.coursework.presentation.model.ReactionUI
+import com.tinkoff.coursework.presentation.model.*
 import com.tinkoff.coursework.presentation.util.convertToDate
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
@@ -54,12 +51,13 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         senderId = state.currentUser!!.id,
                         isMyMessage = true,
                         timestamp = System.currentTimeMillis() / MILLIS_IN_SECOND,
-                        hyperlinks = emptyList()
+                        hyperlinks = emptyList(),
+                        streamId = state.currentStream.id,
+                        topicName = event.toTopic ?: state.currentTopic!!.name,
+                        isUniqueTopicInAllChat = state.currentTopic != null
                     )
                     commands {
-                        +ChatCommand.SendMessage(
-                            state.currentStream.id,
-                            state.currentTopic?.name, //TODO: Получать это как аргумент для того, чтобы отправлять из списка всех сообщений
+                        +ChatCommand.SendMessage(//TODO: Получать это как аргумент для того, чтобы отправлять из списка всех сообщений
                             newMessage
                         )
                     }
@@ -164,6 +162,15 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     +ChatAction.OpenFilePicker
                 }
             }
+            is ChatEvent.Ui.OnMessageTopicClick -> {
+                effects {
+                    +ChatAction.OpenChatWithSortingByTopic(
+                        TopicUI(
+                            event.message.topicName
+                        )
+                    )
+                }
+            }
 
             // Внутренние события
             is ChatEvent.Internal.MessagesLoaded -> {
@@ -202,9 +209,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 if (state.messages.size <= MAX_CACHE_MESSAGES) {
                     commands {
                         +ChatCommand.CacheMessages(
-                            state.messages,
-                            state.currentStream.id,
-                            state.currentTopic?.name
+                            state.messages
                         )
                     }
                 }

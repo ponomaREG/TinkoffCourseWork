@@ -14,7 +14,8 @@ import com.tinkoff.coursework.presentation.model.MessageUI
 class IncomingMessageViewType(
     private val onMessageLongClick: (MessageUI) -> Unit = {},
     private val onEmojiClick: (MessageUI, Int) -> Unit = { _, _ -> },
-    private val onClickableTextClick: (MessageHyperlinkUI) -> Unit = {}
+    private val onClickableTextClick: (MessageHyperlinkUI) -> Unit = {},
+    private val onTopicNameClick: (MessageUI) -> Unit = { _ -> }
 ) : BaseItemViewType<ItemIncomingMessageBinding, MessageUI> {
     override fun isCorrectItem(entityUI: EntityUI): Boolean =
         if (entityUI is MessageUI) {
@@ -28,7 +29,7 @@ class IncomingMessageViewType(
         parent: ViewGroup
     ): BaseViewHolder<ItemIncomingMessageBinding, MessageUI> {
         val binding = ItemIncomingMessageBinding.inflate(layoutInflater, parent, false)
-        return IncomingMessageViewHolder(binding, onMessageLongClick, onEmojiClick, onClickableTextClick)
+        return IncomingMessageViewHolder(binding, onMessageLongClick, onEmojiClick, onClickableTextClick, onTopicNameClick)
     }
 
     override fun areItemsTheSame(oldItem: MessageUI, newItem: MessageUI): Boolean {

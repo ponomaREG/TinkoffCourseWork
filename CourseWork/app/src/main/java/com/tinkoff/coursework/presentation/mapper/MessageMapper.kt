@@ -9,11 +9,13 @@ class MessageMapper @Inject constructor(
     private val messageHyperlinkMapper: MessageHyperlinkMapper
 ) {
 
-    fun fromDomainModelToPresentationModel(domainModel: Message, myUserId: Int): MessageUI {
+    fun fromDomainModelToPresentationModel(domainModel: Message, myUserId: Int, isUniqueTopicInAllChat: Boolean): MessageUI {
         return MessageUI(
             id = domainModel.id,
             username = domainModel.username,
             message = domainModel.message,
+            streamId = domainModel.streamId,
+            topicName = domainModel.topicName,
             avatarUrl = domainModel.avatarUrl,
             reactions = domainModel.reactions.map {
                 reactionMapper.fromDomainModelToPresentationModel(it, myUserId)
@@ -22,7 +24,8 @@ class MessageMapper @Inject constructor(
             isMyMessage = domainModel.userId == myUserId,
             timestamp = domainModel.timestamp,
             hyperlinks =
-            domainModel.messageHyperlinks.map(messageHyperlinkMapper::fromDomainModelToPresentationModel)
+            domainModel.messageHyperlinks.map(messageHyperlinkMapper::fromDomainModelToPresentationModel),
+            isUniqueTopicInAllChat = isUniqueTopicInAllChat
         )
     }
 
@@ -33,6 +36,8 @@ class MessageMapper @Inject constructor(
             id = presentationModel.id,
             username = presentationModel.username,
             message = presentationModel.message,
+            streamId = presentationModel.streamId,
+            topicName = presentationModel.topicName,
             avatarUrl = presentationModel.avatarUrl,
             reactions = presentationModel.reactions.map(reactionMapper::fromPresentationModelToDomainModel),
             userId = presentationModel.senderId,

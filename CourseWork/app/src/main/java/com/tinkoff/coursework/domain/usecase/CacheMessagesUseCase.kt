@@ -7,6 +7,6 @@ import javax.inject.Inject
 class CacheMessagesUseCase @Inject constructor(
     private val messageRepository: MessageRepository
 ) {
-    operator fun invoke(messages: List<Message>, streamId: Int, topicName: String?) =
-        messageRepository.saveMessages(messages, streamId, topicName)
+    operator fun invoke(messages: List<Message>) =
+        messageRepository.saveMessages(messages)
 }

@@ -13,7 +13,7 @@ import com.tinkoff.coursework.data.persistence.model.*
         UserDB::class,
         MessageReactionMtM::class,
         SubscribedChannelOtO::class],
-    version = 10
+    version = 15
 )
 abstract class AppDatabase() : RoomDatabase() {
 

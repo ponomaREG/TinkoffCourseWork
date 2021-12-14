@@ -19,6 +19,8 @@ class MessageMapper @Inject constructor(
             username = networkModel.userName,
             message = parseMessageResult.formattedMessage,
             avatarUrl = networkModel.avatarUrl,
+            streamId = networkModel.streamId,
+            topicName = networkModel.topicName,
             reactions = reactionMapper.fromNetworkModelListToDomainModelList(networkModel.reactions),
             userId = networkModel.userId,
             timestamp = networkModel.timestamp,
@@ -34,6 +36,8 @@ class MessageMapper @Inject constructor(
             username = persistenceModel.userName,
             message = parseMessageResult.formattedMessage,
             avatarUrl = persistenceModel.avatarUrl,
+            streamId = persistenceModel.streamId,
+            topicName = persistenceModel.topicName,
             reactions = listOf(),
             userId = persistenceModel.userId,
             timestamp = persistenceModel.timestamp,
@@ -41,7 +45,7 @@ class MessageMapper @Inject constructor(
         )
     }
 
-    fun fromDomainModelToDatabaseModel(domainModel: Message, streamId: Int, topicName: String?): MessageDB =
+    fun fromDomainModelToDatabaseModel(domainModel: Message): MessageDB =
         MessageDB(
             id = domainModel.id,
             userName = domainModel.username,
@@ -49,7 +53,7 @@ class MessageMapper @Inject constructor(
             avatarUrl = domainModel.avatarUrl,
             userId = domainModel.userId,
             timestamp = domainModel.timestamp,
-            streamId = streamId,
-            topicName = topicName
+            streamId = domainModel.streamId,
+            topicName = domainModel.topicName
         )
 }

@@ -16,6 +16,7 @@
     <color name="emoji_view_background_selected_color">#BFBFBF</color>
 
     <color name="message_view_group_username_text_color">#09453E</color>
+    <color name="message_view_group_topic_name_text_color">#032E29</color>
     <color name="message_view_group_message_text_color">#000000</color>
     <color name="message_view_group_background_color">#DDDDDD</color>
     <color name="message_view_group_avatar_stroke_color">#A1A1A1</color>
