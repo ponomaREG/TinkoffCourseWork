@@ -10,7 +10,9 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tinkoff.coursework.databinding.FragmentCreateManagerBinding
+import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.di.create_manager.DaggerCreateManagerComponent
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.ElmStore
@@ -23,9 +25,9 @@ class CreateManagerFragment: ElmFragment<CreateManagerEvent, CreateManagerAction
     companion object {
         private const val ARGS_CREATE_TYPE = "ARGS_CREATE_TYPE"
         fun newInstance(createType: CreateType): CreateManagerFragment{
+            val fragment = CreateManagerFragment()
             val args = Bundle()
             args.putParcelable(ARGS_CREATE_TYPE, createType)
-            val fragment = CreateManagerFragment()
             fragment.arguments = args
             return fragment
         }
@@ -44,6 +46,12 @@ class CreateManagerFragment: ElmFragment<CreateManagerEvent, CreateManagerAction
 
     override val initEvent: CreateManagerEvent
         get() = CreateManagerEvent.Ui.InitialEvent
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        DaggerCreateManagerComponent.factory().create(getAppComponent()).inject(this)
+        createType
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

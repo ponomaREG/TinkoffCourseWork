@@ -5,7 +5,7 @@ import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.*
 
 data class ChatUIState(
-    val currentTopic: TopicUI,
+    val currentTopic: TopicUI?,
     val currentStream: StreamUI,
     val messages: List<MessageUI> = mutableListOf(),
     val paginationOffset: Int = -1,
@@ -73,7 +73,7 @@ sealed class ChatEvent {
 sealed class ChatCommand {
     data class LoadMessages(
         val streamName: String,
-        val topicName: String,
+        val topicName: String?,
         val olderMessageId: Int,
         val offset: Int,
         val myUserId: Int
@@ -83,14 +83,14 @@ sealed class ChatCommand {
 
     data class LoadCacheMessages(
         val streamId: Int,
-        val topicName: String,
+        val topicName: String?,
         val myUserId: Int
     ) : ChatCommand()
 
     data class CacheMessages(
         val messages: List<MessageUI>,
         val streamId: Int,
-        val topicName: String
+        val topicName: String?
     ) : ChatCommand()
 
     data class AddReaction(val message: MessageUI, val emojiUI: EmojiUI) : ChatCommand()
@@ -98,7 +98,7 @@ sealed class ChatCommand {
 
     data class SendMessage(
         val streamId: Int,
-        val topicName: String,
+        val topicName: String?,
         val message: MessageUI
     ) : ChatCommand()
 

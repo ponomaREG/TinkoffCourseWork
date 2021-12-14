@@ -14,6 +14,7 @@ object DatabaseModule {
     @Provides
     fun provideAppDatabase(context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "megaChat.db")
+            .fallbackToDestructiveMigration()
             .build()
 
     @Singleton

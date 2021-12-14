@@ -7,15 +7,19 @@ import com.tinkoff.coursework.data.network.api.TopicAPI
 import com.tinkoff.coursework.data.network.model.StreamSubscriptionsNetwork
 import com.tinkoff.coursework.data.persistence.dao.StreamDAO
 import com.tinkoff.coursework.data.persistence.dao.TopicDAO
+import com.tinkoff.coursework.data.persistence.model.StreamDB
+import com.tinkoff.coursework.data.persistence.model.SubscribedChannelOtO
 import com.tinkoff.coursework.domain.model.Stream
 import com.tinkoff.coursework.domain.model.Topic
 import com.tinkoff.coursework.domain.repository.ChannelRepository
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.json.JSONArray
 import java.lang.IllegalStateException
 import javax.inject.Inject
 
+//TODO: Нет обновления данных
 class ChannelRepositoryImpl @Inject constructor(
     private val streamAPI: StreamAPI,
     private val topicAPI: TopicAPI,
@@ -60,15 +64,27 @@ class ChannelRepositoryImpl @Inject constructor(
         val streamSubscriptionsNetwork = StreamSubscriptionsNetwork(
             name = streamName,
             description = ""
-        )
+        ).toJSONObject()
+        val array = JSONArray().apply {
+            put(streamSubscriptionsNetwork)
+        }
         return streamAPI.subscribeToStream(
-            listOf(
-                streamSubscriptionsNetwork
-            )
+            array
         )
             .flatMapCompletable {
-                if(it.result == "success") Completable.complete()
+                if(it.result == "success") cacheStream(streamName, true)
                 else Completable.error(IllegalStateException()) //TODO: Добавить наконец нормальную обработку ошибок
+            }
+    }
+
+    override fun cacheStream(streamName: String, isSubscribed: Boolean): Completable {
+        return streamDAO.insertStream(StreamDB(-1, streamName))
+            .flatMapCompletable { newId ->
+                if(isSubscribed) {
+                    streamDAO.subscribeStream(
+                        SubscribedChannelOtO(newId.toInt())
+                    )
+                }else Completable.complete()
             }
     }
 

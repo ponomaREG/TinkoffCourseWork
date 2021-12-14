@@ -46,7 +46,7 @@ class ChatActor constructor(
 
         is ChatCommand.SendMessage -> sendMessageUseCase(
             listOf(command.streamId),
-            command.topicName,
+            command.topicName!!,
             messageMapper.fromPresentationModelToDomainModel(
                 command.message
             )

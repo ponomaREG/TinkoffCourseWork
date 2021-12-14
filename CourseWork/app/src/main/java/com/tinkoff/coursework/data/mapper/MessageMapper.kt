@@ -41,7 +41,7 @@ class MessageMapper @Inject constructor(
         )
     }
 
-    fun fromDomainModelToDatabaseModel(domainModel: Message, streamId: Int, topicName: String): MessageDB =
+    fun fromDomainModelToDatabaseModel(domainModel: Message, streamId: Int, topicName: String?): MessageDB =
         MessageDB(
             id = domainModel.id,
             userName = domainModel.username,

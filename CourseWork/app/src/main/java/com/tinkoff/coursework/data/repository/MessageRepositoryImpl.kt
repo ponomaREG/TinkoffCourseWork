@@ -17,7 +17,7 @@ class MessageRepositoryImpl @Inject constructor(
     private val messageMapper: MessageMapper,
 ) : MessageRepository {
 
-    override fun fetchMessages(
+    override fun fetchTopicMessages(
         streamName: String,
         topicName: String,
         anchor: Int,
@@ -60,12 +60,48 @@ class MessageRepositoryImpl @Inject constructor(
             response.messages.map(messageMapper::fromNetworkModelToDomainModel)
         }
 
-    override fun saveMessages(messages: List<Message>, streamId: Int, topicName: String): Completable =
+    override fun fetchStreamMessages(streamName: String, anchor: Int, offset: Int): Single<List<Message>> {
+        return (if(anchor == -1) {
+            messageAPI.getMessages(
+                anchor = "newest",
+                numAfter = 0,
+                numBefore = offset,
+                narrow = listOf(
+                    NarrowNetwork(
+                        operator = "stream",
+                        operand = streamName
+                    ),
+                ).convertToJsonArray(),
+                applyMarkdown = false
+            )
+        } else
+            messageAPI.getMessages(
+                anchor = anchor,
+                numAfter = 0,
+                numBefore = offset,
+                narrow = listOf(
+                    NarrowNetwork(
+                        operator = "stream",
+                        operand = streamName
+                    ),
+                ).convertToJsonArray(),
+                applyMarkdown = false
+            )).map { response ->
+            response.messages.map(messageMapper::fromNetworkModelToDomainModel)
+        }
+    }
+
+    override fun fetchCacheStreamMessages(streamId: Int): Single<List<Message>> =
+        messageDAO.getMessagesByStream(streamId).map { list ->
+            list.map(messageMapper::fromPersistenceModelToDomainModel)
+        }
+
+    override fun saveMessages(messages: List<Message>, streamId: Int, topicName: String?): Completable =
         messageDAO.clearAllAndInsert(messages.map { message ->
             messageMapper.fromDomainModelToDatabaseModel(message, streamId, topicName)
         })
 
-    override fun fetchCacheMessages(
+    override fun fetchCacheTopicMessages(
         streamId: Int,
         topicName: String
     ): Single<List<Message>> =

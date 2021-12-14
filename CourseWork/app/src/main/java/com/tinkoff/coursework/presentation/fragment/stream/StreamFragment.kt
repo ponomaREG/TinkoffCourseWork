@@ -15,7 +15,6 @@ import com.tinkoff.coursework.presentation.adapter.viewtype.StreamViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.TopicViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.di.stream.DaggerStreamComponent
-import com.tinkoff.coursework.presentation.di.stream.StreamComponent
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
 import com.tinkoff.coursework.presentation.model.TopicUI
@@ -59,6 +58,11 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
     private val streamAdapter: DelegateAdapter = DelegateAdapter(
         listOf(
             StreamViewType(
+                onStreamExpandClick = { stream ->
+                    store.accept(
+                        StreamEvent.Ui.StreamExpandClick(stream)
+                    )
+                },
                 onStreamClick = { stream ->
                     store.accept(
                         StreamEvent.Ui.StreamClick(stream)
@@ -162,11 +166,11 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
         }
     }
 
-    private fun showChatActivity(stream: StreamUI, topic: TopicUI) {
+    private fun showChatActivity(stream: StreamUI, topic: TopicUI?) {
         activity?.let { context ->
-            context.startActivity(
-                ChatActivity.getIntent(context, stream, topic)
-            )
+            val intent = if(topic == null) ChatActivity.getIntent(context, stream)
+            else ChatActivity.getIntent(context, stream, topic)
+            context.startActivity(intent)
         }
     }
 }

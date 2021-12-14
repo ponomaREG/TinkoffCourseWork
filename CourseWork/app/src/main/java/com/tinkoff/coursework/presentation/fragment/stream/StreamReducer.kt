@@ -30,7 +30,7 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
                 }
             }
         }
-        is StreamEvent.Ui.StreamClick -> {
+        is StreamEvent.Ui.StreamExpandClick -> {
             if (event.stream.topics == null) {
                 val newStreams = state.streams.mapWithNew(event.stream.copy(isLoading = true))
                 val newFilteredStreams = state.filteredStreams?.mapWithNew(event.stream.copy(isLoading = true))
@@ -139,6 +139,11 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         }
         is StreamEvent.Ui.CreateTopicClick -> {
 
+        }
+        is StreamEvent.Ui.StreamClick -> {
+            effects {
+                +StreamAction.ShowChatActivity(event.stream, null)
+            }
         }
     }
 

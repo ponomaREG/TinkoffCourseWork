@@ -16,6 +16,9 @@ abstract class StreamDAO {
     abstract fun insertStreams(streams: List<StreamDB>): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract fun insertStream(stream: StreamDB): Single<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun subscribeStream(subscribedChannelOtO: SubscribedChannelOtO): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

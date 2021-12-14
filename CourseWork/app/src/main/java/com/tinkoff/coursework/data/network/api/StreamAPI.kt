@@ -7,6 +7,7 @@ import com.tinkoff.coursework.data.network.response.SubscribeToStreamResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.internal.operators.completable.CompletableAmb
+import org.json.JSONArray
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -21,6 +22,6 @@ interface StreamAPI {
 
     @POST("users/me/subscriptions")
     fun subscribeToStream(
-        @Query("subscriptions") list: List<StreamSubscriptionsNetwork>
+        @Query("subscriptions") list: JSONArray
     ): Single<SubscribeToStreamResponse>
 }

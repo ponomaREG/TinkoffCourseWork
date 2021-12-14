@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
@@ -47,6 +48,12 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             intentToChatActivity.putExtra(EXTRA_TOPIC, topic)
             return intentToChatActivity
         }
+
+        fun getIntent(context: Context, stream: StreamUI): Intent {
+            val intentToChatActivity = Intent(context, ChatActivity::class.java)
+            intentToChatActivity.putExtra(EXTRA_STREAM, stream)
+            return intentToChatActivity
+        }
     }
 
     @Inject
@@ -79,8 +86,8 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
     private val currentStream: StreamUI
         get() = intent.getParcelableExtra(EXTRA_STREAM) ?: throw IllegalStateException()
 
-    private val currentTopic: TopicUI
-        get() = intent.getParcelableExtra(EXTRA_TOPIC) ?: throw IllegalStateException()
+    private val currentTopic: TopicUI?
+        get() = intent.getParcelableExtra(EXTRA_TOPIC)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,10 +184,12 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             setHomeButtonEnabled(true)
             title = currentStream.name
         }
-        binding.chatTopic.text = String.format(
-            resources.getString(R.string.chat_topic),
-            currentTopic.name
-        )
+        if(currentTopic != null) {
+            binding.chatTopic.text = String.format(
+                resources.getString(R.string.chat_topic),
+                currentTopic!!.name
+            )
+        } else binding.chatTopic.visibility = View.GONE
     }
 
     private fun initRecyclerView() {

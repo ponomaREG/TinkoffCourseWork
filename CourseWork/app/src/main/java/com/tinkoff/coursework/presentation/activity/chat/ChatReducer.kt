@@ -30,7 +30,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 commands {
                     +ChatCommand.LoadMessages(
                         state.currentStream.name,
-                        state.currentTopic.name,
+                        state.currentTopic?.name,
                         state.olderMessageId,
                         state.paginationOffset,
                         state.currentUser!!.id
@@ -59,7 +59,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     commands {
                         +ChatCommand.SendMessage(
                             state.currentStream.id,
-                            state.currentTopic.name,
+                            state.currentTopic?.name, //TODO: Получать это как аргумент для того, чтобы отправлять из списка всех сообщений
                             newMessage
                         )
                     }
@@ -204,7 +204,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         +ChatCommand.CacheMessages(
                             state.messages,
                             state.currentStream.id,
-                            state.currentTopic.name
+                            state.currentTopic?.name
                         )
                     }
                 }
@@ -227,12 +227,12 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 commands {
                     +ChatCommand.LoadCacheMessages(
                         state.currentStream.id,
-                        state.currentTopic.name,
+                        state.currentTopic?.name,
                         event.userUI.id
                     )
                     +ChatCommand.LoadMessages(
                         state.currentStream.name,
-                        state.currentTopic.name,
+                        state.currentTopic?.name,
                         state.olderMessageId,
                         state.paginationOffset,
                         state.currentUser!!.id

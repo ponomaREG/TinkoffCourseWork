@@ -10,6 +10,7 @@ import com.tinkoff.coursework.R
 import com.tinkoff.coursework.databinding.ActivityMainBinding
 import com.tinkoff.coursework.presentation.fragment.channels.ChannelsFragment
 import com.tinkoff.coursework.presentation.fragment.create_manager.CreateManagerFragment
+import com.tinkoff.coursework.presentation.fragment.create_manager.CreateType
 import com.tinkoff.coursework.presentation.fragment.people.PeopleFragment
 import com.tinkoff.coursework.presentation.fragment.profile.ProfileFragment
 
@@ -35,9 +36,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showCreateFragment() {
-        val createManagerFragment = CreateManagerFragment()
+        val createManagerFragment = CreateManagerFragment.newInstance(CreateType.Stream)
         supportFragmentManager.beginTransaction()
             .replace(binding.mainContainer.id, createManagerFragment)
+            .addToBackStack(null)
             .commit()
     }
 

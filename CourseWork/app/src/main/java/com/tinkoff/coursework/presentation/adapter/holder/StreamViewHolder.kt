@@ -7,8 +7,9 @@ import com.tinkoff.coursework.presentation.model.StreamUI
 
 class StreamViewHolder constructor(
     private val binding: ItemStreamBinding,
-    private val onStreamClick: (StreamUI) -> Unit = { _ -> },
-    private val onCreateTopicClick: (StreamUI) -> Unit = { _ ->}
+    private val onStreamExpandClick: (StreamUI) -> Unit = { _ -> },
+    private val onCreateTopicClick: (StreamUI) -> Unit = { _ -> },
+    private val onStreamClick: (StreamUI) -> Unit = { _ -> }
 ) : BaseViewHolder<ItemStreamBinding, StreamUI>(binding) {
 
     override fun bind(entityUI: StreamUI) {
@@ -26,8 +27,11 @@ class StreamViewHolder constructor(
         binding.itemStreamLoadingIndicator.isGone = entityUI.isLoading.not()
         binding.itemStreamExpandArrow.isGone = entityUI.isLoading
         binding.itemStreamExpandArrow.rotation = rotation
-        binding.root.setOnClickListener {
+        binding.itemStreamName.setOnClickListener {
             onStreamClick(entityUI)
+        }
+        binding.root.setOnClickListener {
+            onStreamExpandClick(entityUI)
         }
     }
 }
