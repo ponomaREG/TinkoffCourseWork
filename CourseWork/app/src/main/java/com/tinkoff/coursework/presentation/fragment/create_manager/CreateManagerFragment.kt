@@ -4,27 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.Fragment
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tinkoff.coursework.databinding.FragmentCreateManagerBinding
 import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.di.create_manager.DaggerCreateManagerComponent
+import com.tinkoff.coursework.presentation.util.showToast
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.core.ElmStoreCompat
-import vivid.money.elmslie.core.store.ElmStore
 import vivid.money.elmslie.core.store.Store
-import java.lang.IllegalStateException
 import javax.inject.Inject
 
-class CreateManagerFragment: ElmFragment<CreateManagerEvent, CreateManagerAction, CreateManagerState>() {
+class CreateManagerFragment :
+    ElmFragment<CreateManagerEvent, CreateManagerAction, CreateManagerState>() {
 
     companion object {
         private const val ARGS_CREATE_TYPE = "ARGS_CREATE_TYPE"
-        fun newInstance(createType: CreateType): CreateManagerFragment{
+        fun newInstance(createType: CreateType): CreateManagerFragment {
             val fragment = CreateManagerFragment()
             val args = Bundle()
             args.putParcelable(ARGS_CREATE_TYPE, createType)
@@ -38,10 +35,10 @@ class CreateManagerFragment: ElmFragment<CreateManagerEvent, CreateManagerAction
 
     private var _binding: FragmentCreateManagerBinding? = null
     private val binding: FragmentCreateManagerBinding
-    get() = _binding!!
+        get() = _binding!!
 
     private val createType: CreateType
-    get() = requireArguments().getParcelable(ARGS_CREATE_TYPE) ?: throw IllegalStateException()
+        get() = requireArguments().getParcelable(ARGS_CREATE_TYPE) ?: throw IllegalStateException()
 
 
     override val initEvent: CreateManagerEvent
@@ -96,12 +93,12 @@ class CreateManagerFragment: ElmFragment<CreateManagerEvent, CreateManagerAction
         }
     }
 
-    override fun handleEffect(effect: CreateManagerAction) = when(effect) {
+    override fun handleEffect(effect: CreateManagerAction) = when (effect) {
         CreateManagerAction.CloseWithResult -> {
             requireActivity().supportFragmentManager.popBackStack()
         }
-        is CreateManagerAction.ShowError -> {
-            Toast.makeText(requireContext(), effect.error, Toast.LENGTH_SHORT).show()
+        is CreateManagerAction.ShowToastMessage -> {
+            requireContext().showToast(requireContext().getString(effect.error))
         }
     }
 

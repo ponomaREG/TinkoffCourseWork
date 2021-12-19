@@ -9,7 +9,11 @@ class MessageMapper @Inject constructor(
     private val messageHyperlinkMapper: MessageHyperlinkMapper
 ) {
 
-    fun fromDomainModelToPresentationModel(domainModel: Message, myUserId: Int, isUniqueTopicInAllChat: Boolean): MessageUI {
+    fun fromDomainModelToPresentationModel(
+        domainModel: Message,
+        myUserId: Int,
+        isUniqueTopicInAllChat: Boolean
+    ): MessageUI {
         return MessageUI(
             id = domainModel.id,
             username = domainModel.username,

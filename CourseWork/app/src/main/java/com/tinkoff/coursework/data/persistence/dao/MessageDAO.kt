@@ -21,7 +21,10 @@ abstract class MessageDAO {
     abstract fun insertMessagesSynch(messages: List<MessageDB>)
 
     @Query("SELECT * FROM message WHERE streamId == :streamId and topicName == :topicName;")
-    abstract fun getMessagesByStreamAndTopic(streamId: Int, topicName: String): Single<List<MessageDB>>
+    abstract fun getMessagesByStreamAndTopic(
+        streamId: Int,
+        topicName: String
+    ): Single<List<MessageDB>>
 
     @Query("SELECT * FROM message WHERE streamId == :streamId;")
     abstract fun getMessagesByStream(streamId: Int): Single<List<MessageDB>>

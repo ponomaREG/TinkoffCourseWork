@@ -13,8 +13,7 @@
         android:layout_weight="5"
         android:textSize="@dimen/ragment_create_manager_text_size"
         android:textColor="@color/fragment_create_manager_input_text"
-        tools:text="Privet"
-        />
+        tools:text="Privet" />
 
     <ImageView
         android:id="@+id/commit"
@@ -22,8 +21,7 @@
         android:layout_height="35dp"
         android:layout_weight="0.5"
         android:src="@drawable/ic_commit"
-        android:layout_gravity="center_vertical"
-        />
+        android:layout_gravity="center_vertical" />
 
     <ProgressBar
         android:id="@+id/progress_indicator"
@@ -31,8 +29,7 @@
         android:layout_height="35dp"
         android:layout_weight="0.5"
         android:layout_gravity="center_vertical"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
 
 </LinearLayout>

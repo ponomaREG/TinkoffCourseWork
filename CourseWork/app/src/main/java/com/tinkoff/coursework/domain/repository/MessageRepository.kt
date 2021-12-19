@@ -6,7 +6,13 @@ import io.reactivex.Single
 
 interface MessageRepository {
 
-    fun fetchTopicMessages(streamName: String, topicName: String, anchor: Int, offset: Int): Single<List<Message>>
+    fun fetchTopicMessages(
+        streamName: String,
+        topicName: String,
+        anchor: Int,
+        offset: Int
+    ): Single<List<Message>>
+
     fun fetchStreamMessages(streamName: String, anchor: Int, offset: Int): Single<List<Message>>
     fun sendMessage(chatIds: List<Int>, message: Message): Single<Message>
     fun saveMessages(messages: List<Message>): Completable

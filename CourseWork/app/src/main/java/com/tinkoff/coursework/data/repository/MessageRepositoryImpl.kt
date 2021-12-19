@@ -60,8 +60,12 @@ class MessageRepositoryImpl @Inject constructor(
             response.messages.map(messageMapper::fromNetworkModelToDomainModel)
         }
 
-    override fun fetchStreamMessages(streamName: String, anchor: Int, offset: Int): Single<List<Message>> {
-        return (if(anchor == -1) {
+    override fun fetchStreamMessages(
+        streamName: String,
+        anchor: Int,
+        offset: Int
+    ): Single<List<Message>> {
+        return (if (anchor == -1) {
             messageAPI.getMessages(
                 anchor = "newest",
                 numAfter = 0,
@@ -116,7 +120,7 @@ class MessageRepositoryImpl @Inject constructor(
         messageAPI.sendMessage(
             content = message.message,
             to = chatIds,
-            topic = message.topicName,
+            topic = if (message.topicName.isNotEmpty()) message.topicName else "all",
             type = "stream"
         ).map {
             message.copy(

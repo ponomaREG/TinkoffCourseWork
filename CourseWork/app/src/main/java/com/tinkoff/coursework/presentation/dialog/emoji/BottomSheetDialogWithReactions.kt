@@ -5,17 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.tinkoff.coursework.databinding.BottomSheetDialogReactionsBinding
+import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.adapter.DelegateAdapter
 import com.tinkoff.coursework.presentation.adapter.viewtype.EmojiViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
+import com.tinkoff.coursework.presentation.di.emoji_picker.DaggerEmojiPickerComponent
 import com.tinkoff.coursework.presentation.model.EmojiUI
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
 class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
 
@@ -25,7 +28,10 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
         }
     }
 
-    private val viewModel: BSDReactionViewModel by viewModels()
+    @Inject
+    internal lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    internal lateinit var viewModel: BSDReactionViewModel
 
     private lateinit var emojiAdapter: DelegateAdapter
 
@@ -36,6 +42,8 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DaggerEmojiPickerComponent.factory().create(getAppComponent()).inject(this)
+        viewModel = ViewModelProvider(this, viewModelFactory)[BSDReactionViewModel::class.java]
         emojiAdapter = DelegateAdapter(
             listOf(
                 EmojiViewType { emoji ->

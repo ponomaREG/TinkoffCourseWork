@@ -15,7 +15,6 @@ import com.tinkoff.coursework.presentation.adapter.decorator.OffsetItemDecorator
 import com.tinkoff.coursework.presentation.adapter.viewtype.UserViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.di.people.DaggerPeopleComponent
-import com.tinkoff.coursework.presentation.di.people.PeopleComponent
 import com.tinkoff.coursework.presentation.util.addTo
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
@@ -123,7 +122,7 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleAction, PeopleUIState>() {
 
     override fun handleEffect(effect: PeopleAction) = when (effect) {
         is PeopleAction.ShowToastMessage ->
-            requireContext().showToast(effect.message)
+            requireContext().showToast(requireContext().getString(effect.messageId))
         is PeopleAction.ShowUserProfile ->
             requireContext().showToast(effect.user.toString())
     }

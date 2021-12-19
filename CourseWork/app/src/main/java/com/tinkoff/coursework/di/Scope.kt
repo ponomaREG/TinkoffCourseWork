@@ -16,3 +16,6 @@ annotation class PeopleScope
 
 @Scope
 annotation class CreateManagerScope
+
+@Scope
+annotation class EmojiPickerScope

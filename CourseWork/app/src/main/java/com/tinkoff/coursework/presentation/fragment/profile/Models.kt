@@ -9,7 +9,7 @@ data class ProfileUIState(
 )
 
 sealed class ProfileAction {
-    data class ShowToastMessage(val message: String) : ProfileAction()
+    data class ShowToastMessage(val messageId: Int) : ProfileAction()
 }
 
 sealed class ProfileEvent {

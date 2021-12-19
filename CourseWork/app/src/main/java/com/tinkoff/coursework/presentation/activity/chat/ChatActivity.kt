@@ -23,7 +23,6 @@ import com.tinkoff.coursework.presentation.adapter.viewtype.DateDividerViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.IncomingMessageViewType
 import com.tinkoff.coursework.presentation.adapter.viewtype.OutcomingMessageViewType
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.di.chat.ChatComponent
 import com.tinkoff.coursework.presentation.di.chat.DaggerChatComponent
 import com.tinkoff.coursework.presentation.dialog.emoji.BottomSheetDialogWithReactions
 import com.tinkoff.coursework.presentation.model.EmojiUI
@@ -35,7 +34,8 @@ import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
-class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSheetDialogWithReactions.OnEmojiPickListener {
+class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
+    BottomSheetDialogWithReactions.OnEmojiPickListener {
 
     companion object {
         private const val EXTRA_STREAM = "EXTRA_STREAM"
@@ -62,11 +62,12 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
     override val initEvent: ChatEvent
         get() = ChatEvent.Ui.InitEvent
 
-    private val filePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let {
-            store.accept(ChatEvent.Ui.UploadFile(it))
+    private val filePicker =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                store.accept(ChatEvent.Ui.UploadFile(it))
+            }
         }
-    }
 
     private val paginator = PaginatorRecyclerView(
         loadMoreItems = {
@@ -150,7 +151,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             dialogWithReactions.show(supportFragmentManager, null)
         is ChatAction.HideBottomSheetDialog -> dialogWithReactions.dismiss()
         is ChatAction.ShowToastMessage ->
-            showToast(effect.message)
+            showToast(getString(effect.messageId))
         is ChatAction.ShowPreviouslyTypedMessage ->
             binding.chatInput.text = SpannableStringBuilder(effect.message)
         is ChatAction.DisablePagination ->
@@ -163,12 +164,14 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             filePicker.launch("image/*")
         }
         is ChatAction.ShowFileUrlWithName -> {
-            binding.chatInput.text = SpannableStringBuilder(String.format(
-                getString(R.string.file_uploaded_template),
-                binding.chatInput.text.toString(),
-                effect.name,
-                effect.uri.toString()
-            ))
+            binding.chatInput.text = SpannableStringBuilder(
+                String.format(
+                    getString(R.string.file_uploaded_template),
+                    binding.chatInput.text.toString(),
+                    effect.name,
+                    effect.uri.toString()
+                )
+            )
         }
         is ChatAction.OpenChatWithSortingByTopic -> {
             startActivity(
@@ -193,7 +196,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             setHomeButtonEnabled(true)
             title = currentStream.name
         }
-        if(currentTopic != null) {
+        if (currentTopic != null) {
             binding.chatTopic.text = String.format(
                 resources.getString(R.string.chat_topic),
                 currentTopic!!.name
@@ -225,7 +228,7 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(), BottomSh
             if (binding.chatInput.text.isNotEmpty()) {
                 val input = binding.chatInput.text
                 store.accept(
-                    ChatEvent.Ui.SendMessage(input.toString(),null) //TODO: Заменить когда появится плашка выбора топика
+                    ChatEvent.Ui.SendMessage(input.toString())
                 )
                 binding.chatInput.text = SpannableStringBuilder("")
             } else {

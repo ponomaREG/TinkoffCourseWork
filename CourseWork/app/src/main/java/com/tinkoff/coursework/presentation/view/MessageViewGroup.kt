@@ -137,10 +137,13 @@ class MessageViewGroup constructor(
         )
         val backgroundRectLeft =
             avatarImageView.measuredHeight +
-                avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
+                    avatarImageView.marginEnd + avatarImageView.marginStart - backgroundMargin
         val backgroundRectRight =
             backgroundRectLeft +
-                maxOf(usernameWidth + topicNameWidth, messageWidth).toFloat() + 2 * backgroundMargin
+                    maxOf(
+                        usernameWidth + topicNameWidth,
+                        messageWidth
+                    ).toFloat() + 2 * backgroundMargin
         backgroundRect.set(
             backgroundRectLeft.toFloat(),
             0f,
@@ -229,7 +232,7 @@ class MessageViewGroup constructor(
                 context.getString(R.string.message_viewgroup_my_message_indicator)
             } else messageUI.username
         avatarImageView.isInvisible = messageUI.isMyMessage
-        if(messageUI.isUniqueTopicInAllChat) topicNameTextView.visibility = View.GONE
+        if (messageUI.isUniqueTopicInAllChat) topicNameTextView.visibility = View.GONE
         else {
             topicNameTextView.text = messageUI.topicName
             topicNameTextView.setOnClickListener {

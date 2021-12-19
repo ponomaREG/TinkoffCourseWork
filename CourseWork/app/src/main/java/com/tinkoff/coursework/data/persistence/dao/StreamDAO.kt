@@ -4,6 +4,7 @@ import androidx.room.*
 import com.tinkoff.coursework.data.persistence.model.StreamDB
 import com.tinkoff.coursework.data.persistence.model.SubscribedChannelOtO
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 @Dao
@@ -31,10 +32,10 @@ abstract class StreamDAO {
     abstract fun clearAllSynch()
 
     @Query("SELECT * FROM stream ORDER BY id DESC;")
-    abstract fun getAllStreams(): Single<List<StreamDB>>
+    abstract fun getAllStreams(): Observable<List<StreamDB>>
 
     @Query("SELECT * FROM stream WHERE id in (SELECT streamId from subscribedChannels);")
-    abstract fun getSubscribedStreams(): Single<List<StreamDB>>
+    abstract fun getSubscribedStreams(): Observable<List<StreamDB>>
 
     @Query("DELETE FROM stream WHERE id in (SELECT streamId from subscribedChannels);")
     abstract fun clearStreamsWhichSubscribedSynch()

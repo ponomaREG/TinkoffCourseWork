@@ -4,9 +4,10 @@ import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.error.parseError
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
-class CreateManagerReducer: DslReducer<CreateManagerEvent, CreateManagerState, CreateManagerAction, CreateManagerCommand>() {
+class CreateManagerReducer :
+    DslReducer<CreateManagerEvent, CreateManagerState, CreateManagerAction, CreateManagerCommand>() {
 
-    override fun Result.reduce(event: CreateManagerEvent): Any = when(event) {
+    override fun Result.reduce(event: CreateManagerEvent): Any = when (event) {
         is CreateManagerEvent.Ui.Create -> {
             state {
                 copy(
@@ -14,12 +15,9 @@ class CreateManagerReducer: DslReducer<CreateManagerEvent, CreateManagerState, C
                 )
             }
             commands {
-                when(event.createType) {
+                when (event.createType) {
                     is CreateType.Stream -> {
                         +CreateManagerCommand.CreateStream(event.input)
-                    }
-                    is CreateType.Topic -> {
-                        +CreateManagerCommand.CreateTopic(event.createType.streamName, event.input)
                     }
                 }
             }
@@ -31,7 +29,7 @@ class CreateManagerReducer: DslReducer<CreateManagerEvent, CreateManagerState, C
                 )
             }
             effects {
-                +CreateManagerAction.ShowError(event.throwable.parseError().message)
+                +CreateManagerAction.ShowToastMessage(event.throwable.parseError().messageId)
             }
         }
         CreateManagerEvent.Internal.SuccessCreating -> {
@@ -44,6 +42,7 @@ class CreateManagerReducer: DslReducer<CreateManagerEvent, CreateManagerState, C
                 +CreateManagerAction.CloseWithResult
             }
         }
-        CreateManagerEvent.Ui.InitialEvent ->  {}
+        CreateManagerEvent.Ui.InitialEvent -> {
+        }
     }
 }

@@ -146,7 +146,8 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     override fun handleEffect(effect: StreamAction): Unit = when (effect) {
         is StreamAction.ShowChatActivity -> showChatActivity(effect.stream, effect.topic)
-        is StreamAction.ShowToastMessage -> requireContext().showToast(effect.message)
+        is StreamAction.ShowToastMessage ->
+            requireContext().showToast(requireContext().getString(effect.messageId))
         is StreamAction.OpenCreationFragment -> {
 
         }
@@ -168,7 +169,7 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
 
     private fun showChatActivity(stream: StreamUI, topic: TopicUI?) {
         activity?.let { context ->
-            val intent = if(topic == null) ChatActivity.getIntent(context, stream)
+            val intent = if (topic == null) ChatActivity.getIntent(context, stream)
             else ChatActivity.getIntent(context, stream, topic)
             context.startActivity(intent)
         }

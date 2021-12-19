@@ -7,34 +7,30 @@ data class CreateManagerState(
 )
 
 sealed class CreateManagerAction {
-    object CloseWithResult: CreateManagerAction()
-    data class ShowError(val error: String): CreateManagerAction()
+    object CloseWithResult : CreateManagerAction()
+    data class ShowToastMessage(val error: Int) : CreateManagerAction()
 }
 
 sealed class CreateManagerEvent {
 
-    sealed class Ui: CreateManagerEvent() {
+    sealed class Ui : CreateManagerEvent() {
         data class Create(
             val input: String,
             val createType: CreateType
-            ): Ui()
+        ) : Ui()
 
-        object InitialEvent: Ui()
+        object InitialEvent : Ui()
     }
 
-    sealed class Internal: CreateManagerEvent() {
-        object SuccessCreating: Internal()
-        data class ErrorCreating(val throwable: Throwable): Internal()
+    sealed class Internal : CreateManagerEvent() {
+        object SuccessCreating : Internal()
+        data class ErrorCreating(val throwable: Throwable) : Internal()
     }
 }
 
 sealed class CreateManagerCommand {
-    data class CreateTopic(
-        val streamName: String,
-        val topicName: String
-    ): CreateManagerCommand()
 
     data class CreateStream(
         val streamName: String
-    ): CreateManagerCommand()
+    ) : CreateManagerCommand()
 }

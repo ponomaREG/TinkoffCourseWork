@@ -29,7 +29,13 @@ class IncomingMessageViewType(
         parent: ViewGroup
     ): BaseViewHolder<ItemIncomingMessageBinding, MessageUI> {
         val binding = ItemIncomingMessageBinding.inflate(layoutInflater, parent, false)
-        return IncomingMessageViewHolder(binding, onMessageLongClick, onEmojiClick, onClickableTextClick, onTopicNameClick)
+        return IncomingMessageViewHolder(
+            binding,
+            onMessageLongClick,
+            onEmojiClick,
+            onClickableTextClick,
+            onTopicNameClick
+        )
     }
 
     override fun areItemsTheSame(oldItem: MessageUI, newItem: MessageUI): Boolean {

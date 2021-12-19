@@ -16,10 +16,8 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.json.JSONArray
-import java.lang.IllegalStateException
 import javax.inject.Inject
 
-//TODO: Нет обновления данных
 class ChannelRepositoryImpl @Inject constructor(
     private val streamAPI: StreamAPI,
     private val topicAPI: TopicAPI,
@@ -40,7 +38,7 @@ class ChannelRepositoryImpl @Inject constructor(
                 streamsFromApi.map(streamMapper::fromDomainModelToDatabaseModel)
             ).andThen(Single.just(streamsFromApi))
         }
-        return Single.concat(streamDatabase, streamApi).toObservable()
+        return Observable.merge(streamDatabase, streamApi.toObservable())
     }
 
     override fun getStreamTopics(streamId: Int): Observable<List<Topic>> {
@@ -72,24 +70,20 @@ class ChannelRepositoryImpl @Inject constructor(
             array
         )
             .flatMapCompletable {
-                if(it.result == "success") cacheStream(streamName, true)
-                else Completable.error(IllegalStateException()) //TODO: Добавить наконец нормальную обработку ошибок
+                if (it.result == "success") cacheStream(streamName, true)
+                else Completable.error(IllegalStateException())
             }
     }
 
     override fun cacheStream(streamName: String, isSubscribed: Boolean): Completable {
         return streamDAO.insertStream(StreamDB(-1, streamName))
             .flatMapCompletable { newId ->
-                if(isSubscribed) {
+                if (isSubscribed) {
                     streamDAO.subscribeStream(
                         SubscribedChannelOtO(newId.toInt())
                     )
-                }else Completable.complete()
+                } else Completable.complete()
             }
-    }
-
-    override fun createTopic(streamName: String, topicName: String): Completable {//Not yet implemented
-        return Completable.complete()  //TODO: Убрать
     }
 
     override fun syncData(): Completable {
@@ -135,6 +129,6 @@ class ChannelRepositoryImpl @Inject constructor(
                 streams.map(streamMapper::fromDomainModelToDatabaseModel)
             ).andThen(Single.just(streams))
         }
-        return Single.concat(streamDatabase, streamApi).toObservable()
+        return Observable.merge(streamDatabase, streamApi.toObservable())
     }
 }

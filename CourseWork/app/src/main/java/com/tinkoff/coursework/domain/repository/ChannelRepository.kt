@@ -12,6 +12,5 @@ interface ChannelRepository {
     fun getStreamTopics(streamId: Int): Observable<List<Topic>>
     fun createStream(streamName: String): Completable
     fun cacheStream(streamName: String, isSubscribed: Boolean): Completable
-    fun createTopic(streamName: String, topicName: String): Completable
     fun syncData(): Completable
 }

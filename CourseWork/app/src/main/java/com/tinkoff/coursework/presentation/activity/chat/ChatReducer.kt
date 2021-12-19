@@ -53,13 +53,11 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         timestamp = System.currentTimeMillis() / MILLIS_IN_SECOND,
                         hyperlinks = emptyList(),
                         streamId = state.currentStream.id,
-                        topicName = event.toTopic ?: state.currentTopic!!.name,
+                        topicName = state.currentTopic?.name ?: "",
                         isUniqueTopicInAllChat = state.currentTopic != null
                     )
                     commands {
-                        +ChatCommand.SendMessage(//TODO: Получать это как аргумент для того, чтобы отправлять из списка всех сообщений
-                            newMessage
-                        )
+                        +ChatCommand.SendMessage(newMessage)
                     }
                 } else {
                     state {
@@ -137,7 +135,10 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 }
                 val clickedReaction = event.contextMessage.reactions[event.emojiPosition]
                 commands {
-                    if (clickedReaction.isSelected) +ChatCommand.RemoveReaction(event.contextMessage, clickedReaction.emojiUI)
+                    if (clickedReaction.isSelected) +ChatCommand.RemoveReaction(
+                        event.contextMessage,
+                        clickedReaction.emojiUI
+                    )
                     else +ChatCommand.AddReaction(event.contextMessage, clickedReaction.emojiUI)
                 }
             }
@@ -191,7 +192,9 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         }
                     }
                     val newOlderMessageId =
-                        if (olderMessageId == -1 || event.items.isNullOrEmpty().not()) event.items.first().id
+                        if (olderMessageId == -1 || event.items.isNullOrEmpty()
+                                .not()
+                        ) event.items.first().id
                         else olderMessageId
                     if (newOlderMessageId == olderMessageId) {
                         effects {
@@ -222,6 +225,9 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
             is ChatEvent.Internal.ErrorCacheMessages -> {
             }
             is ChatEvent.Internal.ErrorLoadingMyUserInfo -> {
+                effects {
+                    +ChatAction.ShowToastMessage(event.error.parseError().messageId)
+                }
             }
             is ChatEvent.Internal.MyUserInfoLoaded -> {
                 state {
@@ -246,7 +252,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
             }
             is ChatEvent.Internal.ErrorLoading -> {
                 effects {
-                    +ChatAction.ShowToastMessage(event.error.parseError().message)
+                    +ChatAction.ShowToastMessage(event.error.parseError().messageId)
                 }
             }
             is ChatEvent.Internal.CacheMessagesLoaded -> {
@@ -330,6 +336,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 }
                 effects {
                     +ChatAction.ShowPreviouslyTypedMessage(event.message.message)
+                    +ChatAction.ShowToastMessage(event.e.parseError().messageId)
                 }
             }
             is ChatEvent.Internal.FileUploaded -> {

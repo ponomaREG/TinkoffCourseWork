@@ -2,7 +2,6 @@ package com.tinkoff.coursework.data.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.json.JSONArray
 import org.json.JSONObject
 
 @Serializable

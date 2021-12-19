@@ -44,7 +44,7 @@ class PeopleReducer : DslReducer<PeopleEvent, PeopleUIState, PeopleAction, Peopl
         // Внутренние события
         is PeopleEvent.Internal.ErrorLoadedPeople -> {
             effects {
-                +PeopleAction.ShowToastMessage(event.error.parseError().message)
+                +PeopleAction.ShowToastMessage(event.error.parseError().messageId)
             }
         }
         is PeopleEvent.Internal.LoadedPeople -> {

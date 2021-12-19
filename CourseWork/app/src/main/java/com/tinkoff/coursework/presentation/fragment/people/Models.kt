@@ -11,7 +11,7 @@ data class PeopleUIState(
 
 sealed class PeopleAction {
     data class ShowUserProfile(val user: UserUI) : PeopleAction()
-    data class ShowToastMessage(val message: String) : PeopleAction()
+    data class ShowToastMessage(val messageId: Int) : PeopleAction()
 }
 
 sealed class PeopleEvent {

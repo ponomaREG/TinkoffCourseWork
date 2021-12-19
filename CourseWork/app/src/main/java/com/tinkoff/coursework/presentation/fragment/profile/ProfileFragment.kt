@@ -11,7 +11,6 @@ import com.tinkoff.coursework.databinding.FragmentProfileBinding
 import com.tinkoff.coursework.getAppComponent
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.di.profile.DaggerProfileComponent
-import com.tinkoff.coursework.presentation.di.profile.ProfileComponent
 import com.tinkoff.coursework.presentation.model.UserUI
 import com.tinkoff.coursework.presentation.util.detectStatusColor
 import com.tinkoff.coursework.presentation.util.loadImageByUrl
@@ -82,7 +81,7 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileAction, ProfileUIState>
 
     override fun handleEffect(effect: ProfileAction): Unit = when (effect) {
         is ProfileAction.ShowToastMessage ->
-            requireContext().showToast(effect.message)
+            requireContext().showToast(requireContext().getString(effect.messageId))
     }
 
     private fun renderProfile(profile: UserUI) {

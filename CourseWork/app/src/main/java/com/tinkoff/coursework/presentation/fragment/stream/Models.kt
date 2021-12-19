@@ -16,8 +16,8 @@ data class StreamUIState(
 
 sealed class StreamAction {
     data class ShowChatActivity(val stream: StreamUI, val topic: TopicUI?) : StreamAction()
-    data class ShowToastMessage(val message: String) : StreamAction()
-    data class OpenCreationFragment(val createType: CreateType): StreamAction()
+    data class ShowToastMessage(val messageId: Int) : StreamAction()
+    data class OpenCreationFragment(val createType: CreateType) : StreamAction()
 }
 
 sealed class StreamEvent {
@@ -32,11 +32,11 @@ sealed class StreamEvent {
 
     sealed class Ui : StreamEvent() {
         data class StreamExpandClick(val stream: StreamUI) : Ui()
-        data class StreamClick(val stream: StreamUI): Ui()
+        data class StreamClick(val stream: StreamUI) : Ui()
         data class TopicClick(val topic: TopicUI) : Ui()
         data class LoadStreams(val type: StreamsGroup) : Ui()
         data class FilterStreams(val query: String) : Ui()
-        data class CreateTopicClick(val stream: StreamUI): Ui()
+        data class CreateTopicClick(val stream: StreamUI) : Ui()
     }
 }
 

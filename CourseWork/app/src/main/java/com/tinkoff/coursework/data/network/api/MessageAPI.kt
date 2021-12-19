@@ -14,7 +14,7 @@ interface MessageAPI {
     fun sendMessage(
         @Query("content") content: String,
         @Query("to") to: List<Int>,
-        @Query("topic") topic: String?,
+        @Query("topic") topic: String,
         @Query("type") type: String
     ): Single<SendMessageResponse>
 

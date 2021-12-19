@@ -31,7 +31,8 @@ class OutcomingMessageViewHolder(
         binding.messageView.setOnAddClickListenerClick { icAdd ->
             onMessageLongClick(entityUI)
         }
-        binding.messageView.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
+        binding.messageView.setOnEmojiViewClickListener(object :
+            MessageViewGroup.OnEmojiClickListener {
             override fun click(reactionInContainerPosition: Int) {
                 onEmojiClick(entityUI, reactionInContainerPosition)
             }
@@ -41,7 +42,8 @@ class OutcomingMessageViewHolder(
     override fun bind(entityUI: MessageUI, payloads: List<Any>) {
         super.bind(entityUI, payloads)
         binding.messageView.setReactions(entityUI.reactions)
-        binding.messageView.setOnEmojiViewClickListener(object : MessageViewGroup.OnEmojiClickListener {
+        binding.messageView.setOnEmojiViewClickListener(object :
+            MessageViewGroup.OnEmojiClickListener {
             override fun click(reactionInContainerPosition: Int) {
                 onEmojiClick(entityUI, reactionInContainerPosition)
             }

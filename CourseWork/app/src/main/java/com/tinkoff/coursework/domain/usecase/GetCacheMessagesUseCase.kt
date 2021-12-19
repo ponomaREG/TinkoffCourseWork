@@ -9,7 +9,7 @@ class GetCacheMessagesUseCase @Inject constructor(
     private val messageRepository: MessageRepository
 ) {
     operator fun invoke(streamId: Int, topicName: String?): Single<List<Message>> {
-        return if(topicName != null) messageRepository.fetchCacheTopicMessages(streamId, topicName)
+        return if (topicName != null) messageRepository.fetchCacheTopicMessages(streamId, topicName)
         else messageRepository.fetchCacheStreamMessages(streamId)
     }
 }

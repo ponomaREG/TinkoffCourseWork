@@ -19,7 +19,8 @@ class DaggerWorkerFactory constructor(
         workerParameters: WorkerParameters
     ): ListenableWorker {
         val workerKlass = Class.forName(workerClassName).asSubclass(RxWorker::class.java)
-        val constructor = workerKlass.getDeclaredConstructor(Context::class.java, WorkerParameters::class.java)
+        val constructor =
+            workerKlass.getDeclaredConstructor(Context::class.java, WorkerParameters::class.java)
         val instance = constructor.newInstance(appContext, workerParameters)
 
         when (instance) {

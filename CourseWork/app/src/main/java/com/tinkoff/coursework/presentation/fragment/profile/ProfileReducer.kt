@@ -36,7 +36,7 @@ class ProfileReducer : DslReducer<ProfileEvent, ProfileUIState, ProfileAction, P
                 )
             }
             effects {
-                +ProfileAction.ShowToastMessage(event.error.parseError().message)
+                +ProfileAction.ShowToastMessage(event.error.parseError().messageId)
             }
         }
     }

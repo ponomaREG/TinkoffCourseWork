@@ -33,7 +33,8 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         is StreamEvent.Ui.StreamExpandClick -> {
             if (event.stream.topics == null) {
                 val newStreams = state.streams.mapWithNew(event.stream.copy(isLoading = true))
-                val newFilteredStreams = state.filteredStreams?.mapWithNew(event.stream.copy(isLoading = true))
+                val newFilteredStreams =
+                    state.filteredStreams?.mapWithNew(event.stream.copy(isLoading = true))
                 state {
                     copy(
                         streams = newStreams,
@@ -49,8 +50,10 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
                     )
                 }
             } else {
-                val newStreams = state.streams.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
-                val newFilteredStreams = state.filteredStreams?.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
+                val newStreams =
+                    state.streams.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
+                val newFilteredStreams =
+                    state.filteredStreams?.mapWithNew(event.stream.copy(isExpanded = event.stream.isExpanded.not()))
                 state {
                     copy(
                         filteredStreams = newFilteredStreams,
@@ -115,11 +118,13 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
             } else state
         }
         is StreamEvent.Internal.LoadedTopics -> {
-            val newStreams = state.streams.mapWithNew(event.stream.copy(
-                isLoading = false,
-                isExpanded = true,
-                topics = event.topics
-            ))
+            val newStreams = state.streams.mapWithNew(
+                event.stream.copy(
+                    isLoading = false,
+                    isExpanded = true,
+                    topics = event.topics
+                )
+            )
             state {
                 copy(
                     streams = newStreams,
@@ -129,12 +134,12 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         }
         is StreamEvent.Internal.ErrorLoadedStreams -> {
             effects {
-                +StreamAction.ShowToastMessage(event.error.parseError().message)
+                +StreamAction.ShowToastMessage(event.error.parseError().messageId)
             }
         }
         is StreamEvent.Internal.ErrorLoadedTopics -> {
             effects {
-                +StreamAction.ShowToastMessage(event.error.parseError().message)
+                +StreamAction.ShowToastMessage(event.error.parseError().messageId)
             }
         }
         is StreamEvent.Ui.CreateTopicClick -> {

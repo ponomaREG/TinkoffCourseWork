@@ -28,7 +28,8 @@ class SyncWorker constructor(
     lateinit var streamRepository: ChannelRepository
     lateinit var userRepository: PeopleRepository
 
-    private val notifyManager = ContextCompat.getSystemService(context, NotificationManager::class.java)
+    private val notifyManager =
+        ContextCompat.getSystemService(context, NotificationManager::class.java)
 
     override fun createWork(): Single<Result> {
         val syncStreams = streamRepository.syncData()

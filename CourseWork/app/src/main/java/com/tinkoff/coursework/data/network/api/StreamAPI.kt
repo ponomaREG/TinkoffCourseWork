@@ -1,12 +1,9 @@
 package com.tinkoff.coursework.data.network.api
 
-import com.tinkoff.coursework.data.network.model.StreamSubscriptionsNetwork
 import com.tinkoff.coursework.data.network.response.GetAllStreamsResponse
 import com.tinkoff.coursework.data.network.response.GetSubscribedStreamsResponse
 import com.tinkoff.coursework.data.network.response.SubscribeToStreamResponse
-import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.internal.operators.completable.CompletableAmb
 import org.json.JSONArray
 import retrofit2.http.GET
 import retrofit2.http.POST

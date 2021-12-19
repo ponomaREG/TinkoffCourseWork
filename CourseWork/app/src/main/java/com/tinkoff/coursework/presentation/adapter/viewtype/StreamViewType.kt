@@ -12,7 +12,6 @@ import com.tinkoff.coursework.presentation.model.StreamUI
 
 class StreamViewType constructor(
     private val onStreamExpandClick: (StreamUI) -> Unit = { _ -> },
-    private val onCreateTopicClick: (StreamUI) -> Unit = { _ ->},
     private val onStreamClick: (StreamUI) -> Unit = { _ -> }
 ) : BaseItemViewType<ItemStreamBinding, StreamUI> {
 
@@ -25,7 +24,7 @@ class StreamViewType constructor(
         parent: ViewGroup
     ): BaseViewHolder<ItemStreamBinding, StreamUI> {
         val binding = ItemStreamBinding.inflate(layoutInflater, parent, false)
-        return StreamViewHolder(binding, onStreamExpandClick, onCreateTopicClick, onStreamClick)
+        return StreamViewHolder(binding, onStreamExpandClick, onStreamClick)
     }
 
     override fun areItemsTheSame(oldItem: StreamUI, newItem: StreamUI): Boolean {
