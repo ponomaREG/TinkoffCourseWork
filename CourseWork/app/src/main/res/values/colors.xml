@@ -66,6 +66,8 @@
     <color name="icon_add_emoji_bg">#DDDDDD</color>
     <color name="icon_add_emoji_plus">#000000</color>
 
+    <color name="icon_add_stream_tint">#000000</color>
+
     <color name="text_hyperlink_color">#0000FF</color>
     <color name="fragment_create_manager_input_text">#000000</color>
 

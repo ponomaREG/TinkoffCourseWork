@@ -31,7 +31,7 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
     @Inject
     internal lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    internal lateinit var viewModel: BSDReactionViewModel
+    private lateinit var viewModel: BSDReactionViewModel
 
     private lateinit var emojiAdapter: DelegateAdapter
 
@@ -101,7 +101,8 @@ class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { action ->
                 when (action) {
-                    is BSDAction.ShowToastMessage -> requireContext().showToast(action.message)
+                    is BSDAction.ShowToastMessage ->
+                        requireContext().showToast(requireContext().getString(action.messageId))
                 }
             }.addTo(compositeDisposable)
     }

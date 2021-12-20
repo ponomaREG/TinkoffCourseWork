@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.data.di
 
+import com.tinkoff.coursework.BuildConfig
 import com.tinkoff.coursework.data.ext.addClient
 import com.tinkoff.coursework.data.ext.addJsonConverter
 import com.tinkoff.coursework.data.network.api.*
@@ -19,36 +20,36 @@ object RetrofitModule {
             .addClient()
             .addJsonConverter()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .baseUrl("https://test-ponomareg-tinkoff.zulipchat.com/api/v1/")
+            .baseUrl(BuildConfig.API_URL)
             .build()
 
     @Singleton
     @Provides
-    fun provideMessageAPI(retrofit: Retrofit) =
+    fun provideMessageAPI(retrofit: Retrofit): MessageAPI =
         retrofit.create(MessageAPI::class.java)
 
     @Singleton
     @Provides
-    fun provideStreamAPI(retrofit: Retrofit) =
+    fun provideStreamAPI(retrofit: Retrofit): StreamAPI =
         retrofit.create(StreamAPI::class.java)
 
     @Singleton
     @Provides
-    fun provideTopicApi(retrofit: Retrofit) =
+    fun provideTopicApi(retrofit: Retrofit): TopicAPI =
         retrofit.create(TopicAPI::class.java)
 
     @Singleton
     @Provides
-    fun provideUserApi(retrofit: Retrofit) =
+    fun provideUserApi(retrofit: Retrofit): UserAPI =
         retrofit.create(UserAPI::class.java)
 
     @Singleton
     @Provides
-    fun provideReactionApi(retrofit: Retrofit) =
+    fun provideReactionApi(retrofit: Retrofit): ReactionAPI =
         retrofit.create(ReactionAPI::class.java)
 
     @Singleton
     @Provides
-    fun provideFileApi(retrofit: Retrofit) =
+    fun provideFileApi(retrofit: Retrofit): FileAPI =
         retrofit.create(FileAPI::class.java)
 }

@@ -53,4 +53,5 @@
     <color name="icon_add_emoji_bg">#1C1C1C</color>
     <color name="icon_add_emoji_plus">#FFFFFF</color>
     <color name="fragment_create_manager_input_text">#FFFFFF</color>
+    <color name="icon_add_stream_tint">#FFFFFF</color>
 </resources>

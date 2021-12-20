@@ -13,9 +13,9 @@ import com.tinkoff.coursework.data.persistence.model.*
         UserDB::class,
         MessageReactionMtM::class,
         SubscribedChannelOtO::class],
-    version = 15
+    version = 1
 )
-abstract class AppDatabase() : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getMessageDao(): MessageDAO
     abstract fun getStreamDao(): StreamDAO

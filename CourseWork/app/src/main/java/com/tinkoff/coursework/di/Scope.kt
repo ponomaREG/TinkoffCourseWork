@@ -19,3 +19,6 @@ annotation class CreateManagerScope
 
 @Scope
 annotation class EmojiPickerScope
+
+@Scope
+annotation class MainActivityScope

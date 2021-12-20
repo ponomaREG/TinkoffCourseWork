@@ -9,7 +9,7 @@ import com.tinkoff.coursework.domain.repository.FileRepository
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 
@@ -28,10 +28,11 @@ class FileRepositoryImpl @Inject constructor(
         val inputStream = context.contentResolver.openInputStream(uri)
         val bytes = inputStream?.readBytes() ?: throw IllegalStateException()
         inputStream.close()
-        val requestBody = RequestBody.create(
-            "image/*".toMediaTypeOrNull(),
-            bytes
-        )
+        val requestBody = bytes
+            .toRequestBody(
+                "image/*".toMediaTypeOrNull(),
+                0, bytes.size
+            )
         return Single.fromCallable {
             MultipartBody.Part.createFormData(MULTIPART_NAME, FILE_NAME, requestBody)
         }.flatMap { body ->

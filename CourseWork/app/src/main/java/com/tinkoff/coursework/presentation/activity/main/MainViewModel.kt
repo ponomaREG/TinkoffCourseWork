@@ -5,9 +5,11 @@ import com.tinkoff.coursework.domain.usecase.StartSyncerDatabaseUseCase
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    startSyncerDatabaseUseCase: StartSyncerDatabaseUseCase
+    private val startSyncerDatabaseUseCase: StartSyncerDatabaseUseCase
 ) : ViewModel() {
-    init {
+
+
+    fun startSyncer() {
         startSyncerDatabaseUseCase()
     }
 }

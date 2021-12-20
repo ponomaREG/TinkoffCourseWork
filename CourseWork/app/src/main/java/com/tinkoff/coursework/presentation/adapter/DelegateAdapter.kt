@@ -53,36 +53,12 @@ class DelegateAdapter(
         update()
     }
 
-    fun addItems(index: Int, newItems: List<EntityUI>) {
-        items.addAll(index, newItems)
-        update()
-    }
-
     fun setItems(newItems: List<EntityUI>) {
         items.clear()
         addItems(newItems)
     }
 
-    fun getItemAt(position: Int): EntityUI? = items.getOrNull(position)
-
-    fun replaceItemAt(position: Int, entityUI: EntityUI) {
-        items.removeAt(position)
-        items.add(position, entityUI)
-        update()
-    }
-
-    fun removeSlice(range: IntRange) {
-        range.forEach { _ ->
-            items.removeAt(range.first)
-        }
-    }
-
-    fun clear() {
-        items.clear()
-        notifyDataSetChanged()
-    }
-
-    fun update() {
+    private fun update() {
         submitList(items.toMutableList())
     }
 }

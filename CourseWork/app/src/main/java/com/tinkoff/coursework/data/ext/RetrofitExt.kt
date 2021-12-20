@@ -44,8 +44,8 @@ fun getAuthHeaderInterceptor() = Interceptor { chain ->
         .header(
             "Authorization",
             Credentials.basic(
-                "ponomarcomru@gmail.com",
-                "LxUpZ974DW6k6gKgEzk1gASoLlHAQbcE"
+                BuildConfig.API_EMAIL,
+                BuildConfig.API_KEY
             )
         ).build()
     chain.proceed(authenticatedRequest)

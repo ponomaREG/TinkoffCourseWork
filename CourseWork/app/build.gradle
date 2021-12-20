@@ -15,6 +15,12 @@ android {
             resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
         }
 
+        buildConfigField "String", "API_KEY", "\"${project.API_KEY}\""
+        buildConfigField "String", "API_EMAIL", "\"${project.EMAIL}\""
+
+        buildConfigField "String", "API_URL", "\"${project.API_URL}\""
+        buildConfigField "String", "API_STORAGE_URL", "\"${project.IMAGE_STORAGE_URL}\""
+
         applicationId "com.tinkoff.coursework"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
@@ -34,6 +40,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

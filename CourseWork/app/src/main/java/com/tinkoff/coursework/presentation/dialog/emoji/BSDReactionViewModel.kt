@@ -32,7 +32,7 @@ class BSDReactionViewModel @Inject constructor(
         compositeDisposable.dispose()
     }
 
-    fun loadEmojies() {
+    private fun loadEmojies() {
         currentState.loadingState = LoadingState.LOADING
         submitState()
         getEmojiesUseCase()
@@ -48,7 +48,7 @@ class BSDReactionViewModel @Inject constructor(
                 }
                 err?.let {
                     currentState.loadingState = LoadingState.ERROR
-                    submitAction(BSDAction.ShowToastMessage(it.parseError().message))
+                    submitAction(BSDAction.ShowToastMessage(it.parseError().messageId))
                 }
                 submitState()
             }.addTo(compositeDisposable)

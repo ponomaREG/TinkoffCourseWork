@@ -4,6 +4,6 @@
     android:width="24dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <path
-        android:fillColor="#FF000000"
+        android:fillColor="@color/icon_add_stream_tint"
         android:pathData="M486.4,486.4H128a25.6,25.6 0,0 0,0 51.2h358.4v358.4a25.6,25.6 0,0 0,51.2 0V537.6h358.4a25.6,25.6 0,0 0,0 -51.2H537.6V128a25.6,25.6 0,0 0,-51.2 0v358.4z" />
 </vector>

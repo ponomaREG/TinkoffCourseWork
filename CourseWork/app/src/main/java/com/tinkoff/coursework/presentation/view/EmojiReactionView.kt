@@ -67,7 +67,7 @@ class EmojiReactionView constructor(
         set(value) {
             if (field != value) {
                 field = value
-                contentPaint?.color = textColor
+                contentPaint.color = textColor
                 invalidate()
             }
         }
@@ -75,7 +75,7 @@ class EmojiReactionView constructor(
         set(value) {
             if (field != value) {
                 field = value
-                contentPaint?.textSize = contentTextSize
+                contentPaint.textSize = contentTextSize
                 requestLayout()
             }
         }

@@ -1,15 +1,12 @@
 package com.tinkoff.coursework.domain.util
 
+import com.tinkoff.coursework.BuildConfig
 import com.tinkoff.coursework.domain.model.MessageHyperlink
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 class MessageContentParser @Inject constructor() {
-
-    companion object {
-        private const val ZULIP_STORAGE_LINK = "https://tinkoff-android-fall21.zulipchat.com"
-    }
 
     //Паттерн для вложений сообщений вида : [imageName](https://internet.com/image.png)
     private val pattern = Pattern.compile(
@@ -50,7 +47,7 @@ class MessageContentParser @Inject constructor() {
                     to = start + extractMessageResult.name.length + 1,
                     name = extractMessageResult.name,
                     hyperlink =
-                    if (isZulipStorage) ZULIP_STORAGE_LINK + extractMessageResult.uri else extractMessageResult.uri,
+                    if (isZulipStorage) BuildConfig.API_STORAGE_URL + extractMessageResult.uri else extractMessageResult.uri,
                 )
             )
         }

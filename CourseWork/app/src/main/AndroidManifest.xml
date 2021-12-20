@@ -22,7 +22,7 @@
         </activity>
         <activity
             android:name=".presentation.activity.chat.ChatActivity"
-            android:theme="@style/Theme.CourseWork.ChatActivity"></activity>
+            android:theme="@style/Theme.CourseWork.ChatActivity" />
 
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"
