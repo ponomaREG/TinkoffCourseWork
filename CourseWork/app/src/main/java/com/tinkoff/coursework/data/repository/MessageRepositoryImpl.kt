@@ -5,6 +5,8 @@ import com.tinkoff.coursework.data.mapper.MessageMapper
 import com.tinkoff.coursework.data.network.api.MessageAPI
 import com.tinkoff.coursework.data.network.model.NarrowNetwork
 import com.tinkoff.coursework.data.persistence.dao.MessageDAO
+import com.tinkoff.coursework.data.util.mapToResponse
+import com.tinkoff.coursework.domain.Response
 import com.tinkoff.coursework.domain.model.Message
 import com.tinkoff.coursework.domain.repository.MessageRepository
 import io.reactivex.Completable
@@ -22,7 +24,7 @@ class MessageRepositoryImpl @Inject constructor(
         topicName: String,
         anchor: Int,
         offset: Int
-    ): Single<List<Message>> =
+    ): Single<Response<List<Message>>> =
         (if (anchor == -1) {
             messageAPI.getMessages(
                 anchor = "newest",
@@ -58,13 +60,14 @@ class MessageRepositoryImpl @Inject constructor(
                 applyMarkdown = false
             )).map { response ->
             response.messages.map(messageMapper::fromNetworkModelToDomainModel)
-        }
+            }
+            .mapToResponse()
 
     override fun fetchStreamMessages(
         streamName: String,
         anchor: Int,
         offset: Int
-    ): Single<List<Message>> {
+    ): Single<Response<List<Message>>> {
         return (if (anchor == -1) {
             messageAPI.getMessages(
                 anchor = "newest",
@@ -91,14 +94,14 @@ class MessageRepositoryImpl @Inject constructor(
                 ).convertToJsonArray(),
                 applyMarkdown = false
             )).map { response ->
-            response.messages.map(messageMapper::fromNetworkModelToDomainModel)
-        }
+                response.messages.map(messageMapper::fromNetworkModelToDomainModel)
+            }.mapToResponse()
     }
 
-    override fun fetchCacheStreamMessages(streamId: Int): Single<List<Message>> =
+    override fun fetchCacheStreamMessages(streamId: Int): Single<Response<List<Message>>> =
         messageDAO.getMessagesByStream(streamId).map { list ->
             list.map(messageMapper::fromPersistenceModelToDomainModel)
-        }
+        }.mapToResponse()
 
     override fun saveMessages(messages: List<Message>): Completable =
         messageDAO.clearAllAndInsert(messages.map { message ->
@@ -108,15 +111,15 @@ class MessageRepositoryImpl @Inject constructor(
     override fun fetchCacheTopicMessages(
         streamId: Int,
         topicName: String
-    ): Single<List<Message>> =
+    ): Single<Response<List<Message>>> =
         messageDAO.getMessagesByStreamAndTopic(streamId, topicName).map { list ->
             list.map(messageMapper::fromPersistenceModelToDomainModel)
-        }
+        }.mapToResponse()
 
     override fun sendMessage(
         chatIds: List<Int>,
         message: Message
-    ): Single<Message> =
+    ): Single<Response<Message>> =
         messageAPI.sendMessage(
             content = message.message,
             to = chatIds,
@@ -126,5 +129,5 @@ class MessageRepositoryImpl @Inject constructor(
             message.copy(
                 id = it.newMessageId!!
             )
-        }
+        }.mapToResponse()
 }

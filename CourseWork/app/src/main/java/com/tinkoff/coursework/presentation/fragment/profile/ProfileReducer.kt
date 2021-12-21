@@ -1,7 +1,7 @@
 package com.tinkoff.coursework.presentation.fragment.profile
 
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.exception.parseException
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
 class ProfileReducer : DslReducer<ProfileEvent, ProfileUIState, ProfileAction, ProfileCommand>() {
@@ -36,7 +36,7 @@ class ProfileReducer : DslReducer<ProfileEvent, ProfileUIState, ProfileAction, P
                 )
             }
             effects {
-                +ProfileAction.ShowToastMessage(event.error.parseError().messageId)
+                +ProfileAction.ShowToastMessage(event.error.messageId)
             }
         }
     }

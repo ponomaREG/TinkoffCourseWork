@@ -1,7 +1,6 @@
 package com.tinkoff.coursework.presentation.fragment.stream
 
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup
@@ -105,6 +104,12 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
             } else state
         }
 
+        is StreamEvent.Ui.StreamClick -> {
+            effects {
+                +StreamAction.ShowChatActivity(event.stream, null)
+            }
+        }
+
         // Внутренние события
         is StreamEvent.Internal.LoadedStreams -> {
             if (event.streams.isNotEmpty()) {
@@ -134,20 +139,12 @@ class StreamReducer : DslReducer<StreamEvent, StreamUIState, StreamAction, Strea
         }
         is StreamEvent.Internal.ErrorLoadedStreams -> {
             effects {
-                +StreamAction.ShowToastMessage(event.error.parseError().messageId)
+                +StreamAction.ShowToastMessage(event.error.messageId)
             }
         }
         is StreamEvent.Internal.ErrorLoadedTopics -> {
             effects {
-                +StreamAction.ShowToastMessage(event.error.parseError().messageId)
-            }
-        }
-        is StreamEvent.Ui.CreateTopicClick -> {
-
-        }
-        is StreamEvent.Ui.StreamClick -> {
-            effects {
-                +StreamAction.ShowChatActivity(event.stream, null)
+                +StreamAction.ShowToastMessage(event.error.messageId)
             }
         }
     }

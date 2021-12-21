@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.domain.usecase
 
+import com.tinkoff.coursework.domain.Response
 import com.tinkoff.coursework.domain.model.Message
 import com.tinkoff.coursework.domain.repository.MessageRepository
 import io.reactivex.Single
@@ -13,7 +14,7 @@ class GetMessagesUseCase @Inject constructor(
         topicName: String?,
         anchor: Int,
         offset: Int
-    ): Single<List<Message>> {
+    ): Single<Response<List<Message>>> {
         return if (topicName != null) messageRepositoryImpl.fetchTopicMessages(
             streamName,
             topicName,

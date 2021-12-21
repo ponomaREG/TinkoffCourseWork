@@ -3,9 +3,10 @@ package com.tinkoff.coursework.presentation.dialog.emoji
 import androidx.lifecycle.ViewModel
 import com.tinkoff.coursework.domain.usecase.GetEmojiesUseCase
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.exception.parseException
 import com.tinkoff.coursework.presentation.mapper.EmojiMapper
 import com.tinkoff.coursework.presentation.util.addTo
+import com.tinkoff.coursework.presentation.util.whenCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -37,18 +38,24 @@ class BSDReactionViewModel @Inject constructor(
         submitState()
         getEmojiesUseCase()
             .subscribeOn(Schedulers.computation())
-            .map {
-                it.map(emojiMapper::fromDomainModelToPresentationModel)
-            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data, err ->
-                data?.let {
-                    currentState.emojies = it
-                    currentState.loadingState = LoadingState.SUCCESS
+                data?.let { response ->
+                    response.whenCase(
+                        isSuccess = { list ->
+                            currentState.emojies =
+                                list.map(emojiMapper::fromDomainModelToPresentationModel)
+                            currentState.loadingState = LoadingState.SUCCESS
+                        },
+                        isError = {
+                            currentState.loadingState = LoadingState.ERROR
+                            submitAction(BSDAction.ShowToastMessage(it.messageId))
+                        }
+                    )
                 }
                 err?.let {
                     currentState.loadingState = LoadingState.ERROR
-                    submitAction(BSDAction.ShowToastMessage(it.parseError().messageId))
+                    submitAction(BSDAction.ShowToastMessage(it.parseException().messageId))
                 }
                 submitState()
             }.addTo(compositeDisposable)

@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.data.repository
 
+import com.tinkoff.coursework.data.error.parseError
 import com.tinkoff.coursework.data.mapper.StreamMapper
 import com.tinkoff.coursework.data.mapper.TopicMapper
 import com.tinkoff.coursework.data.network.api.StreamAPI
@@ -9,6 +10,8 @@ import com.tinkoff.coursework.data.persistence.dao.StreamDAO
 import com.tinkoff.coursework.data.persistence.dao.TopicDAO
 import com.tinkoff.coursework.data.persistence.model.StreamDB
 import com.tinkoff.coursework.data.persistence.model.SubscribedChannelOtO
+import com.tinkoff.coursework.data.util.mapToResponse
+import com.tinkoff.coursework.domain.Response
 import com.tinkoff.coursework.domain.model.Stream
 import com.tinkoff.coursework.domain.model.Topic
 import com.tinkoff.coursework.domain.repository.ChannelRepository
@@ -27,21 +30,26 @@ class ChannelRepositoryImpl @Inject constructor(
     private val topicMapper: TopicMapper
 ) : ChannelRepository {
 
-    override fun getAllChannels(): Observable<List<Stream>> {
+    override fun getAllChannels(): Observable<Response<List<Stream>>> {
         val streamDatabase = streamDAO.getAllStreams().map { streams ->
             streams.map(streamMapper::fromDatabaseModelToDomainModel)
+        }.map { data ->
+            Response.Success(data)
         }
         val streamApi = streamAPI.getAllStreams().map { response ->
             response.streams.map(streamMapper::fromNetworkModelToDomainModel)
-        }.flatMap { streamsFromApi ->
-            streamDAO.clearAllAndInsert(
-                streamsFromApi.map(streamMapper::fromDomainModelToDatabaseModel)
-            ).andThen(Single.just(streamsFromApi))
         }
-        return Observable.merge(streamDatabase, streamApi.toObservable())
+            .flatMap { streamsFromApi ->
+                streamDAO.clearAllAndInsert(
+                    streamsFromApi.map(streamMapper::fromDomainModelToDatabaseModel)
+                ).andThen(Single.just(streamsFromApi))
+            }.toObservable().mapToResponse()
+        return Observable.merge(streamDatabase, streamApi)
+
+
     }
 
-    override fun getStreamTopics(streamId: Int): Observable<List<Topic>> {
+    override fun getStreamTopics(streamId: Int): Observable<Response<List<Topic>>> {
         val topicDatabase = topicDAO.getStreamTopics(streamId).map { topics ->
             topics.map(topicMapper::fromDatabaseModelToDomainModel)
         }
@@ -56,6 +64,7 @@ class ChannelRepositoryImpl @Inject constructor(
                 ).andThen(Single.just(it))
             }
         return Single.concat(topicDatabase, topicApi).toObservable()
+            .mapToResponse()
     }
 
     override fun createStream(streamName: String): Completable {
@@ -118,9 +127,11 @@ class ChannelRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getSubscribedChannels(): Observable<List<Stream>> {
+    override fun getSubscribedChannels(): Observable<Response<List<Stream>>> {
         val streamDatabase = streamDAO.getSubscribedStreams().map { streams ->
             streams.map(streamMapper::fromDatabaseModelToDomainModel)
+        }.map { data ->
+            Response.Success(data) as Response<List<Stream>>
         }
         val streamApi = streamAPI.getSubscribedStreams().map { response ->
             response.streams.map(streamMapper::fromNetworkModelToDomainModel)
@@ -128,7 +139,7 @@ class ChannelRepositoryImpl @Inject constructor(
             streamDAO.clearSubscribedStreamsAndInsert(
                 streams.map(streamMapper::fromDomainModelToDatabaseModel)
             ).andThen(Single.just(streams))
-        }
-        return Observable.merge(streamDatabase, streamApi.toObservable())
+        }.toObservable().mapToResponse()
+        return Observable.merge(streamDatabase, streamApi)
     }
 }

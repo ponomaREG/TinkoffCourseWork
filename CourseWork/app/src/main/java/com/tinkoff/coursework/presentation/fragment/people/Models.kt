@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.presentation.fragment.people
 
+import com.tinkoff.coursework.domain.Error
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.UserUI
 
@@ -18,7 +19,7 @@ sealed class PeopleEvent {
 
     sealed class Internal : PeopleEvent() {
         data class LoadedPeople(val peoples: List<UserUI>) : Internal()
-        data class ErrorLoadedPeople(val error: Throwable) : Internal()
+        data class ErrorLoadedPeople(val error: Error) : Internal()
     }
 
     sealed class Ui : PeopleEvent() {

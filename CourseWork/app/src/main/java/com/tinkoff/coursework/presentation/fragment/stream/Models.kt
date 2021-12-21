@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.presentation.fragment.stream
 
+import com.tinkoff.coursework.domain.Error
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.fragment.create_manager.CreateType
 import com.tinkoff.coursework.presentation.model.EntityUI
@@ -17,7 +18,6 @@ data class StreamUIState(
 sealed class StreamAction {
     data class ShowChatActivity(val stream: StreamUI, val topic: TopicUI?) : StreamAction()
     data class ShowToastMessage(val messageId: Int) : StreamAction()
-    data class OpenCreationFragment(val createType: CreateType) : StreamAction()
 }
 
 sealed class StreamEvent {
@@ -26,8 +26,8 @@ sealed class StreamEvent {
         data class LoadedStreams(val streams: List<StreamUI>) : Internal()
         data class LoadedTopics(val stream: StreamUI, val topics: List<TopicUI>) : Internal()
 
-        data class ErrorLoadedStreams(val error: Throwable) : Internal()
-        data class ErrorLoadedTopics(val error: Throwable) : Internal()
+        data class ErrorLoadedStreams(val error: Error) : Internal()
+        data class ErrorLoadedTopics(val error: Error) : Internal()
     }
 
     sealed class Ui : StreamEvent() {
@@ -36,7 +36,6 @@ sealed class StreamEvent {
         data class TopicClick(val topic: TopicUI) : Ui()
         data class LoadStreams(val type: StreamsGroup) : Ui()
         data class FilterStreams(val query: String) : Ui()
-        data class CreateTopicClick(val stream: StreamUI) : Ui()
     }
 }
 

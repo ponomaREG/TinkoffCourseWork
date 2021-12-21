@@ -21,6 +21,14 @@ class EmojiReactionView constructor(
         private const val DEFAULT_TEXTSIZE = 14f
     }
 
+
+    private val contentPaint: Paint = Paint().apply {
+        style = Paint.Style.FILL
+        textAlign = Paint.Align.CENTER
+        textSize = contentTextSize
+        color = textColor
+    }
+
     init {
         context.obtainStyledAttributes(
             attributeSet,
@@ -84,13 +92,6 @@ class EmojiReactionView constructor(
 
     private val content: String
         get() = getFormattedContent()
-
-    private val contentPaint = Paint().apply {
-        style = Paint.Style.FILL
-        textAlign = Paint.Align.CENTER
-        textSize = contentTextSize
-        color = textColor
-    }
 
     private val backgroundRect = RectF()
     private val coordinatePointOfContent = PointF()

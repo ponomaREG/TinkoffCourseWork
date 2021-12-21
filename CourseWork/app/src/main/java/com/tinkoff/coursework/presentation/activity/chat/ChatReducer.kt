@@ -1,8 +1,8 @@
 package com.tinkoff.coursework.presentation.activity.chat
 
+import android.util.Log
 import androidx.core.net.toUri
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.error.parseError
 import com.tinkoff.coursework.presentation.model.*
 import com.tinkoff.coursework.presentation.util.convertToDate
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
@@ -175,6 +175,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
 
             // Внутренние события
             is ChatEvent.Internal.MessagesLoaded -> {
+                Log.e("serverItems",event.items.toString())
                 state {
                     val newCurrentMessages =
                         if (event.items.isNullOrEmpty().not()) {
@@ -216,7 +217,6 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         )
                     }
                 }
-
                 state
             }
 
@@ -226,7 +226,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
             }
             is ChatEvent.Internal.ErrorLoadingMyUserInfo -> {
                 effects {
-                    +ChatAction.ShowToastMessage(event.error.parseError().messageId)
+                    +ChatAction.ShowToastMessage(event.error.messageId)
                 }
             }
             is ChatEvent.Internal.MyUserInfoLoaded -> {
@@ -236,11 +236,6 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                     )
                 }
                 commands {
-                    +ChatCommand.LoadCacheMessages(
-                        state.currentStream.id,
-                        state.currentTopic?.name,
-                        event.userUI.id
-                    )
                     +ChatCommand.LoadMessages(
                         state.currentStream.name,
                         state.currentTopic?.name,
@@ -248,14 +243,20 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                         state.paginationOffset,
                         state.currentUser!!.id
                     )
+                    +ChatCommand.LoadCacheMessages(
+                        state.currentStream.id,
+                        state.currentTopic?.name,
+                        event.userUI.id
+                    )
                 }
             }
             is ChatEvent.Internal.ErrorLoading -> {
                 effects {
-                    +ChatAction.ShowToastMessage(event.error.parseError().messageId)
+                    +ChatAction.ShowToastMessage(event.error.messageId)
                 }
             }
             is ChatEvent.Internal.CacheMessagesLoaded -> {
+                Log.e("cachedItems",event.items.toString())
                 if (event.items.isNotEmpty()) {
                     state {
                         copy(
@@ -336,7 +337,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 }
                 effects {
                     +ChatAction.ShowPreviouslyTypedMessage(event.message.message)
-                    +ChatAction.ShowToastMessage(event.e.parseError().messageId)
+                    +ChatAction.ShowToastMessage(event.e.messageId)
                 }
             }
             is ChatEvent.Internal.FileUploaded -> {

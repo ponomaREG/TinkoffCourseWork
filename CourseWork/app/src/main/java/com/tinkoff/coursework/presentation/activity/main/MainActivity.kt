@@ -23,19 +23,19 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    internal lateinit var viewModelFactory: ViewModelProvider.Factory
+//    @Inject
+//    internal lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binding: ActivityMainBinding
-
-    private lateinit var viewModel: MainViewModel
+//
+//    private lateinit var viewModel: MainViewModel
 
     private var currentFragment: Fragment = ChannelsFragment.newInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DaggerMainActivityComponent.factory().create(getAppComponent()).inject(this)
-        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+//        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         if (savedInstanceState == null) {
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
         initNavigation()
-        viewModel.startSyncer()
+//        viewModel.startSyncer()
     }
 
     fun showCreateFragment() {

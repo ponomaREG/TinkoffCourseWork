@@ -1,5 +1,6 @@
 package com.tinkoff.coursework.presentation.fragment.profile
 
+import com.tinkoff.coursework.domain.Error
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.UserUI
 
@@ -21,7 +22,7 @@ sealed class ProfileEvent {
 
     sealed class Internal : ProfileEvent() {
         data class LoadedProfile(val userUI: UserUI) : Internal()
-        data class ErrorLoadedProfile(val error: Throwable) : Internal()
+        data class ErrorLoadedProfile(val error: Error) : Internal()
     }
 }
 

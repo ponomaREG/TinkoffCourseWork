@@ -1,9 +1,12 @@
 package com.tinkoff.coursework.presentation.activity.chat
 
 import com.tinkoff.coursework.domain.usecase.*
+import com.tinkoff.coursework.domain.util.MessageContentParser
+import com.tinkoff.coursework.presentation.exception.parseException
 import com.tinkoff.coursework.presentation.mapper.EmojiMapper
 import com.tinkoff.coursework.presentation.mapper.MessageMapper
 import com.tinkoff.coursework.presentation.mapper.UserMapper
+import com.tinkoff.coursework.presentation.util.whenCase
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
 import java.io.File
@@ -17,6 +20,7 @@ class ChatActor constructor(
     private val removeReactionToMessageUseCase: RemoveReactionToMessageUseCase,
     private val uploadFileUseCase: UploadFileUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
+    private val messageContentParser: MessageContentParser,
     private val messageMapper: MessageMapper,
     private val userMapper: UserMapper,
     private val emojiMapper: EmojiMapper,
@@ -32,19 +36,26 @@ class ChatActor constructor(
             command.olderMessageId,
             command.offset,
         ).mapEvents(
-            { list ->
-                ChatEvent.Internal.MessagesLoaded(
-                    list.map {
-                        messageMapper.fromDomainModelToPresentationModel(
-                            it,
-                            command.myUserId,
-                            command.topicName != null
+            { response ->
+                response.whenCase(
+                    isSuccess = {
+                        ChatEvent.Internal.MessagesLoaded(
+                            it.map {
+                                messageMapper.fromDomainModelToPresentationModel(
+                                    it,
+                                    command.myUserId,
+                                    command.topicName != null
+                                )
+                            }
                         )
+                    },
+                    isError = {
+                        ChatEvent.Internal.ErrorLoading(it)
                     }
                 )
             },
             { e ->
-                ChatEvent.Internal.ErrorLoading(e)
+                ChatEvent.Internal.ErrorLoading(e.parseException())
             }
         )
 
@@ -56,17 +67,32 @@ class ChatActor constructor(
         )
             .mapEvents(
                 { response ->
-                    ChatEvent.Internal.SuccessSendMessage(
-                        messageMapper.fromDomainModelToPresentationModel(
-                            response,
-                            command.message.senderId,
-                            command.message.isUniqueTopicInAllChat
-                        ),
-                        response.id
+                    response.whenCase(
+                        isSuccess = {
+                            val parseMessageContent = messageContentParser.parseMessageContent(
+                                it.message
+                            )
+                            val parsedMessage = it.copy(
+                                message = parseMessageContent.formattedMessage,
+                                messageHyperlinks = parseMessageContent.hyperlinks
+                            )
+                            ChatEvent.Internal.SuccessSendMessage(
+                                messageMapper.fromDomainModelToPresentationModel(
+                                    parsedMessage,
+                                    command.message.senderId,
+                                    command.message.isUniqueTopicInAllChat
+                                ),
+                                parsedMessage.id
+                            )
+
+                        },
+                        isError = {
+                            ChatEvent.Internal.ErrorSendMessage(it,command.message)
+                        }
                     )
                 },
                 { e ->
-                    ChatEvent.Internal.ErrorSendMessage(e, command.message)
+                    ChatEvent.Internal.ErrorSendMessage(e.parseException(), command.message)
                 }
             )
 
@@ -74,19 +100,26 @@ class ChatActor constructor(
             command.streamId,
             command.topicName
         ).mapEvents(
-            { list ->
-                ChatEvent.Internal.CacheMessagesLoaded(
-                    list.map {
-                        messageMapper.fromDomainModelToPresentationModel(
-                            it,
-                            command.myUserId,
-                            command.topicName != null
+            { response ->
+                response.whenCase(
+                    isSuccess = { list ->
+                        ChatEvent.Internal.CacheMessagesLoaded(
+                            list.map {
+                                messageMapper.fromDomainModelToPresentationModel(
+                                    it,
+                                    command.myUserId,
+                                    command.topicName != null
+                                )
+                            }
                         )
+                    },
+                    isError = {
+                        ChatEvent.Internal.ErrorLoading(it)
                     }
                 )
             },
             { e ->
-                ChatEvent.Internal.ErrorLoading(e)
+                ChatEvent.Internal.ErrorLoading(e.parseException())
             }
         )
 
@@ -101,13 +134,20 @@ class ChatActor constructor(
 
         is ChatCommand.LoadOwnUserInfo -> getOwnProfileInfoUseCase()
             .mapEvents(
-                { user ->
-                    ChatEvent.Internal.MyUserInfoLoaded(
-                        userMapper.fromDomainModelToPresentationModel(user)
+                { response ->
+                    response.whenCase(
+                        isSuccess = {
+                            ChatEvent.Internal.MyUserInfoLoaded(
+                                userMapper.fromDomainModelToPresentationModel(it)
+                            )
+                        },
+                        isError = {
+                            ChatEvent.Internal.ErrorLoadingMyUserInfo(it)
+                        }
                     )
                 },
                 { e ->
-                    ChatEvent.Internal.ErrorLoadingMyUserInfo(e)
+                    ChatEvent.Internal.ErrorLoadingMyUserInfo(e.parseException())
                 }
             )
 
@@ -119,7 +159,7 @@ class ChatActor constructor(
             .mapEvents(
                 ChatEvent.Internal.AddReactionAtUI(command.message, command.emojiUI)
             ) { e ->
-                ChatEvent.Internal.ErrorLoading(e)
+                ChatEvent.Internal.ErrorLoading(e.parseException())
             }
 
         is ChatCommand.RemoveReaction -> removeReactionToMessageUseCase(
@@ -129,20 +169,27 @@ class ChatActor constructor(
             .mapEvents(
                 ChatEvent.Internal.RemoveReactionAtUI(command.message, command.emojiUI)
             ) { e ->
-                ChatEvent.Internal.ErrorLoading(e)
+                ChatEvent.Internal.ErrorLoading(e.parseException())
             }
 
         //Команды для файлов
         is ChatCommand.UploadFile -> uploadFileUseCase(command.uri)
             .mapEvents(
-                { link ->
-                    ChatEvent.Internal.FileUploaded(
-                        File(link.hyperlink).name,
-                        link.hyperlink
+                { response ->
+                    response.whenCase(
+                        isSuccess = {
+                            ChatEvent.Internal.FileUploaded(
+                                File(it.hyperlink).name,
+                                it.hyperlink
+                            )
+                        },
+                        isError = {
+                            ChatEvent.Internal.ErrorLoading(it)
+                        }
                     )
                 },
                 { e ->
-                    ChatEvent.Internal.ErrorLoading(e)
+                    ChatEvent.Internal.ErrorLoading(e.parseException())
                 }
             )
     }

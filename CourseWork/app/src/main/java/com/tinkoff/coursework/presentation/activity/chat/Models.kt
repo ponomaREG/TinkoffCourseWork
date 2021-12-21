@@ -1,13 +1,14 @@
 package com.tinkoff.coursework.presentation.activity.chat
 
 import android.net.Uri
+import com.tinkoff.coursework.domain.Error
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.*
 
 data class ChatUIState(
     val currentTopic: TopicUI?,
     val currentStream: StreamUI,
-    val messages: List<MessageUI> = mutableListOf(),
+    val messages: List<MessageUI> = listOf(),
     val paginationOffset: Int = -1,
     val olderMessageId: Int = -1,
     val clickedMessageId: Int = -1,
@@ -51,19 +52,19 @@ sealed class ChatEvent {
 
         data class MessagesLoaded(val items: List<MessageUI>) : Internal()
         data class CacheMessagesLoaded(val items: List<MessageUI>) : Internal()
-        data class ErrorLoading(val error: Throwable) : Internal()
+        data class ErrorLoading(val error: Error) : Internal()
 
         object SuccessCacheMessages : Internal()
         object ErrorCacheMessages : Internal()
 
         data class MyUserInfoLoaded(val userUI: UserUI) : Internal()
-        data class ErrorLoadingMyUserInfo(val error: Throwable) : Internal()
+        data class ErrorLoadingMyUserInfo(val error: Error) : Internal()
 
         data class AddReactionAtUI(val message: MessageUI, val emojiUI: EmojiUI) : Internal()
         data class RemoveReactionAtUI(val message: MessageUI, val emojiUI: EmojiUI) : Internal()
 
         data class SuccessSendMessage(val message: MessageUI, val newMessageId: Int) : Internal()
-        data class ErrorSendMessage(val e: Throwable, val message: MessageUI) : Internal()
+        data class ErrorSendMessage(val e: Error, val message: MessageUI) : Internal()
 
         data class FileUploaded(
             val name: String,

@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import com.tinkoff.coursework.data.mapper.HyperlinkMapper
 import com.tinkoff.coursework.data.network.api.FileAPI
+import com.tinkoff.coursework.data.util.mapToResponse
+import com.tinkoff.coursework.domain.Response
 import com.tinkoff.coursework.domain.model.Hyperlink
 import com.tinkoff.coursework.domain.repository.FileRepository
 import io.reactivex.Single
@@ -24,7 +26,7 @@ class FileRepositoryImpl @Inject constructor(
         private const val FILE_NAME = "userImage"
     }
 
-    override fun uploadFile(uri: Uri): Single<Hyperlink> {
+    override fun uploadFile(uri: Uri): Single<Response<Hyperlink>> {
         val inputStream = context.contentResolver.openInputStream(uri)
         val bytes = inputStream?.readBytes() ?: throw IllegalStateException()
         inputStream.close()
@@ -39,6 +41,6 @@ class FileRepositoryImpl @Inject constructor(
             fileAPI.uploadFile(body)
         }.map { hyperlink ->
             hyperlinkMapper.fromNetworkModelToDomainModel(hyperlink)
-        }
+        }.mapToResponse()
     }
 }

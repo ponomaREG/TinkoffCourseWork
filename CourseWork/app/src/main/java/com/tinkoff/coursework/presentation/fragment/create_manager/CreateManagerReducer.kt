@@ -1,7 +1,7 @@
 package com.tinkoff.coursework.presentation.fragment.create_manager
 
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.exception.parseException
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
 class CreateManagerReducer :
@@ -29,7 +29,7 @@ class CreateManagerReducer :
                 )
             }
             effects {
-                +CreateManagerAction.ShowToastMessage(event.throwable.parseError().messageId)
+                +CreateManagerAction.ShowToastMessage(event.throwable.parseException().messageId)
             }
         }
         CreateManagerEvent.Internal.SuccessCreating -> {

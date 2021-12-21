@@ -148,9 +148,6 @@ class StreamFragment : ElmFragment<StreamEvent, StreamAction, StreamUIState>() {
         is StreamAction.ShowChatActivity -> showChatActivity(effect.stream, effect.topic)
         is StreamAction.ShowToastMessage ->
             requireContext().showToast(requireContext().getString(effect.messageId))
-        is StreamAction.OpenCreationFragment -> {
-
-        }
     }
 
     private fun subscribeToFilter() {

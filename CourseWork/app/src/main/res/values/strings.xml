@@ -25,4 +25,5 @@
     <string name="error_server">Произошла ошибка на сервере. Попробуйте позже</string>
     <string name="error_too_many_requests">Слишком много запросов в секунду</string>
     <string name="error_unknown_host">Отсутствует соединение</string>
+    <string name="exception_inner">Произошла внутренняя ошибка</string>
 </resources>

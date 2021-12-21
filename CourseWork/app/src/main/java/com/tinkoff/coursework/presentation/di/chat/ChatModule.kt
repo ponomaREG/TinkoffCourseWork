@@ -2,6 +2,7 @@ package com.tinkoff.coursework.presentation.di.chat
 
 import com.tinkoff.coursework.di.ChatScope
 import com.tinkoff.coursework.domain.usecase.*
+import com.tinkoff.coursework.domain.util.MessageContentParser
 import com.tinkoff.coursework.presentation.activity.chat.ChatActor
 import com.tinkoff.coursework.presentation.mapper.EmojiMapper
 import com.tinkoff.coursework.presentation.mapper.MessageMapper
@@ -24,6 +25,7 @@ object ChatModule {
         uploadFileUseCase: UploadFileUseCase,
         sendMessageUseCase: SendMessageUseCase,
         messageMapper: MessageMapper,
+        messageContentParser: MessageContentParser,
         userMapper: UserMapper,
         emojiMapper: EmojiMapper,
     ): ChatActor =
@@ -36,6 +38,7 @@ object ChatModule {
             removeReactionToMessageUseCase,
             uploadFileUseCase,
             sendMessageUseCase,
+            messageContentParser,
             messageMapper,
             userMapper,
             emojiMapper,

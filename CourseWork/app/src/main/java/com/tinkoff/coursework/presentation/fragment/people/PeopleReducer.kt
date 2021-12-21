@@ -1,7 +1,7 @@
 package com.tinkoff.coursework.presentation.fragment.people
 
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.error.parseError
+import com.tinkoff.coursework.presentation.exception.parseException
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 import java.util.*
 
@@ -44,7 +44,7 @@ class PeopleReducer : DslReducer<PeopleEvent, PeopleUIState, PeopleAction, Peopl
         // Внутренние события
         is PeopleEvent.Internal.ErrorLoadedPeople -> {
             effects {
-                +PeopleAction.ShowToastMessage(event.error.parseError().messageId)
+                +PeopleAction.ShowToastMessage(event.error.messageId)
             }
         }
         is PeopleEvent.Internal.LoadedPeople -> {
