@@ -20,6 +20,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
+/**
+ * Фрагмент-пикер с эмодзи
+ */
 class BottomSheetDialogWithReactions : BottomSheetDialogFragment() {
 
     companion object {

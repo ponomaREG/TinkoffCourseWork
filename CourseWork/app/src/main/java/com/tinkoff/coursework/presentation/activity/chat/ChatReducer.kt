@@ -358,6 +358,9 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
     }
 }
 
+/**
+ * Строительство сущностей для адаптера
+ */
 private fun List<MessageUI>.buildEntities(): List<EntityUI> {
     val distinctMessages = this.distinct().toMutableList()
     distinctMessages.sortBy { it.id }

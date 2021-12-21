@@ -6,10 +6,19 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * Функция-расширение
+ * Добавление в композитный контейнер
+ */
 fun Disposable.addTo(compositeDisposable: CompositeDisposable) {
     compositeDisposable.add(this)
 }
 
+/**
+ * Функция-расширение
+ * Асинхронная фильтрация
+ * @param predicate - условие, по которому будем проходить фильтрация
+ */
 fun <E> Collection<E>.filterAsync(
     predicate: (E) -> Boolean,
     action: (Collection<E>?) -> Unit

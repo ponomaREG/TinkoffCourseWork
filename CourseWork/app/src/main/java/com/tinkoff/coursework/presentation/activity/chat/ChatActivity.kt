@@ -34,6 +34,9 @@ import vivid.money.elmslie.core.ElmStoreCompat
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
+/**
+ * Activity с чатом
+ */
 class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
     BottomSheetDialogWithReactions.OnEmojiPickListener {
 
@@ -42,6 +45,9 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
         private const val EXTRA_TOPIC = "EXTRA_TOPIC"
         private const val PAGINATION_OFFSET = 20
 
+        /**
+         * Следует вызывать для отображения сообщений из конкретного топика
+         */
         fun getIntent(context: Context, stream: StreamUI, topic: TopicUI): Intent {
             val intentToChatActivity = Intent(context, ChatActivity::class.java)
             intentToChatActivity.putExtra(EXTRA_STREAM, stream)
@@ -49,6 +55,9 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
             return intentToChatActivity
         }
 
+        /**
+         * Следует вызывать для отображения сообщений целиком из стрима
+         */
         fun getIntent(context: Context, stream: StreamUI): Intent {
             val intentToChatActivity = Intent(context, ChatActivity::class.java)
             intentToChatActivity.putExtra(EXTRA_STREAM, stream)
@@ -62,6 +71,9 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
     override val initEvent: ChatEvent
         get() = ChatEvent.Ui.InitEvent
 
+    /**
+     * Системный пикер файлов для загрузки
+     */
     private val filePicker =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
@@ -79,6 +91,9 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
 
     private val chatAdapter = DelegateAdapter(getSupportedViewTypesForChatRv())
 
+    /**
+     * Пикер эмодзи для сообщения
+     */
     private val dialogWithReactions =
         BottomSheetDialogWithReactions.newInstance()
 
@@ -243,6 +258,10 @@ class ChatActivity : ElmActivity<ChatEvent, ChatAction, ChatUIState>(),
         binding.rvMessages.addOnScrollListener(paginator)
     }
 
+    /**
+     * Типы вьюшек для DelegateAdapter
+     * @see com.tinkoff.coursework.presentation.adapter.DelegateAdapter
+     */
     private fun getSupportedViewTypesForChatRv() = listOf(
         OutcomingMessageViewType(
             onMessageLongClick = { message ->

@@ -9,6 +9,9 @@ import com.tinkoff.coursework.di.components.AppComponent
 import com.tinkoff.coursework.di.components.DaggerAppComponent
 import com.tinkoff.coursework.di.module.AppModule
 
+/**
+ * Класс приложения
+ */
 class CourseWorkApp : Application() {
 
     lateinit var appComponent: AppComponent
@@ -19,11 +22,12 @@ class CourseWorkApp : Application() {
             .factory()
             .create(AppModule(this))
         appComponent.inject(this)
+
         val configuration =
             Configuration.Builder()
                 .setWorkerFactory(appComponent.workerFactory())
                 .build()
-        WorkManager.initialize(this, configuration)
+        WorkManager.initialize(this, configuration) //Нужно для инжекта зависимостей в воркер
     }
 }
 

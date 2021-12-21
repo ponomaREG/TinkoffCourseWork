@@ -14,6 +14,10 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
+/**
+ * Вьюмоделька для
+ * @see BottomSheetDialogWithReactions
+ */
 class BSDReactionViewModel @Inject constructor(
     private val getEmojiesUseCase: GetEmojiesUseCase,
     private val emojiMapper: EmojiMapper

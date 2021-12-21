@@ -6,6 +6,10 @@ import com.tinkoff.coursework.R
 import com.tinkoff.coursework.presentation.model.STATUS
 
 
+/**
+ * Функция-расширение
+ * Определяет цвет по статусу онлайна пользователя
+ */
 fun STATUS.detectStatusColor(context: Context): Int {
     val colorId = when (this) {
         STATUS.ONLINE -> R.color.ic_status_online_fill

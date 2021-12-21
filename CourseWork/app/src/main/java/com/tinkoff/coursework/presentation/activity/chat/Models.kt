@@ -5,6 +5,20 @@ import com.tinkoff.coursework.domain.Error
 import com.tinkoff.coursework.presentation.base.LoadingState
 import com.tinkoff.coursework.presentation.model.*
 
+/**
+ * Стейт активити с чатом
+ * @param currentStream - текущий стрим, для которого отображаются сообщения
+ * @param currentTopic - текущий топик, для которого отображаются сообщения
+ * @param currentUser - текущий аутентифицированный пользователь
+ * @param messages - список сообщений
+ * @param paginationOffset - оффсет сообщений для пагинации
+ * @param olderMessageId - айдишник самого верхнего сообщения
+ * @param clickedMessageId - айдишник нажатого сообщения
+ * @param chatEntities - сущности для адаптера
+ * @param loadingInput - состояние загрузки при отправке данных от польхователя
+ * @param loadingNewMessages - состояние загрузки новых сообщений
+ * @param loadingState - состояние загрузки при первоначальном запуске экрана
+ */
 data class ChatUIState(
     val currentTopic: TopicUI?,
     val currentStream: StreamUI,

@@ -9,6 +9,11 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.core.view.children
 import com.tinkoff.coursework.R
 
+/**
+ * Флекс-бокс лейаут
+ * Отображает элементы по
+ * @property maxQuantityChildPerRow в ряд
+ */
 class FlexBoxLayout constructor(
     context: Context,
     attributeSet: AttributeSet

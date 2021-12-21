@@ -8,6 +8,11 @@ import androidx.core.content.ContextCompat
 import com.tinkoff.coursework.R
 import com.tinkoff.coursework.presentation.util.spToPx
 
+/**
+ * Вьюшка емодзи
+ * Существует в двух состояниях: нажатая и не нажатая
+ * Отображает количество поставленных емодзи
+ */
 class EmojiReactionView constructor(
     context: Context,
     attributeSet: AttributeSet? = null

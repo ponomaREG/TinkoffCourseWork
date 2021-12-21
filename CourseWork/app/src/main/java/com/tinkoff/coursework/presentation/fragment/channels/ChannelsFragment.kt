@@ -16,6 +16,12 @@ import com.tinkoff.coursework.presentation.util.doAfterTextChangedWithDelay
 import com.tinkoff.coursework.presentation.viewpager.StreamsStateAdapter
 import io.reactivex.disposables.CompositeDisposable
 
+/**
+ * Фрагмент с каналами
+ * Содержит ViewPager с 2 фрагментами с каналами
+ * @see com.tinkoff.coursework.presentation.fragment.stream.StreamFragment
+ * Считает вертикальные отступы у вьюгрупы
+ */
 class ChannelsFragment : Fragment() {
 
     companion object {

@@ -25,6 +25,10 @@ import com.tinkoff.coursework.presentation.model.ReactionUI
 import com.tinkoff.coursework.presentation.util.sumHorizontalMargins
 import com.tinkoff.coursework.presentation.util.sumVerticalMargins
 
+/**
+ * Вьюшка сообщения
+ * Отображает сообщение, его реакции
+ */
 class MessageViewGroup constructor(
     context: Context,
     attributeSet: AttributeSet?
