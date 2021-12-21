@@ -12,10 +12,15 @@ class SyncRepositoryImpl @Inject constructor(
     private val applicationContext: Context
 ) : SyncRepository {
 
+    companion object {
+        private const val SYNC_INTERVAL = 6 * 60 * 60 * 1000L // 6 hours
+
+    }
+
     override fun launchSyncerData() {
         val periodicWorker = PeriodicWorkRequest.Builder(
             SyncWorker::class.java,
-            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            SYNC_INTERVAL,
             TimeUnit.MILLISECONDS
         ).setConstraints(
             Constraints.Builder()

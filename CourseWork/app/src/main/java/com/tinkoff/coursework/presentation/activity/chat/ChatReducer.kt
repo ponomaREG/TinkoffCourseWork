@@ -175,7 +175,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
 
             // Внутренние события
             is ChatEvent.Internal.MessagesLoaded -> {
-                Log.e("serverItems",event.items.toString())
+                Log.e("serverItems", event.items.toString())
                 state {
                     val newCurrentMessages =
                         if (event.items.isNullOrEmpty().not()) {
@@ -256,7 +256,7 @@ class ChatReducer : DslReducer<ChatEvent, ChatUIState, ChatAction, ChatCommand>(
                 }
             }
             is ChatEvent.Internal.CacheMessagesLoaded -> {
-                Log.e("cachedItems",event.items.toString())
+                Log.e("cachedItems", event.items.toString())
                 if (event.items.isNotEmpty()) {
                     state {
                         copy(

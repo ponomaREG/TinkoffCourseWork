@@ -28,6 +28,7 @@ class SyncWorker constructor(
     lateinit var streamRepository: ChannelRepository
     lateinit var userRepository: PeopleRepository
 
+
     private val notifyManager =
         ContextCompat.getSystemService(context, NotificationManager::class.java)
 

@@ -4,7 +4,6 @@ import com.tinkoff.coursework.domain.usecase.CreateStreamUseCase
 import io.reactivex.Observable
 import vivid.money.elmslie.core.ActorCompat
 
-// FIXME: 21.12.2021 Сделать респонс
 class CreateManagerActor constructor(
     private val createStreamUseCase: CreateStreamUseCase,
 ) : ActorCompat<CreateManagerCommand, CreateManagerEvent> {

@@ -2,7 +2,6 @@ package com.tinkoff.coursework.presentation.fragment.stream
 
 import com.tinkoff.coursework.domain.Error
 import com.tinkoff.coursework.presentation.base.LoadingState
-import com.tinkoff.coursework.presentation.fragment.create_manager.CreateType
 import com.tinkoff.coursework.presentation.model.EntityUI
 import com.tinkoff.coursework.presentation.model.StreamUI
 import com.tinkoff.coursework.presentation.model.StreamsGroup

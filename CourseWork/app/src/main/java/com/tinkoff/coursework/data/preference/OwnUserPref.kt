@@ -12,7 +12,7 @@ class OwnUserPref @Inject constructor(context: Context) {
         private const val PREFERENCES_KEY_USER = "PREFERENCES_KEY_USER"
     }
 
-    val prefs = context.getSharedPreferences(
+    private val prefs = context.getSharedPreferences(
         PREFERENCES_USER_STORE,
         Context.MODE_PRIVATE
     )
@@ -26,7 +26,7 @@ class OwnUserPref @Inject constructor(context: Context) {
     }
 
     fun putCurrentUserPreferences(user: UserNetwork) {
-        val userString = Json.encodeToString(UserNetwork.serializer(),user)
+        val userString = Json.encodeToString(UserNetwork.serializer(), user)
         prefs.edit()
             .putString(PREFERENCES_KEY_USER, userString)
             .apply()

@@ -60,7 +60,7 @@ class MessageRepositoryImpl @Inject constructor(
                 applyMarkdown = false
             )).map { response ->
             response.messages.map(messageMapper::fromNetworkModelToDomainModel)
-            }
+        }
             .mapToResponse()
 
     override fun fetchStreamMessages(
@@ -94,8 +94,8 @@ class MessageRepositoryImpl @Inject constructor(
                 ).convertToJsonArray(),
                 applyMarkdown = false
             )).map { response ->
-                response.messages.map(messageMapper::fromNetworkModelToDomainModel)
-            }.mapToResponse()
+            response.messages.map(messageMapper::fromNetworkModelToDomainModel)
+        }.mapToResponse()
     }
 
     override fun fetchCacheStreamMessages(streamId: Int): Single<Response<List<Message>>> =

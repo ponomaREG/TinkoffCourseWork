@@ -1,7 +1,5 @@
 package com.tinkoff.coursework.data.repository
 
-import android.util.Log
-import com.tinkoff.coursework.data.error.NetworkError
 import com.tinkoff.coursework.data.mapper.UserMapper
 import com.tinkoff.coursework.data.network.api.UserAPI
 import com.tinkoff.coursework.data.persistence.dao.UserDAO
@@ -83,7 +81,7 @@ class PeopleRepositoryImpl @Inject constructor(
                         prefUser,
                         STATUS.UNDEFINED
                     )
-                }else throw java.net.UnknownHostException()
+                } else throw java.net.UnknownHostException()
             }
             .mapToResponse()
 

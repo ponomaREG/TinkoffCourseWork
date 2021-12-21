@@ -87,7 +87,7 @@ class ChatActor constructor(
 
                         },
                         isError = {
-                            ChatEvent.Internal.ErrorSendMessage(it,command.message)
+                            ChatEvent.Internal.ErrorSendMessage(it, command.message)
                         }
                     )
                 },

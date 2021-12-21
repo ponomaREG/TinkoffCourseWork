@@ -17,7 +17,6 @@ fun <T> Observable<T>.mapToResponse(): Observable<Response<T>> =
     }
         .onErrorResumeNext(DoOnResume::doOnResumeNextObservable)
 
-
 private object DoOnResume {
     fun doOnResumeNextSingle(error: Throwable) = Single.just(Response.Exception(error.parseError()))
     fun doOnResumeNextObservable(error: Throwable) = Observable.just(Response.Exception(error.parseError()))

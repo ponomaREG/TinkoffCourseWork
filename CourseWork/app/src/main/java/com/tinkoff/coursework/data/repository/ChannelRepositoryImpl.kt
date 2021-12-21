@@ -1,6 +1,5 @@
 package com.tinkoff.coursework.data.repository
 
-import com.tinkoff.coursework.data.error.parseError
 import com.tinkoff.coursework.data.mapper.StreamMapper
 import com.tinkoff.coursework.data.mapper.TopicMapper
 import com.tinkoff.coursework.data.network.api.StreamAPI
