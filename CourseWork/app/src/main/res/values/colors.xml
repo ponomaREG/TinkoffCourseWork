@@ -1,19 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
-    <color name="emoji_view_default_text_color">#EAEAEA</color>
-    <color name="emoji_view_background_color">#1C1C1C</color>
-    <color name="emoji_view_background_selected_color">#3A3A3A</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryVariant">#F3F3F3</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
 
-    <color name="message_view_group_username_text_color">#2A9D8F</color>
-    <color name="message_view_group_message_text_color">#FAFAFA</color>
-    <color name="message_view_group_background_color">#1C1C1C</color>
+    <color name="colorSecondary">#000000</color>
+    <color name="colorSecondaryVariant">#FFFFFF</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+
+    <color name="colorPrimaryVariantChat">#2A9D8F</color>
+
+    <color name="emoji_view_default_text_color">#000000</color>
+    <color name="emoji_view_background_color">#DDDDDD</color>
+    <color name="emoji_view_background_selected_color">#BFBFBF</color>
+
+    <color name="message_view_group_username_text_color">#09453E</color>
+    <color name="message_view_group_topic_name_text_color">#032E29</color>
+    <color name="message_view_group_message_text_color">#000000</color>
+    <color name="message_view_group_background_color">#DDDDDD</color>
     <color name="message_view_group_avatar_stroke_color">#A1A1A1</color>
+    <color name="chat_input_container_background_color">#D8D8D8</color>
+    <color name="chat_input_text_color">#000000</color>
+    <color name="chat_input_hint_text_color">#000000</color>
+    <color name="chat_input_background_color">#B6B6B6</color>
+    <color name="chat_background">#E8E8E8</color>
+    <color name="chat_topic_bg">#E3E2E2</color>
+    <color name="chat_topic_text_color">#4E4E4E</color>
+    <color name="bg_date_divider">#DDDDDD</color>
+    <color name="bottom_sheet_dialog_reactions_background_color">#CCCCCC</color>
+    <color name="date_divider_text_color">#353535</color>
+    <color name="item_user_name">#000000</color>
+    <color name="item_user_email">#302F2F</color>
+    <color name="ic_status_online_fill">#048325</color>
+    <color name="ic_status_idle_fill">#C5AC0E</color>
+    <color name="ic_status_offline_fill">#8A0808</color>
+    <color name="item_stream_background">#FFFFFF</color>
+    <color name="item_topic_background">#D5D5D5</color>
+    <color name="item_topic_messagesCount_text_color">#000000</color>
+    <color name="item_topic_name_text_color">#121212</color>
+    <color name="item_stream_name_text_color">#000000</color>
+    <color name="fragment_profile_status_text_color">#474747</color>
+    <color name="fragment_profile_onlineStatus_text_color">#4AB54D</color>
+    <color name="fragment_profile_logOut_text_color">#434242</color>
+    <color name="fragment_searches_searchInput_text_color">#000000</color>
+    <color name="fragment_searches_searchInput_text_color_hint">#000000</color>
+    <color name="fragment_profile_name_text_color">#000000</color>
+    <color name="bg_button_logout">#B5B5B5</color>
+    <color name="fragment_people_searchInput_text_color">#000000</color>
+    <color name="fragment_container_streams_tab">#219653</color>
+    <color name="shimmer_background">#DDDDDD</color>
+
+    <color name="topicPossibleColorRed">#FF0000</color>
+    <color name="topicPossibleColorBlue">#0000FF</color>
+    <color name="topicPossibleColorGreen">#148F14</color>
+    <color name="topicPossibleColorOrange">#FFA500</color>
+    <color name="topicPossibleColorYellow">#AAAA2D</color>
+    <color name="topicPossibleColorCyan">#1DA5A5</color>
+    <color name="topicPossibleColorPink">#FF69B4</color>
+    <color name="topicPossibleColorPurple">#A020F0</color>
+    <color name="topicPossibleColorIndigo">#4B0082</color>
+
+    <!-->Icons</-->
+    <color name="icon_search">#000000</color>
+    <color name="icon_add_emoji_bg">#DDDDDD</color>
+    <color name="icon_add_emoji_plus">#000000</color>
+
+    <color name="icon_add_stream_tint">#000000</color>
+
+    <color name="text_hyperlink_color">#0000FF</color>
+    <color name="fragment_create_manager_input_text">#000000</color>
+
 </resources>

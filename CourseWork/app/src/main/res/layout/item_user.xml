@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/item_user_height"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/item_user_avatar"
+            android:layout_width="@dimen/item_user_avatar_size"
+            android:layout_height="@dimen/item_user_avatar_size"
+            android:layout_marginStart="@dimen/item_user_avatar_margin_start"
+            android:layout_marginEnd="@dimen/item_user_avatar_margin_end"
+            android:background="@drawable/round_avatar"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_background" />
+
+        <ImageView
+            android:id="@+id/item_user_onlineStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_status_online"
+            android:layout_marginTop="@dimen/item_user_onlineStatus_margin_top"
+            android:layout_marginStart="@dimen/item_user_onlineStatus_margin_start" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/item_user_name"
+            android:textSize="@dimen/item_user_name_text_size"
+            tools:text="@tools:sample/full_names" />
+
+        <TextView
+            android:id="@+id/item_user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/item_user_email"
+            android:textSize="@dimen/item_user_email_text_size"
+            tools:text="@tools:sample/last_names" />
+    </LinearLayout>
+
+</LinearLayout>

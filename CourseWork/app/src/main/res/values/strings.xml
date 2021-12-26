@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">CourseWork</string>
+    <string name="app_name">Tulip</string>
+    <string name="chat_input_hint">Написать сообщение</string>
+    <string name="fragment_searches_searchInput_hint">Search…</string>
+    <string name="fragment_people_searchInput_hint">Users…</string>
+    <string name="fragment_profile_logOut">Log out</string>
+    <string name="fragment_profile_status">In a meeting</string>
+    <string name="chat_topic">Topic: %0$s</string>
+    <string name="item_topic_new_messages">%0$d mes</string>
+    <string name="main_bnv_channels">Channels</string>
+    <string name="main_bnv_people">People</string>
+    <string name="main_bnv_profile">Profile</string>
+    <string name="fragment_streams_type_subscribed">Subscribed</string>
+    <string name="fragment_streams_type_all">All</string>
+    <string name="fragment_profile_onlineStatus">online</string>
+    <string name="fragment_profile_offlineStatus">offline</string>
+    <string name="message_viewgroup_my_message_indicator"> (Вы)</string>
+    <string name="worker_success_updating">База данных успешно обновлена</string>
+    <string name="uri_browsing_chooser">Выберите браузер</string>
+    <string name="file_uploaded_template">%1$s [%2$s](%3$s)</string>
+    <string name="error_mock">Это тестовое исключение</string>
+    <string name="error_unexpected">Неизвестная ошибка</string>
+    <string name="error_network">Проблемы с соединением</string>
+    <string name="error_authenticated">Проблема с аутентификацией</string>
+    <string name="error_server">Произошла ошибка на сервере. Попробуйте позже</string>
+    <string name="error_too_many_requests">Слишком много запросов в секунду</string>
+    <string name="error_unknown_host">Отсутствует соединение</string>
+    <string name="exception_inner">Произошла внутренняя ошибка</string>
 </resources>
